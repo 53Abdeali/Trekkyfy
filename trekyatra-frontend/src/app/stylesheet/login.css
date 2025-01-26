@@ -12,6 +12,7 @@
 .trek-log-main {
   background-color: #ecf0f9;
   overflow: hidden;
+  height: 100dvh;
 }
 
 .trek-log-img {
@@ -138,6 +139,13 @@ input:focus {
   margin-top: 10px;
 }
 
+.fp-link-txt{
+  color: #212b43;
+  text-align: right;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
 @media (max-width: 425px) {
   .trek-log {
     margin: 0;
@@ -183,6 +191,9 @@ input:focus {
   .log-btn {
     margin-right: 0.5rem;
     margin-top: 12px;
+  }
+  .reg-link-txt, .fp-link-txt{
+    font-size: 0.8rem;
   }
 }
 
@@ -234,7 +245,10 @@ input:focus {
   }
 }
 
-@media (max-width: 768px) {
+@media ((min-width: 768px) and (max-width: 1023px)) {
+  .trek-log-main {
+    height:100dvh;
+  }
   .trek-log-img {
     width: 25%;
   }

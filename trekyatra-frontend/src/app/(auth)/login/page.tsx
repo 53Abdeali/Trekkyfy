@@ -109,6 +109,9 @@ export default function Login() {
               </div>
             </div>
             <div className="log-btn-main">
+              <Link className="fp-link-txt" href="/forgot-password">
+                Forgot Password?
+              </Link>
               <button className="log-btn" type="submit">
                 Login
               </button>
