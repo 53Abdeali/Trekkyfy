@@ -7,6 +7,7 @@ import trekyatra from "@/app/Images/ty.png";
 import "@/app/stylesheet/Forgot-Password.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {toast} from "react-hot-toast";
 
 export default function Reset() {
   const { token } = useParams();
@@ -22,7 +23,7 @@ export default function Reset() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setMessage("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
 
@@ -37,16 +38,16 @@ export default function Reset() {
       );
 
       if (response.ok) {
-        setMessage("Password reset successful! Redirecting to login...");
+        toast.success("Password reset successful! Redirecting to login...");
         setTimeout(() => {
           router.push("/login");
-        }, 2000);
+        }, 1000);
       } else {
         const data = await response.json();
-        setMessage(data.message || "Invalid or expired token.");
+        toast.custom(data.message || "Invalid or expired token.");
       }
     } catch (error) {
-      setMessage("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     }
   };
 

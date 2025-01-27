@@ -63,8 +63,10 @@ def register():
     username = data.get("username", "default_username")
 
     hashed_password = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
+    
+    role = data.get('role', 'hiker')
 
-    user = User(email=data["email"], password=hashed_password, username=username)
+    user = User(email=data["email"], password=hashed_password, username=username, role=role)
     db.session.add(user)
     db.session.commit()
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import trekyatra from "@/app/Images/ty.png";
 import "@/app/stylesheet/Forgot-Password.css";
+import { toast } from "react-hot-toast";
 
 export default function Forgot() {
   const [email, setEmail] = useState("");
@@ -19,9 +20,9 @@ export default function Forgot() {
       });
 
       if (response.ok) {
-        setMessage("If the email is registered, a reset link has been sent.");
+        toast.success("If the email is registered, a reset link has been sent.");
       } else {
-        setMessage("Something went wrong. Please try again.");
+        toast.error("Something went wrong. Please try again.");
       }
     } catch (error) {
       setMessage("Unable to process the request.");

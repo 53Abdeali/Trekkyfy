@@ -10,6 +10,7 @@ import Link from "next/link";
 import "@/app/stylesheet/login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-hot-toast";
 
 export const logMetadata: Metadata = {
   title: "Trekyatra- Register",
@@ -22,6 +23,7 @@ export default function Regsiter() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -29,11 +31,11 @@ export default function Regsiter() {
     e.preventDefault();
 
     if (!username || !email || !password || !confirmPassword) {
-      alert("Please fill in the both fields.");
+      toast.error("Please fill in the all fields.");
     }
 
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      toast.error("Password does not match");
       return;
     }
 
@@ -43,12 +45,16 @@ export default function Regsiter() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      if (!response.ok) {
+      if (response.ok) {
+        toast.success("Registration done successfully!");
+        setTimeout(() => {
+          router.push("/login");
+        }, 1000);
+      } else {
         throw new Error("Registration Failed");
       }
-      router.push("/login");
     } catch (err) {
-      alert("Registration Failed");
+      console.error("Registration Failed");
     }
   };
 
@@ -74,7 +80,7 @@ export default function Regsiter() {
         </div>
         <div className="trek-log-right">
           <form onSubmit={handleRegister}>
-          <div className="input">
+            <div className="input">
               <label className="label" htmlFor="Username">
                 Username
               </label>
@@ -154,6 +160,33 @@ export default function Regsiter() {
                     icon={showConfirmPassword ? faEyeSlash : faEye}
                   />{" "}
                 </span>
+              </div>
+            </div>
+            <div className="input">
+              <label className="label">Your role:</label>
+              <div className="rdo-lbl-main">
+                <label htmlFor="hiker" className="rdo-lbl">
+                  <input
+                    id="radio"
+                    type="radio"
+                    name="role"
+                    value="hiker"
+                    checked={role === "hiker"}
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                  <span className="radio-label">Hiker</span>
+                </label>
+                <label htmlFor="guide" className="rdo-lbl">
+                  <input
+                    id="guide"
+                    type="radio"
+                    name="role"
+                    value="guide"
+                    checked={role === "guide"}
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                  <span className="radio-label">Guide</span>
+                </label>
               </div>
             </div>
             <div className="log-btn-main">

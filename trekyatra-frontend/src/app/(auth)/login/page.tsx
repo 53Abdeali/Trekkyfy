@@ -10,6 +10,8 @@ import Link from "next/link";
 import "@/app/stylesheet/login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-hot-toast";
+import { totalmem } from "os";
 
 export const logMetadata: Metadata = {
   title: "Trekyatra- Login",
@@ -27,7 +29,7 @@ export default function Login() {
     e.preventDefault();
 
     if (!email || !password) {
-      setError("Please fill in the both fields.");
+      toast.error("Please fill in the both fields.");
     }
 
     try {
@@ -36,8 +38,10 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      if (!response.ok) {
-        throw new Error("Invalid Credentials");
+      if (response.ok) {
+        toast.success("Login successful");
+      } else {
+        toast.error("Invalid Credentials");
       }
       router.push("/");
     } catch (err) {

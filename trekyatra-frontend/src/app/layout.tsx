@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Head from "next/head";
+import { Toaster } from "react-hot-toast";
+
 export const metadata: Metadata = {
   title: "TrekYatra",
   description: "Hike and outdoor with an experienced local.",
@@ -12,7 +13,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Toaster />
+        {children}
+      </body>
     </html>
   );
 }
