@@ -1,1 +1,1 @@
-# TrekYatra
+# Trekkyfy
