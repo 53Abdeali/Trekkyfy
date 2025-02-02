@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import trekyatra from "@/app/Images/ty.png";
+import Trekkyfy from "@/app/Images/ty.png";
 import "@/app/stylesheet/Forgot-Password.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -55,8 +55,8 @@ export default function Reset() {
     <div className="fp">
       <div className="fp-img">
         <Image
-          src={trekyatra}
-          alt="TrekYatra Logo"
+          src={Trekkyfy}
+          alt="Trekkyfy Logo"
           className="fp-image"
           priority
         />

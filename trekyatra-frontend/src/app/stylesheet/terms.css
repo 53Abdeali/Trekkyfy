@@ -1,0 +1,209 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff;
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #212b43;
+  border-radius: 0.5rem;
+}
+
+.tc-nav {
+  margin-bottom: 3rem;
+}
+
+.tc-foot {
+  margin-top: 3rem;
+}
+
+.tc-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tc-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+
+.tc-heads {
+  width: 100%;
+  padding: 0 4rem;
+}
+
+.tc-heads h1 {
+  font-size: 4rem;
+  color: #212b43;
+  text-transform: capitalize;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.tc-heads p {
+  font-size: 1rem;
+  color: #212b43;
+  margin-bottom: 2rem;
+}
+
+.tc-heads h2 {
+  font-size: 1rem;
+  color: #212b43;
+  margin-bottom: 2rem;
+}
+
+.tc-get-started {
+  margin: 1rem;
+}
+
+.tc-get {
+  background-color: #212b43;
+  color: #fff;
+  border-radius: 0.8rem;
+  font-size: 1rem;
+  padding: 1rem 2rem;
+  cursor: pointer;
+}
+
+.tc-get:hover {
+  background-color: #fff;
+  color: #212b43;
+  border: 2px solid #212b43;
+  transition: all 1s ease-in-out;
+}
+
+.tc-get-icon {
+  margin-left: 0.8rem;
+}
+
+.pp-img{
+    width: 100%;
+}
+
+.tc-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tc-icon-head {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding-left: 10rem;
+}
+
+.tc-icon {
+  font-size: 1rem;
+  border: 2px solid #212b43;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #212b43;
+  padding: 0.5rem;
+  margin: 0.5rem 2rem 0.5rem 0;
+  cursor: pointer;
+}
+
+.tc-head h1 {
+  font-size: 1.2rem;
+  color: #212b43;
+  cursor: pointer;
+}
+
+.tc-icon:hover {
+  background-color: #212b43;
+  color: white;
+}
+
+.tc-head h1:hover {
+  text-decoration: underline;
+  text-decoration-color: #212b43;
+}
+
+.tc-head p {
+  font-size: 1rem;
+  color: #212b43;
+  margin-top: 1rem;
+}
+
+.tc-list {
+  margin-top: 10px;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.tc-list li {
+  margin-bottom: 5px;
+  color: #212b43;
+}
+
+@media (max-width: 430px) {
+  .tc-main {
+    flex-direction: column-reverse;
+  }
+
+  .tc-heads {
+    padding: 0 2rem;
+  }
+
+  .tc-heads h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .tc-heads p {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .tc-heads h2 {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .tc-get {
+    padding: 0.5rem;
+  }
+
+  .tc-icon-head {
+    padding-left: 1rem;
+  }
+
+  .tc-head p {
+    margin-right: 1rem;
+    text-align: justify;
+    padding-bottom: 1rem;
+  }
+}
+
+@media ((min-width: 431px) and (max-width:768px)) {
+  .tc-heads h1 {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+
+  .tc-heads p {
+    font-size: 0.8rem;
+    text-align: justify;
+  }
+
+  .tc-heads h2 {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+}

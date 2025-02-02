@@ -3,7 +3,6 @@
 import Image from "next/image";
 import trekyatra from "@/app/Images/ty.png";
 import black from "@/app/Images/black.jpg";
-import { Metadata } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -11,12 +10,6 @@ import "@/app/stylesheet/login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-hot-toast";
-import { totalmem } from "os";
-
-export const logMetadata: Metadata = {
-  title: "Trekyatra- Login",
-  description: "Login to Trekyatra",
-};
 
 export default function Login() {
   const router = useRouter();
@@ -40,10 +33,10 @@ export default function Login() {
       });
       if (response.ok) {
         toast.success("Login successful");
+        router.push("/");
       } else {
         toast.error("Invalid Credentials");
       }
-      router.push("/");
     } catch (err) {
       setError("Invalid Credentials");
     }

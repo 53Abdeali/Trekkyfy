@@ -1,0 +1,251 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.faq-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-heads {
+  width: 80%;
+  padding-left: 2rem;
+}
+
+.faq-heads h1 {
+  font-size: 3rem;
+  color: #212b43;
+  margin-bottom: 2rem;
+}
+
+.faq-img {
+  width: 100%;
+}
+
+.faq-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.faq-section {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.faq-que-head {
+  font-size: 2rem;
+  color: #212b43;
+  text-align: center;
+}
+
+.faq-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.faq-inp {
+  font-size: 1rem;
+  outline: none;
+  border: 2px solid #212b43;
+  border-radius: 0.5rem;
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.faq-btn {
+  font-size: 1.5rem;
+  border: none;
+  outline: none;
+  background-color: #ccc;
+  border-radius: 0.5rem;
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.faq-btn:hover {
+  background-color: #212b43;
+  transition: all 0.7s ease-in-out;
+}
+
+.faq-map {
+  width: 80%;
+}
+
+.faq-map-que {
+  width: 50%;
+}
+
+.faq-map-main {
+  font-size: 1.2rem;
+  color: #212b43;
+  border-bottom: 2px solid #212b43;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-que-icon:hover {
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.que-faq:hover {
+  text-decoration: underline;
+  text-decoration-color: #212b43;
+  cursor: pointer;
+}
+
+.faq-map p {
+  padding: 0 0.5rem 0 0;
+  margin: 0.5rem 0;
+  text-align: justify;
+}
+
+.faq-ans-para {
+  width: 100%;
+}
+
+.faq-navigation {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  padding-left: 30rem;
+}
+
+.faq-nav-btn {
+  background: #2c3e50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.faq-nav-btn:hover {
+  background: #34495e;
+}
+
+
+@media (max-width:430px) {
+    .faq-main{
+        flex-direction: column;
+    }
+
+    .faq-section{
+        flex-direction: column;
+    }
+    .faq-navigation{
+        margin: 0 0 2rem 0;
+        padding: 0;
+    }
+    .faq-heads{
+        width: 100%;
+        margin-top: 2rem;
+    }
+    .faq-heads h1{
+        font-size: 1.5rem;
+    }
+    .faq-heads p{
+        font-size: 0.8rem;
+        padding-right: 0.8rem;
+    }
+    .faq-form{
+        padding: 0 0.3rem;
+    }
+    .faq-que-head h1{
+        font-size: 2rem;
+    }
+    .faq-btn{
+        font-size: 1rem;
+    }
+    .faq-map-que{
+        width: 100%;
+        padding: 0;
+        margin: 1rem 0 0 0;
+    }
+    .faq-map{
+        width: 100%;
+        padding: 0 0.5rem;
+    }
+    .que-faq{
+        font-size: 1rem;
+    }
+}
+@media ((min-width:431px) and (max-width:950px)) {
+    .faq-main{
+        flex-direction: column;
+    }
+
+    .faq-section{
+        flex-direction: column;
+    }
+    .faq-navigation{
+        margin: 0 0 2rem 0;
+        padding: 0;
+    }
+    .faq-heads{
+        width: 100%;
+        margin-top: 2rem;
+    }
+    .faq-heads h1{
+        font-size: 3rem;
+    }
+    .faq-heads p{
+        font-size: 1.2rem;
+        padding-right: 0.8rem;
+    }
+    .faq-form{
+        padding: 0 0.3rem;
+    }
+    .faq-que-head h1{
+        font-size: 3rem;
+    }
+    .faq-btn{
+        font-size: 1rem;
+    }
+    .faq-map-que{
+        width: 100%;
+        padding: 0;
+        margin: 1rem 0 0 0;
+    }
+    .faq-map{
+        width: 100%;
+        padding: 0 3rem;
+    }
+    .que-faq{
+        font-size: 1rem;
+    }
+    .faq-que{
+        width: 70%;
+    }
+}
+
+@media ((min-width:951px) and (max-width:1100px)) {
+    .faq-heads h1{
+        font-size: 2.5rem;
+    }
+    .faq-que{
+        width: 40%;
+    }
+    .faq-que-head{
+        font-size: 1.5rem;
+    }
+    .faq-navigation{
+        margin-top: 1rem;
+        padding: 0 0 0 23rem;
+    }
+}

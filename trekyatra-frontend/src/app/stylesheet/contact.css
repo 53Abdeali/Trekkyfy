@@ -1,0 +1,271 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.contact-map {
+  background-color: #212b43;
+  position: relative;
+  width: 100%;
+  height: 500px;
+  margin-bottom: 2rem;
+}
+
+.mouse-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.contact-map::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1;
+  pointer-events: none;
+  mask-image: radial-gradient(
+    circle 120px at var(--x, 50%) var(--y, 50%),
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.8)
+  );
+  -webkit-mask-image: radial-gradient(
+    circle 120px at var(--x, 50%) var(--y, 50%),
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.8)
+  );
+  transition: mask-image 0.05s ease-out;
+}
+
+.contact-heads {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  color: white;
+  z-index: 9999;
+}
+
+.contact-heads h1 {
+  font-size: 3rem;
+}
+
+.contact-heads p {
+  font-size: 1.5rem;
+}
+
+.contact-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.contact-left {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+}
+
+.contact-left-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem;
+  padding: 0 1rem;
+  color: #212b43;
+  font-size: 1rem;
+}
+
+.contact-inputs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contact-inp {
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+  flex-direction: column;
+  margin: 1rem 1rem;
+  padding: 0 1rem;
+}
+
+.contact-inp label {
+  color: #212b43;
+  font-weight: 600;
+  padding-bottom: 2px;
+}
+
+.contact-inp input {
+  width: 250px;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #ccc;
+  padding: 0.5rem;
+}
+
+.contact-inp textarea {
+  outline: none;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.contact-inp input:focus {
+  border-bottom: 2px solid #212b43;
+  transition: all 0.5s ease-in-out;
+}
+
+.contact-inp textarea:focus {
+  border: 2px solid #212b43;
+  transition: all 1s ease-in-out;
+}
+
+.contact-text-area {
+  position: relative;
+  padding-bottom: 0.1rem;
+}
+
+.contact-text-area button {
+  border: none;
+  outline: none;
+  background-color: #212b43;
+  color: #fff;
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  margin: 0 1.2rem;
+  font-size: 1rem;
+  border-radius: 50%;
+  padding: 1rem;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.contact-right {
+  padding: 2rem;
+  background-color: #212b43;
+  width: 25%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.contact-right-head {
+  color: white;
+  font-size: 0.7rem;
+  margin: 2rem 0rem 2rem 0rem;
+}
+
+.contact-right-content {
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  color: white;
+}
+
+.contact-right-content p {
+  margin: 0rem 1rem 2rem 1rem;
+}
+
+.contact-right-icons {
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.contact-right-icons div {
+  margin: 0.5rem 2rem 0rem 0rem;
+  color: #212b43;
+  border-radius: 50%;
+  background-color: #fff;
+  padding: 0.5rem;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.contact-right-icons div:hover{
+  background-color: #212b43;
+  color: #fff;
+  border: 2px solid #fff;
+  transition: all 0.5s ease-in-out;
+}
+
+@media (max-width:600px){
+  .contact-heads h1{
+    font-size: 2rem;
+  }
+
+  .contact-heads p{
+    font-size: 1rem;
+  }
+  .contact-content{
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .contact-left{
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .contact-left-head{
+    font-size: 0.7rem;
+  }
+
+  .contact-inp{
+    align-items: left;
+  }
+
+  .contact-inputs{
+    flex-direction: column;
+  }
+
+  .contact-right{
+    width: 100%;
+  }
+}
+
+@media ((min-width:601px) and (max-width:950px)) {
+  .contact-content{
+    flex-direction: column;
+  }
+
+  .contact-left{
+    width: 100%;
+  }
+
+  .contact-right{
+    width: 100%;
+    padding-left: 4rem;
+  }
+}
+
+@media ((min-width:951px) and (max-width:1100px)){
+  .contact-right{
+    width: 35%;
+  }
+}

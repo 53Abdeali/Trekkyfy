@@ -1,23 +1,26 @@
-"use client"
-import { useEffect, useState } from "react";
+"use client";
+import Navbar from "@/app/hike-components/navbar";
+import Footer from "@/app/hike-components/footer";
+import Hero from "@/app/hike-components/hero";
+import About from "@/app/hike-components/about";
+import Feature from "@/app/hike-components/feature";
+import Work from "@/app/hike-components/work";
+import Testimonials from "@/app/hike-components/testimonial";
+import Discount from "@/app/hike-components/discount";
+import Feedback from "@/app/hike-components/feedback";
 
-interface Data {message : string}
-
-export default function TrekYatra() {
-  const [data, setData] = useState<Data | null>(null);
-
-  useEffect(() => {
-    const fetchData = async() => {
-        const response = await fetch("http://127.0.0.1:5000");
-        const result: Data = await response.json();
-        setData(result)
-    };
-    fetchData();
-  }, []);
+export default function Trekkyfy() {
   return (
     <div>
-      <h1>Api Test</h1>
-      {data ? <p>{data.message}</p> : <p>Loading...</p>}
+      <Navbar />
+      <Hero />
+      <About />
+      <Work />
+      <Discount />
+      <Feature />
+      <Testimonials />
+      <Feedback />
+      <Footer />
     </div>
   );
 }

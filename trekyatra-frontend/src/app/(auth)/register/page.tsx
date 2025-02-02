@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import trekyatra from "@/app/Images/ty.png";
+import Trekkyfy from "@/app/Images/ty.png";
 import black from "@/app/Images/black.jpg";
 import { Metadata } from "next";
 import { useRouter } from "next/navigation";
@@ -13,8 +13,8 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-hot-toast";
 
 export const logMetadata: Metadata = {
-  title: "Trekyatra- Register",
-  description: "Register to Trekyatra",
+  title: "Trekkyfy- Register",
+  description: "Register to Trekkyfy",
 };
 
 export default function Regsiter() {
@@ -62,8 +62,8 @@ export default function Regsiter() {
     <div className="trek-log-main">
       <div className="trek-log-img">
         <Image
-          src={trekyatra}
-          alt="Logo_TrekYatra"
+          src={Trekkyfy}
+          alt="Logo_Trekkyfy"
           className="trek-log-image"
           priority
         />
@@ -73,7 +73,7 @@ export default function Regsiter() {
         <div className="trek-log-left">
           <Image
             src={black}
-            alt="Side_TrekYatra"
+            alt="Side_Trekkyfy"
             className="trek-log-left-image"
             priority
           />

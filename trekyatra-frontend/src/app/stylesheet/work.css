@@ -1,0 +1,101 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.work-main {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.work-line {
+  width: 5px;
+  height: 3rem;
+  background: linear-gradient(90deg, #3a5226, #371e12);
+  border-radius: 0.5rem;
+}
+
+.work-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #212b43;
+  text-align: center;
+}
+
+.work-header p {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #212b43;
+  text-align: center;
+}
+
+.work-steps {
+  margin-bottom: 2rem;
+}
+
+.work-links {
+  text-decoration: none;
+}
+
+.steps {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.step {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: auto;
+  height: 100px;
+  border: 2px solid #212b43;
+  margin-top: 2rem;
+  padding: 0 2rem;
+  border-radius: 0.8rem;
+  font-size: 1.2rem;
+  color: #212b43;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+.step:hover {
+  background-color: #212b43;
+  color: #fff;
+}
+
+.step-icon {
+  font-size: 2rem;
+}
+
+.step-arrow {
+  width: 3rem;
+  background-color: #212b43;
+  height: 2px;
+}
+
+@media (max-width: 430px) {
+  .work-header p {
+    padding: 0 2rem;
+  }
+  .steps {
+    flex-direction: column;
+  }
+  .step-arrow {
+    width: 2px;
+    height: 2rem;
+  }
+  .step {
+    width: 300px;
+    margin: 0;
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,178 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f3f3;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #212b43;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a5226;
+  cursor: pointer;
+}
+
+.feed-main {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  flex-direction: column;
+}
+
+.feed-back {
+  background-color: #212b43;
+  width: 100%;
+  height: 300px;
+  position: absolute;
+}
+
+.feed-sec {
+  position: relative;
+  display: flex;
+  justify-content: right;
+  padding: 5rem;
+  /* top: 8rem; */
+}
+
+.feed-left {
+  color: #fff;
+  padding: 0 0 0 2rem;
+  width: 80%;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.feed-left h1 {
+  font-size: 2.5rem;
+}
+
+.feed-left h2 {
+  font-size: 1rem;
+  width: 80%;
+  font-weight: normal;
+}
+
+.feed-right {
+  background-color: #fff;
+  width: 40%;
+  padding: 2rem;
+  margin: 0 2rem 0 0;
+  border: 0.1rem solid #212b43;
+  font-family: "Times New Roman", Times, serif;
+  height: auto;
+}
+
+.feed-head {
+  padding: 0 1rem;
+}
+
+.feed-head h1 {
+  font-size: 2.5rem;
+  color: #371e12;
+}
+
+.feed-head h2 {
+  font-size: 1.2rem;
+  color: #3a5226;
+}
+
+.feed-input {
+  width: 90%;
+  background-color: #e0e0e0;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin: 1rem 0 0 0.9rem;
+  border-radius: 0.3rem;
+  font-family:'Times New Roman', Times, serif
+}
+
+.feed-input::placeholder {
+  font-family: "Times New Roman", Times, serif;
+  color: #212b43;
+}
+
+.feed-btn {
+  width: 90%;
+  background-color: #212b43;
+  border: none;
+  outline: none;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  margin: 1rem 0 0 0.9rem;
+  border-radius: 0.3rem;
+  color: #fff;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.feed-btn:hover {
+  color: #212b43;
+  background-color: #fff;
+  border: 0.1rem solid #212b43;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+@media (max-width: 950px) {
+  .feed-sec {
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    margin: 2rem 0;
+  }
+
+  .feed-left {
+    width: 100%;
+  }
+
+  .feed-left h1 {
+    font-size: 1.7rem;
+  }
+
+  .feed-left h2 {
+    margin-bottom: 2rem;
+    font-size: 0.8rem;
+  }
+
+  .feed-right {
+    width: 100%;
+    border: none;
+    margin: none;
+  }
+
+  .feed-head h1 {
+    font-size: 1.7rem;
+  }
+
+  .feed-head h2 {
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .feed-input,
+  .feed-btn {
+    font-size: 1rem;
+  }
+}
+
+@media ((min-width: 951px) and (max-width:1024px)) {
+  .feed-left {
+    width: 70%;
+  }
+
+  .feed-right {
+    width: 50%;
+  }
+}

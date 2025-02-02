@@ -1,0 +1,119 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+.feature-main{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.feature-line {
+  width: 5px;
+  height: 3rem;
+  background: linear-gradient(90deg, #3a5226, #371e12);
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.feature-heads h1 {
+  text-align: center;
+  font-size: 2rem;
+  color: #212b43;
+  font-family: "Montserrat", "serif";
+}
+
+.feature-heads p {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #212b43;
+  margin-bottom: 2rem;
+}
+
+.feat-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feature-icon h1 {
+  font-size: 4rem;
+  text-align: center;
+  color: #371e12;
+}
+
+
+.feature-icon h2 {
+  font-size: 1rem;
+  color: #3a5226;
+  text-align: center;
+}
+
+.card-back {
+  background-color: #212b43;
+  color: #ffffff;
+  /* padding: 20px; */
+  text-align: center;
+  transform: rotateY(180deg);
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+  border: 2px solid #212b43;
+}
+
+.card-rotation .feature-icon h1 {
+  transform: rotateY(180deg);
+}
+
+.card-rotation .feature-icon h2 {
+  transform: rotateY(0);
+}
+
+.card-rotation .card-back {
+  transform: rotateY(0);
+}
+
+.feature-icon h1,
+.card-back {
+  width: 250px;
+  height: 200px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  transition: transform 0.6s ease-in-out;
+  position: absolute;
+}
+
+.card-rotate {
+  width: 250px;
+  height: 250px;
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+}
+
+.card-back p {
+  font-size: 0.8rem;
+}
+
+@media (max-width:430px) {
+    .feat-cards{
+        flex-direction: column;
+    }
+
+}
+
+@media ((min-width:431px) and (max-width:768px)) {
+    .feat-cards{
+        flex-wrap: wrap;
+    }
+
+}
+
+@media ((min-width:769px) and (max-width:1024px)) {
+    .feat-cards{
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+}

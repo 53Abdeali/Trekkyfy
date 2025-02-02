@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import trekyatra from "@/app/Images/ty.png";
+import Trekkyfy from "@/app/Images/ty.png";
 import "@/app/stylesheet/Forgot-Password.css";
 import { toast } from "react-hot-toast";
 
@@ -32,8 +32,8 @@ export default function Forgot() {
     <div className="fp">
       <div className="fp-img">
         <Image
-          src={trekyatra}
-          alt="Logo_TrekYatra"
+          src={Trekkyfy}
+          alt="Logo_Trekkyfy"
           className="fp-image"
           priority
         />
