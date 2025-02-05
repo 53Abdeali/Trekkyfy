@@ -24,7 +24,7 @@ export default function Feedback() {
         toast.custom("Please try again later!");
       }
     } catch (err) {
-      toast.error("Something went wrong!");
+      console.error("Something went wrong!",err);
     }
   };
 
@@ -58,7 +58,7 @@ export default function Feedback() {
           <h1 className="animate">Your Voice Is Crucial !</h1>
           <h2 className="animate">
             Embark on your journey with the perfect plan and let us know how
-            we're doing. Your valuable feedback guides us toward excellence!
+            we&apos;re doing. Your valuable feedback guides us toward excellence!
           </h2>
         </div>
         <div className="feed-right">

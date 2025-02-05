@@ -96,7 +96,8 @@ export default function Privacy() {
           <div className="tc-get-started">
             <span
               onClick={(e) => {
-                e.preventDefault(), handleTerms();
+                e.preventDefault();
+                handleTerms();
               }}
               className="tc-get"
             >
@@ -115,7 +116,12 @@ export default function Privacy() {
           </div>
         </div>
         <div className="tc-img pp-img">
-          <Image className="tc-image" src={terms} alt="Privacy & Policy" priority />
+          <Image
+            className="tc-image"
+            src={terms}
+            alt="Privacy & Policy"
+            priority
+          />
         </div>
       </div>
 
@@ -126,7 +132,8 @@ export default function Privacy() {
               <div className="tc-icon">
                 <FontAwesomeIcon
                   onClick={(e) => {
-                    e.preventDefault(), handleCondition(condition.id);
+                    e.preventDefault();
+                    handleCondition(condition.id);
                   }}
                   icon={
                     showDescription[condition.id] ? faArrowDown : faArrowRight
@@ -136,7 +143,8 @@ export default function Privacy() {
               <div className="tc-head">
                 <h1
                   onClick={(e) => {
-                    e.preventDefault(), handleCondition(condition.id);
+                    e.preventDefault();
+                    handleCondition(condition.id);
                   }}
                 >
                   {condition.title}

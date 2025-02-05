@@ -113,7 +113,8 @@ export default function Terms() {
           <div className="tc-get-started">
             <span
               onClick={(e) => {
-                e.preventDefault(), handleTerms();
+                e.preventDefault();
+                handleTerms();
               }}
               className="tc-get"
             >
@@ -143,7 +144,8 @@ export default function Terms() {
               <div className="tc-icon">
                 <FontAwesomeIcon
                   onClick={(e) => {
-                    e.preventDefault(), handleCondition(condition.id);
+                    e.preventDefault();
+                    handleCondition(condition.id);
                   }}
                   icon={
                     showDescription[condition.id] ? faArrowDown : faArrowRight
@@ -153,7 +155,8 @@ export default function Terms() {
               <div className="tc-head">
                 <h1
                   onClick={(e) => {
-                    e.preventDefault(), handleCondition(condition.id);
+                    e.preventDefault();
+                    handleCondition(condition.id);
                   }}
                 >
                   {condition.title}

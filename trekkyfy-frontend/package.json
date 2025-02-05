@@ -1,5 +1,5 @@
 {
-  "name": "trekyatra-frontend",
+  "name": "trekkyfy-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -19,7 +19,7 @@
     "framer-motion": "^12.0.6",
     "gsap": "^3.12.7",
     "locomotive-scroll": "^4.1.4",
-    "next": "15.1.6",
+    "next": "^15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.1",

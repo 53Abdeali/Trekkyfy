@@ -2,23 +2,13 @@
 
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHiking,
-  faMapMarkedAlt,
-  faCampground,
-  faBus,
-  faUserShield,
-  faRecycle,
-  faUsers,
-  faBook,
-} from "@fortawesome/free-solid-svg-icons";
-
 import "@/app/stylesheet/services.css"
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 interface ServiceCardProps {
   heading: string;
   description: string;
-  icon: any;
+  icon: IconDefinition;
 }
 
 export default function Flipcard({

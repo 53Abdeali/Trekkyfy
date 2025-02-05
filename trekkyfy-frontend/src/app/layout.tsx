@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 
-export var metadata: Metadata = {
+export const metadata: Metadata = {
   title: "Trekkyfy",
   description: "Hike and outdoor with an experienced local.",
   icons: {

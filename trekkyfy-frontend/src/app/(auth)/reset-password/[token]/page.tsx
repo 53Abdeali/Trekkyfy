@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import "@/app/stylesheet/Forgot-Password.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -14,7 +13,6 @@ export default function Reset() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -46,7 +44,7 @@ export default function Reset() {
         toast.custom(data.message || "Invalid or expired token.");
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      console.error("Something went wrong. Please try again.",error);
     }
   };
 
@@ -95,9 +93,6 @@ export default function Reset() {
                 />
               </span>
             </div>
-
-            {message && <span className="fp-msg">{message}</span>}
-
             <div className="fp-btn-main">
               <button className="fp-btn" type="submit">
                 Update Password

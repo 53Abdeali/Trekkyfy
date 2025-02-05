@@ -96,7 +96,7 @@ export default function Footer() {
             <div className="foot-para animate">
               <span className="intro-para animate">
                 Discover the thrill of the outdoors with Trekkyfy. From serene
-                trails to epic peaks, we're here to guide your journey. Let's
+                trails to epic peaks, we&apos;re here to guide your journey. Let&apos;s
                 explore together!
               </span>
               <span className="contact-para animate">

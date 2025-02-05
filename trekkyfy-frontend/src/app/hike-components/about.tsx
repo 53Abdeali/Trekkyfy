@@ -61,14 +61,14 @@ export default function About() {
             <div className="abt-content-para">
               <p className="animate">
                 At Trekkyfy, we believe that every hike is more than just a
-                journey—it's an adventure filled with breathtaking landscapes,
+                journey—it&apos;s an adventure filled with breathtaking landscapes,
                 thrilling challenges, and unforgettable memories. Our platform
                 connects passionate hikers with experienced local guides,
                 ensuring personalized and safe trekking experiences.
               </p>{" "}
               <p className="animate">
                 {" "}
-                Whether you're a beginner looking for an easy trail or an
+                Whether you&apos;re a beginner looking for an easy trail or an
                 experienced adventurer seeking a challenging expedition, we
                 provide expert recommendations tailored to your skill level.
                 With a strong focus on sustainability and responsible tourism,

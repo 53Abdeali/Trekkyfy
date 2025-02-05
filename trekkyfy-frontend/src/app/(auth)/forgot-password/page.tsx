@@ -9,7 +9,6 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 export default function Forgot() {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
 
   const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +30,7 @@ export default function Forgot() {
         toast.error("Something went wrong. Please try again.");
       }
     } catch (error) {
-      setMessage("Unable to process the request.");
+      console.error("Unable to process the request.", error);
     }
   };
   return (
@@ -54,7 +53,6 @@ export default function Forgot() {
                 required
               />
             </div>
-            {message && <span className="fp-msg">{message}</span>}
             <div className="fp-btn-main">
               <button className="fp-btn" type="submit">
                 Reset Password

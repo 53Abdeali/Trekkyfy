@@ -21,7 +21,6 @@ import {
   faBook,
   faCalendar,
   faUserGroup,
-  faPerson,
   faIndianRupeeSign,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
@@ -168,7 +167,7 @@ export default function Services() {
               experienced local guides, offer personalized itineraries, and
               provide a seamless experience from booking to exploring the great
               outdoors. Whether you are looking for a solo adventure, a group
-              trek, or a full guided tour, we've got you covered.
+              trek, or a full guided tour, we&apos;ve got you covered.
             </p>
           </div>
         </div>

@@ -270,7 +270,7 @@ export default function About() {
             </div>
             <div className="about-para">
               <p>
-                From Peaks to Paths: Exploring Nature's Best-Kept Secrets in
+                From Peaks to Paths: Exploring Nature&apos;s Best-Kept Secrets in
                 Assam, Meghalaya
               </p>
             </div>

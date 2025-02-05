@@ -14,7 +14,6 @@ export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -37,7 +36,7 @@ export default function Login() {
         toast.error("Invalid Credentials");
       }
     } catch (err) {
-      setError("Invalid Credentials");
+      console.error(err);
     }
   };
 
@@ -107,7 +106,7 @@ export default function Login() {
                 Login
               </button>
               <Link className="reg-link-txt" href="/register">
-                Don't have an account?Register Here
+                Don&apos;t have an account?Register Here
               </Link>
             </div>
           </form>

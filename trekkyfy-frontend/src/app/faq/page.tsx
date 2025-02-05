@@ -37,7 +37,7 @@ export default function Faqs() {
         toast.error("Failed to submit question");
       }
     } catch (err) {
-      toast.error("Something Went Wrong");
+      console.error("Something Went Wrong", err);
     }
   };
 
@@ -135,7 +135,7 @@ export default function Faqs() {
             <p>
               At Trek Yatra, we aim to make your trekking experience seamless
               and enjoyable. To help you navigate our platform and services,
-              we've compiled a list of frequently asked questions.
+              we&apos;ve compiled a list of frequently asked questions.
             </p>
           </div>
         </div>

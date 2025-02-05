@@ -1,9 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Trekkyfy from "@/app/Images/ty.png";
 import black from "@/app/Images/black.jpg";
-import { Metadata } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -11,11 +9,6 @@ import "@/app/stylesheet/login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-hot-toast";
-
-export const logMetadata: Metadata = {
-  title: "Trekkyfy- Register",
-  description: "Register to Trekkyfy",
-};
 
 export default function Regsiter() {
   const router = useRouter();
@@ -54,7 +47,7 @@ export default function Regsiter() {
         throw new Error("Registration Failed");
       }
     } catch (err) {
-      console.error("Registration Failed");
+      console.error("Registration Failed",err);
     }
   };
 
