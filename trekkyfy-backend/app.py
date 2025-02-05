@@ -250,11 +250,21 @@ def submit_feedback():
         db.session.add(new_feedback)
         db.session.commit()
         
-        html_content = f"""
+        html_content = """
         <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+         <style>
+          @import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+          .trekkyfy {
+            font-family: 'Alex Brush', cursive;
+            font-size: 2rem;
+            color: #212b43;
+            text-align: center;
+            margin-bottom: 20px;
+          }
+        </style>
             <div style="text-align: center; margin-bottom: 20px;">
-                <a href="https://imgbb.com/"><img style= "width:100px; height:100px" src="https://i.ibb.co/0VtXQSkm/ty.png" alt="ty" border="0"></a>
+                <h1 class="trekkyfy">Trekkyfy</h1>
             </div>
             <h2 style="color: #2c3e50;">Welcome to Trekkyfy! 🌿⛰️</h2>
             <p>Hi there,</p>
@@ -312,11 +322,21 @@ def frequent_question():
         db.session.add(new_question)
         db.session.commit()
         
-        html_content = f"""
+        html_content = """
         <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+         <style>
+          @import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+          .trekkyfy {
+            font-family: 'Alex Brush', cursive;
+            font-size: 2rem;
+            color: #212b43;
+            text-align: center;
+            margin-bottom: 20px;
+          }
+        </style>
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://imgbb.com/"><img style= "width:100px; height:100px" src="https://i.ibb.co/0VtXQSkm/ty.png" alt="ty" border="0"></a>
+            <h1 class="trekkyfy>Trekkyfy</h1>
         </div>
         <h2 style="color: #2c3e50;">We've Received Your Question! 📩</h2>
         <p>Hi there,</p>
@@ -379,13 +399,21 @@ def contact_us():
         db.session.add(new_contact_us)
         db.session.commit()
         
-        html_content = f"""
+        html_content = """
         <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <style>
+          @import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+          .trekkyfy {
+            font-family: 'Alex Brush', cursive;
+            font-size: 2rem;
+            color: #212b43;
+            text-align: center;
+            margin-bottom: 20px;
+          }
+        </style>
         <div style="text-align: center; margin-bottom: 20px;">
-        <a href="https://imgbb.com/">
-        <img style="width:100px; height:100px" src="https://i.ibb.co/0VtXQSkm/ty.png" alt="ty" border="0">
-        </a>
+            <h1 class="trekkyfy>Trekkyfy</h1>
         </div>
     
         <h2 style="color: #2c3e50;">Thank You for Contacting Trekkyfy! 🌍</h2>
