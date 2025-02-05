@@ -24,7 +24,7 @@ export default function Faqs() {
   const handleQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/question", {
+      const response = await fetch("https://trekkyfy.onrender.com/api/question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question, email }),

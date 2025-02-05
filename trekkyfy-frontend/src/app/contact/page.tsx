@@ -29,7 +29,7 @@ export default function Contact() {
   const handleContact = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/contact", {
+      const response = await fetch("https://trekkyfy.onrender.com/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, phone, subject, message }),
