@@ -174,25 +174,53 @@ def newsletter():
         db.session.add(new_subscriber)
         db.session.commit()
         
-        html_content = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://imgbb.com/"><img style= "width:100px; height:100px" src="https://i.ibb.co/0VtXQSkm/ty.png" alt="ty" border="0"></a>
-        </div>
-        <h2 style="color: #333;"> Welcome to Trekkyfy! 🌄</h2>
+        html_content = """
+ <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Welcome to Trekkyfy</title>
+        <style>
+          @import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+          }
+          .trekkyfy-title {
+            font-family: 'Alex Brush', cursive;
+            font-size: 2rem;
+            color: #212b43;
+            text-align: center;
+            margin-bottom: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <h2 class="trekkyfy-title">Trekkyfy</h2>
         <p>Hi,</p>
-        <p>Welcome to Trekkyfy! We're thrilled to have you as part of our hiking and trekking community. Whether you're a seasoned explorer or just starting your journey, we're here to help you make the most out of your adventures.</p>
-        <p>Here's what you can look forward to:<br/>
-        🌟 Explore breathtaking trails curated by experienced guides.<br/>
-        🗺️ Discover hidden gems and plan your perfect trek.<br/>
-        🚐 Convenient shuttle services to get you where you need to go.<br/>
-        🤝 Connect with trusted local guides for personalized experiences.</p>
-        <p>Stay tuned for exclusive tips, updates, and exciting announcements—we've got lots of great things planned for you!</p>
-        <p>If you have any questions, feel free to reply to this email. We’re here to help you every step of the way.</p>
-        <p style="color: #555;">Happy Hiking<br/>Warm Regards<br/>The Trekkyfy Team</p>
-        </body>
-        </html>
+        <p>
+          Welcome to Trekkyfy! We're thrilled to have you as part of our hiking and trekking community. Whether you're a seasoned explorer or just starting your journey, we're here to help you make the most out of your adventures.
+        </p>
+        <p>
+          Here's what you can look forward to:<br />
+          🌟 Explore breathtaking trails curated by experienced guides.<br />
+          🗺️ Discover hidden gems and plan your perfect trek.<br />
+          🚐 Convenient shuttle services to get you where you need to go.<br />
+          🤝 Connect with trusted local guides for personalized experiences.
+        </p>
+        <p>
+          Stay tuned for exclusive tips, updates, and exciting announcements—we've got lots of great things planned for you!
+        </p>
+        <p>
+          If you have any questions, feel free to reply to this email. We’re here to help you every step of the way.
+        </p>
+        <p style="color: #555;">
+          Happy Hiking<br />
+          Warm Regards<br />
+          The Trekkyfy Team
+        </p>
+      </body>
+    </html>
         """
     
         msg = Message("Welcome to Trekkyfy",
