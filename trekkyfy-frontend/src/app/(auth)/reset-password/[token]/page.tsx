@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import Trekkyfy from "@/app/Images/ty.png";
 import "@/app/stylesheet/Forgot-Password.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 export default function Reset() {
   const { token } = useParams();
@@ -54,12 +53,7 @@ export default function Reset() {
   return (
     <div className="fp">
       <div className="fp-img">
-        <Image
-          src={Trekkyfy}
-          alt="Trekkyfy Logo"
-          className="fp-image"
-          priority
-        />
+        <h1>Trekkyfy</h1>
       </div>
 
       <div className="forgot-pass">

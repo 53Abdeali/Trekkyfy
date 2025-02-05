@@ -61,12 +61,7 @@ export default function Regsiter() {
   return (
     <div className="trek-log-main">
       <div className="trek-log-img">
-        <Image
-          src={Trekkyfy}
-          alt="Logo_Trekkyfy"
-          className="trek-log-image"
-          priority
-        />
+       <h1>Trekkyfy</h1>
       </div>
 
       <div className="trek-log">

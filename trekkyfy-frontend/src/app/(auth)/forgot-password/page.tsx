@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import Trekkyfy from "@/app/Images/ty.png";
+import Link from "next/link";
 import "@/app/stylesheet/Forgot-Password.css";
 import { toast } from "react-hot-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 export default function Forgot() {
   const [email, setEmail] = useState("");
@@ -13,14 +14,19 @@ export default function Forgot() {
   const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/forgot-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
 
       if (response.ok) {
-        toast.success("If the email is registered, a reset link has been sent.");
+        toast.success(
+          "If the email is registered, a reset link has been sent."
+        );
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -31,12 +37,7 @@ export default function Forgot() {
   return (
     <div className="fp">
       <div className="fp-img">
-        <Image
-          src={Trekkyfy}
-          alt="Logo_Trekkyfy"
-          className="fp-image"
-          priority
-        />
+        <h1>Trekkyfy</h1>
       </div>
       <div className="forgot-pass">
         <h1>Forgot Password</h1>
@@ -58,6 +59,12 @@ export default function Forgot() {
               <button className="fp-btn" type="submit">
                 Reset Password
               </button>
+            </div>
+            <div className="back-to-login">
+              <FontAwesomeIcon className="btl-icon" icon={faArrowLeft} />
+              <Link className="btl-link" href="/login">
+                <p>Back to Login</p>
+              </Link>
             </div>
           </form>
         </div>

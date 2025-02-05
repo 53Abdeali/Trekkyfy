@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import trekyatra from "@/app/Images/ty.png";
 import black from "@/app/Images/black.jpg";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -45,12 +44,7 @@ export default function Login() {
   return (
     <div className="trek-log-main">
       <div className="trek-log-img">
-        <Image
-          src={trekyatra}
-          alt="Logo_TrekYatra"
-          className="trek-log-image"
-          priority
-        />
+        <h1>Trekkyfy</h1>
       </div>
 
       <div className="trek-log">
