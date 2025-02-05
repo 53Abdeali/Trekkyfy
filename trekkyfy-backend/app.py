@@ -9,7 +9,7 @@ from datetime import timedelta
 
 # App configuration
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/*": {"origins": "https://trekkyfy.vercel.app"}})
 
 secret_key = secrets.token_hex(32)
 jwt_secret_key = secrets.token_hex(32)
@@ -18,7 +18,7 @@ salt = secrets.token_hex(16)
 app.config["SECRET_KEY"] = secret_key
 app.config["JWT_SECRET_KEY"] = jwt_secret_key
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=10) 
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:Active%4053@localhost/Trekkyfy"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://avnadmin:AVNS_P-7RDq_tkUVMeTbEKnV@mysql-21f3bc70-aliabdealifakhri53-78d7.i.aivencloud.com/trekkyfy"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 #for forgot password

@@ -82,7 +82,7 @@
   height: 2px;
 }
 
-@media (max-width: 430px) {
+@media (max-width: 600px) {
   .work-header p {
     padding: 0 2rem;
   }

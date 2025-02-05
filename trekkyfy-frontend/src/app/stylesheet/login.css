@@ -186,7 +186,7 @@ input[type="password"]:focus {
   margin-top: 10px;
 }
 
-@media (max-width: 425px) {
+@media (max-width: 600px) {
   .trek-log {
     margin: 0;
     padding: 0;
@@ -231,7 +231,7 @@ input[type="password"]:focus {
   }
 }
 
-@media ((min-width: 554px) and (max-width: 767px)) {
+@media ((min-width: 601px) and (max-width: 950px)) {
   .trek-log {
     justify-content: center;
     align-items: center;
@@ -275,7 +275,7 @@ input[type="password"]:focus {
   }
 }
 
-@media ((min-width: 768px) and (max-width: 1023px)) {
+@media ((min-width: 951px) and (max-width: 1100px)) {
   .trek-log-main {
     height: 100dvh;
   }
