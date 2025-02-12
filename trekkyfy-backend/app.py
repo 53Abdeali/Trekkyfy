@@ -9,7 +9,7 @@ from datetime import timedelta
 
 # App configuration
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://trekkyfy.vercel.app"}})
+CORS(app, resources={r"/*": {"origins": "https://trekkyfy.vercel.app"}}, supports_credentials=True)
 
 secret_key = secrets.token_hex(32)
 jwt_secret_key = secrets.token_hex(32)
