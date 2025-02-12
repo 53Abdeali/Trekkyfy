@@ -111,9 +111,9 @@ def user_profile():
 
         return jsonify({"email": user.email, "username": user.username}), 200
     
-    except jwt.ExpiredSignatureError:
+    except ExpiredSignatureError:
         return jsonify({"error": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
+    except InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
 
    
