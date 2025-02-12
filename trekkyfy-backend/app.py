@@ -64,9 +64,6 @@ def register():
     
     username = data.get("username")
     
-    if not username:
-        username = f"default_username_{int(datetime.utcnow().timestamp())}"
-
     hashed_password = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
     
     role = data.get('role', 'hiker')

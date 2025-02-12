@@ -36,7 +36,7 @@ export default function Regsiter() {
       const response = await fetch("https://trekkyfy.onrender.com/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, email, password, role }),
       });
       if (response.ok) {
         toast.success("Registration done successfully!");
