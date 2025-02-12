@@ -1,11 +1,13 @@
 from flask import Flask, make_response, request, jsonify  # type: ignore
 from flask_cors import CORS  # type: ignore
 from extensions import db, jwt, bcrypt  # type: ignore
-from flask_jwt_extended import create_access_token  # type: ignore
+from flask_jwt_extended import create_access_token, decode_token  # type: ignore
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message # type: ignore
 import secrets
 from datetime import timedelta
+import jwt # type: ignore
+from jwt import ExpiredSignatureError, InvalidTokenError # type: ignore
 
 # App configuration
 app = Flask(__name__)
@@ -101,7 +103,7 @@ def user_profile():
         return jsonify({"error": "Unauthorized"}), 401
     
     try:
-        decoded_token = decoded_token(access_token)
+        decoded_token = jwt.decode(access_token, secret_key, algorithms=["HS256"])
         user_identity = decoded_token["sub"]
         user = User.query.filter_by(email=user_identity).first()
 
@@ -110,9 +112,9 @@ def user_profile():
 
         return jsonify({"email": user.email, "username": user.username}), 200
     
-    except jwt.ExpiredSignatureError:
+    except ExpiredSignatureError:
         return jsonify({"error": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
+    except InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
 
    
