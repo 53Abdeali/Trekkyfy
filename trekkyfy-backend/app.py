@@ -7,13 +7,14 @@ from flask_mail import Mail, Message # type: ignore
 import secrets
 from datetime import timedelta
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError # type: ignore
+import os
 
 # App configuration
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://trekkyfy.vercel.app"}}, supports_credentials=True)
 
-secret_key = secrets.token_hex(32)
-jwt_secret_key = secrets.token_hex(32)
+secret_key = os.getenv("SECRET_KEY", "66da30be6ce1360c4614b51ed81f8b313847a1920d814d6ef2c07bf2abb28e06")
+jwt_secret_key = os.getenv("JWT_SECRET_KEY","bde21c69993e8a62ff9e9cd1d19d8b7bbefda66cc24c2ff29f4bdb25d92592bf")
 salt = secrets.token_hex(16)
 
 app.config["SECRET_KEY"] = secret_key
