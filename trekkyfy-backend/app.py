@@ -101,7 +101,7 @@ def user_profile():
         return jsonify({"error": "Unauthorized"}), 401
     
     try:
-        decoded_token = decode_token(access_token, secret_key, algorithms=["HS256"])
+        decoded_token = decode_token(access_token, jwt_secret_key, algorithms=["HS256"])
         user_identity = decoded_token["sub"]
         user = User.query.filter_by(email=user_identity).first()
 
