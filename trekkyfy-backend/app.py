@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token, decode_token  # type: ignore
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message # type: ignore
 import secrets
-from datetime import timedelta
+from datetime import datetime, timedelta
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError # type: ignore
 import os
 
@@ -63,6 +63,9 @@ def register():
         return jsonify({"error": "User already exists"}), 400
     
     username = data.get("username")
+    
+    if not username:
+        username = f"default_username_{int(datetime.utcnow().timestamp())}"
 
     hashed_password = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
     
