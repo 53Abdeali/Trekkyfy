@@ -3,18 +3,29 @@
 import Image from "next/image";
 import black from "@/app/Images/black.jpg";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import "@/app/stylesheet/login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-hot-toast";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const access_token = Cookies.get("access_token");
+
+    if (access_token) {
+      toast.success("You are already logged in.");
+      router.push("/dashboard");
+    }
+  }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +42,15 @@ export default function Login() {
       });
       if (response.ok) {
         toast.success("Login successful");
-        router.push("/");
+
+        const cookieOption: Cookies.CookieAttributes = rememberMe
+          ? { expires: 7, secure: true, sameSite: "Strict" }
+          : {};
+
+        const { access_token } = await response.json();
+        Cookies.set("access_token", access_token, cookieOption);
+
+        router.push("/dashboard");
       } else {
         toast.error("Invalid Credentials");
       }
@@ -99,9 +118,20 @@ export default function Login() {
               </div>
             </div>
             <div className="log-btn-main">
-              <Link className="fp-link-txt" href="/forgot-password">
-                Forgot Password?
-              </Link>
+              <div className="remember-me">
+                <div>
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  <label htmlFor="rememberMe"> Remember Me</label>
+                </div>
+                <Link className="fp-link-txt" href="/forgot-password">
+                  Forgot Password?
+                </Link>
+              </div>
               <button className="log-btn" type="submit">
                 Login
               </button>

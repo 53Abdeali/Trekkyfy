@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify  # type: ignore
+from flask import Flask, make_response, request, jsonify  # type: ignore
 from flask_cors import CORS  # type: ignore
 from extensions import db, jwt, bcrypt  # type: ignore
 from flask_jwt_extended import create_access_token  # type: ignore
@@ -88,7 +88,39 @@ def login():
         return jsonify({"error": "Invalid email or password"}), 401
 
     access_token = create_access_token(identity=user.email)
-    return jsonify({"access_token": access_token}), 200
+    response = make_response(jsonify({"access_token": access_token}), 200)
+    response.set_cookie("access_token", access_token, httponly=True, max_age=36000)
+
+#Protected Route (Get Cookies)
+@app.route("api/user-profile", methods=["Get"])
+def user_profile():
+    access_token = request.cookies.get("access_token")
+    
+    if not access_token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        decoded_token = decoded_token(access_token)
+        user_identity = decoded_token["sub"]
+        user = User.query.filter_by(email=user_identity).first()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({"email": user.email, "username": user.username}), 200
+    
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token has expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+
+   
+#API Call for Logout
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    response = make_response(jsonify({"message": "Logged out successfully"}))
+    response.set_cookie("access_token", "", expires=0)  
+    return response
 
 
 #API Call for Forgot Password

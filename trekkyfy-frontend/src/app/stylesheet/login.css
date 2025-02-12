@@ -152,6 +152,17 @@ input[type="password"]:focus {
   width: 400px;
 }
 
+.remember-me{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.remember-me input{
+  margin-top: 10px;
+  cursor: pointer;
+}
+
 .log-btn {
   width: 100%;
   background-color: #212b43;
