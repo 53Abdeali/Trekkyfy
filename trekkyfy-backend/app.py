@@ -90,6 +90,7 @@ def login():
     access_token = create_access_token(identity=user.email)
     response = make_response(jsonify({"access_token": access_token}), 200)
     response.set_cookie("access_token", access_token, httponly=True, max_age=36000)
+    return response
 
 #Protected Route (Get Cookies)
 @app.route("/api/user-profile", methods=["GET"])
