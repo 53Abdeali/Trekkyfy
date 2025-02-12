@@ -11,6 +11,7 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-hot-toast";
 import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
+import axios from "axios";
 
 export default function Login() {
   const router = useRouter();
@@ -50,13 +51,12 @@ export default function Login() {
       Cookies.set("access_token", access_token, cookieOption);
       toast.success("Login successful");
       router.push("/dashboard");
-    } catch (error: any) {
-      if (error.response) {
-        toast.error(error.response.data.error || "Invalid Credentials");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("Failed to fetch profile:", error.response?.data?.error);
       } else {
-        toast.error("Something went wrong. Please try again.");
+        console.error("An unknown error occurred:", error);
       }
-      console.error("Login Error:", error);
     }
   };
 
