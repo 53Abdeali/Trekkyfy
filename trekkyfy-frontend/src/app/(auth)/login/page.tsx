@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-hot-toast";
 import Cookies from "js-cookie";
+import axiosInstance from "@/utils/axiosConfig";
 
 export default function Login() {
   const router = useRouter();
@@ -20,7 +21,6 @@ export default function Login() {
 
   useEffect(() => {
     const access_token = Cookies.get("access_token");
-
     if (access_token) {
       toast.success("You are already logged in.");
       router.push("/dashboard");
@@ -31,31 +31,32 @@ export default function Login() {
     e.preventDefault();
 
     if (!email || !password) {
-      toast.error("Please fill in the both fields.");
+      toast.error("Please fill in both fields.");
+      return;
     }
 
     try {
-      const response = await fetch("https://trekkyfy.onrender.com/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const response = await axiosInstance.post("/api/login", {
+        email,
+        password,
       });
-      if (response.ok) {
-        toast.success("Login successful");
 
-        const cookieOption: Cookies.CookieAttributes = rememberMe
-          ? { expires: 7, secure: true, sameSite: "Strict" }
-          : {};
+      const { access_token } = response.data;
 
-        const { access_token } = await response.json();
-        Cookies.set("access_token", access_token, cookieOption);
+      const cookieOption: Cookies.CookieAttributes = rememberMe
+        ? { expires: 7, secure: true, sameSite: "Strict" }
+        : {};
 
-        router.push("/dashboard");
+      Cookies.set("access_token", access_token, cookieOption);
+      toast.success("Login successful");
+      router.push("/dashboard");
+    } catch (error: any) {
+      if (error.response) {
+        toast.error(error.response.data.error || "Invalid Credentials");
       } else {
-        toast.error("Invalid Credentials");
+        toast.error("Something went wrong. Please try again.");
       }
-    } catch (err) {
-      console.error(err);
+      console.error("Login Error:", error);
     }
   };
 
@@ -113,7 +114,7 @@ export default function Login() {
                   <FontAwesomeIcon
                     className="icon"
                     icon={showPassword ? faEyeSlash : faEye}
-                  />{" "}
+                  />
                 </span>
               </div>
             </div>
@@ -136,7 +137,7 @@ export default function Login() {
                 Login
               </button>
               <Link className="reg-link-txt" href="/register">
-                Don&apos;t have an account?Register Here
+                Don&apos;t have an account? Register Here
               </Link>
             </div>
           </form>
