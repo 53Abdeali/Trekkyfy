@@ -15,6 +15,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
         setLoading(false); 
       } catch (error) {
         router.push('/login'); 
+        console.error(error);
       }
     }
     checkAuth();

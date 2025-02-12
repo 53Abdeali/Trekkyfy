@@ -1,18 +1,28 @@
-"use client"
+"use client";
 
 import axiosInstance from "@/utils/axiosConfig";
+import axios from "axios";
 import { useState, useEffect } from "react";
 
-export default function Dashboard(){
-    const [profile, setProfile] = useState<any>(null);
+interface UserProfile {
+  username: string;
+  email: string;
+}
+
+export default function Dashboard() {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const response = await axiosInstance.get('/user-profile');
+        const response = await axiosInstance.get<UserProfile>("/user-profile");
         setProfile(response.data);
-      } catch (error: any) {
-        console.error('Failed to fetch profile:', error.response?.data?.error);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          console.error("Failed to fetch profile:", error.response?.data?.error);
+        } else {
+          console.error("An unknown error occurred:", error);
+        }
       }
     }
     fetchProfile();
