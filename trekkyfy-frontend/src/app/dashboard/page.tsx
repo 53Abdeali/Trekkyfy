@@ -1,3 +1,5 @@
+"use client"
+
 import axiosInstance from "@/utils/axiosConfig";
 import { useState, useEffect } from "react";
 
