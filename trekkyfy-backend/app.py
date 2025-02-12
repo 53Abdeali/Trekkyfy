@@ -6,6 +6,7 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message # type: ignore
 import secrets
 from datetime import timedelta
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError # type: ignore
 
 # App configuration
 app = Flask(__name__)
