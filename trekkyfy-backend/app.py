@@ -136,7 +136,7 @@ def forgot_password():
     
     token = s.dumps(email, salt=salt)
     
-    reset_url = f"http://localhost:3000/reset-password/{token}"
+    reset_url = f"https://trekkyfy.vercel.app/reset-password/{token}"
     
     html_content = f"""
     <html>
