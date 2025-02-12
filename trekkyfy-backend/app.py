@@ -92,7 +92,7 @@ def login():
     response.set_cookie("access_token", access_token, httponly=True, max_age=36000)
 
 #Protected Route (Get Cookies)
-@app.route("api/user-profile", methods=["Get"])
+@app.route("/api/user-profile", methods=["GET"])
 def user_profile():
     access_token = request.cookies.get("access_token")
     
