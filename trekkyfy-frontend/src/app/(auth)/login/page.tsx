@@ -45,7 +45,7 @@ export default function Login() {
       const { access_token } = response.data;
 
       const cookieOption: Cookies.CookieAttributes = rememberMe
-        ? { expires: 7, secure: true,  }
+        ? { expires: 7, secure: true, sameSite: "None" }
         : {};
 
       Cookies.set("access_token", access_token, cookieOption);
