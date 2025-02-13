@@ -37,16 +37,28 @@ export default function Hero() {
       } else {
         console.error("An unknown error occurred:", error);
       }
-      setProfile(null); 
+      setProfile(null);
     }
   }
 
   const images = [
     { back: desert, text: "The Thar desert landscape at sunset." },
-    { back: mountain, text: "The Grand Beauty of Himalayas from Jammu and Kashmir to Arunachal Pradesh." },
-    { back: misty, text: "The Attraction of Western Ghats from Gujarat to Tamil Nadu." },
-    { back: laketrail, text: "The amazing and various lakes of Srinagar, Udaipur and Bhopal." },
-    { back: mountain_trek, text: "The snowy peaks of Himalayas in Jammu and Uttarakhand." },
+    {
+      back: mountain,
+      text: "The Grand Beauty of Himalayas from Jammu and Kashmir to Arunachal Pradesh.",
+    },
+    {
+      back: misty,
+      text: "The Attraction of Western Ghats from Gujarat to Tamil Nadu.",
+    },
+    {
+      back: laketrail,
+      text: "The amazing and various lakes of Srinagar, Udaipur and Bhopal.",
+    },
+    {
+      back: mountain_trek,
+      text: "The snowy peaks of Himalayas in Jammu and Uttarakhand.",
+    },
   ];
 
   const settings = {
@@ -78,15 +90,20 @@ export default function Hero() {
                 <div className="hero-overlay animate">
                   <div className="con-para">
                     <p className="hero-text animate">
-                      {profile ? `Welcome, ${profile.username}! Ready for your next adventure?` : item.text}
+                      {profile
+                        ? `Welcome, ${profile.username}! Ready for your next adventure?`
+                        : item.text}
                     </p>
                   </div>
                   <div className="hero-link-para animate">
-                    <p>
-                      <Link className="hero-trail-link" href="/trails">
-                        Explore Trails
-                      </Link>
-                    </p>
+                    {profile && (
+                      <p>
+                        <Link className="hero-trail-link" href="/trails">
+                          Explore Trails
+                        </Link>
+                      </p>
+                    )}
+
                     {!profile && (
                       <>
                         <p>
