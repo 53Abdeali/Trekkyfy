@@ -17,8 +17,8 @@ export default function Trekkyfy() {
 
   useEffect(() => {
     const token = Cookies.get("access_token");
-    setAuthenticated(true);
-  });
+    setAuthenticated(!!token);
+  },[]);
 
   return (
     <div>
