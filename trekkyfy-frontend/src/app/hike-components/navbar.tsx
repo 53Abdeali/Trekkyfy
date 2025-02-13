@@ -58,7 +58,7 @@ export default function Navbar() {
       <div className="nav-logo">
         <h1>TrekYatra</h1>
       </div>
-      {isAuthenticated ? (
+      {!isAuthenticated ? (
         <>
           <div
             ref={navRef}
