@@ -35,7 +35,6 @@ export default function Home() {
         <div>
           <Navbar/>
           <h2>Welcome, {profile.username}!</h2>
-          <p>Email: {profile.email}</p>
         </div>
       ) : (
         <p>Loading...</p>

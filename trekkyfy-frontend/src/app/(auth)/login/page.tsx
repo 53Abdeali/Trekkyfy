@@ -24,7 +24,7 @@ export default function Login() {
     const access_token = Cookies.get("access_token");
     if (access_token) {
       toast.success("You are already logged in.");
-      router.push("/home");
+      router.push("/");
     }
   }, [router]);
 
@@ -50,7 +50,7 @@ export default function Login() {
 
       Cookies.set("access_token", access_token, cookieOption);
       toast.success("Login successful");
-      router.push("/home");
+      router.push("/");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("Failed to fetch profile:", error.response?.data?.error);

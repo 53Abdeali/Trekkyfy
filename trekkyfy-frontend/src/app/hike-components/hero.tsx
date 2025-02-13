@@ -6,9 +6,20 @@ import misty from "@/app/Images/misty-fog.jpg";
 import laketrail from "@/app/Images/laketrail.webp";
 import mountain from "@/app/Images/mountain.webp";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie"; 
 
 export default function Hero() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const token = Cookies.get("access_token");
+    const user = Cookies.get("username"); 
+    setIsAuthenticated(!!token);
+    if (user) setUsername(user);
+  }, []);
+
   const images = [
     {
       back: desert,
@@ -82,19 +93,33 @@ export default function Hero() {
               >
                 <div className="hero-overlay animate">
                   <div className="con-para">
-                    <p className="hero-text animate">{item.text}</p>
+                    <p className="hero-text animate">
+                      {isAuthenticated
+                        ? `Welcome, ${username}! Ready for your next adventure?`
+                        : item.text}
+                    </p>
                   </div>
                   <div className="hero-link-para animate">
-                    <p>
-                      <Link className="hero-trail-link animate" href="/trails">
-                        Explore Trails
-                      </Link>
-                    </p>
-                    <p>
-                      <Link className="hero-reg-link" href="/register">
-                        Register / Login
-                      </Link>
-                    </p>
+                    {isAuthenticated ? (
+                      <p>
+                        <Link className="hero-trail-link" href="/trails">
+                          Explore Trails
+                        </Link>
+                      </p>
+                    ) : (
+                      <>
+                        <p>
+                          <Link className="hero-reg-link" href="/login">
+                            Login
+                          </Link>
+                        </p>
+                        <p>
+                          <Link className="hero-reg-link" href="/register">
+                            Register
+                          </Link>
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
