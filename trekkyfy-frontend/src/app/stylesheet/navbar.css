@@ -102,7 +102,7 @@
   display: none;
 }
 
-.profile-container {
+/* .profile-container {
   position: relative;
   cursor: pointer;
 }
@@ -145,7 +145,7 @@
 
 .profile-dropdown .logout-btn:hover {
   background: #ffefef;
-}
+} */
 
 .nav-prof-icon {
   color: #212b43;
