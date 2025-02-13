@@ -24,7 +24,7 @@ export default function Trekkyfy() {
     <div>
       <Navbar />
       <Hero />
-      {!authenticated ? <Dashboard /> : ""}
+      {authenticated ? <Dashboard /> : ""}
       <About />
       <Work />
       <Discount />
