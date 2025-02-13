@@ -8,16 +8,37 @@ import mountain from "@/app/Images/mountain.webp";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie"; 
+import axiosInstance from "@/utils/axiosConfig";
+import axios from "axios";
+
+interface UserProfile{
+  username : string;
+}
 
 export default function Hero() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState("");
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    const token = Cookies.get("access_token");
-    const user = Cookies.get("username"); 
+    async function fetchProfile() {
+      try {
+        const response = await axiosInstance.get<UserProfile>("/user-profile");
+        setProfile(response.data);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          console.error("Failed to fetch profile:", error.response?.data?.error);
+        } else {
+          console.error("An unknown error occurred:", error);
+        }
+      }
+    }
+    fetchProfile();
+  }, []);
+  
+
+  useEffect(() => {
+    const token = Cookies.get("access_token"); 
     setIsAuthenticated(!!token);
-    if (user) setUsername(user);
   }, []);
 
   const images = [
@@ -94,8 +115,8 @@ export default function Hero() {
                 <div className="hero-overlay animate">
                   <div className="con-para">
                     <p className="hero-text animate">
-                      {isAuthenticated
-                        ? `Welcome, ${username}! Ready for your next adventure?`
+                      {profile
+                        ? `Welcome, ${profile.username}! Ready for your next adventure?`
                         : item.text}
                     </p>
                   </div>
