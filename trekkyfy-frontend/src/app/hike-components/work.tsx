@@ -70,7 +70,7 @@ export default function Work() {
             </div>
           </Link>
           <div className="step-arrow animate"></div>
-          <Link className="work-links animate" href="/trails">
+          <Link className="work-links animate" href="/trek-trails">
             <div className="step">
               <FontAwesomeIcon className="step-icon" icon={faHiking} /> Seamless
               Adventures

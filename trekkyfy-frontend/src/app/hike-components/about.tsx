@@ -81,20 +81,20 @@ export default function About() {
               </p>
               <p className="animate">
                 <FontAwesomeIcon className="abt-icon" icon={faArrowRight} />
-                <Link className="abt-icon-link" href="/login">
+                <Link className="abt-icon-link" href="/trek-and-trails">
                   Start Your Adventure
                 </Link>
               </p>
               <p className="animate">
                 <FontAwesomeIcon className="abt-icon" icon={faArrowRight} />
-                <Link className="abt-icon-link" href="/trail">
+                <Link className="abt-icon-link" href="/explore">
                   Find Your Perfect Trail
                 </Link>
               </p>
               <p className="animate">
                 <FontAwesomeIcon className="abt-icon" icon={faArrowRight} />
-                <Link className="abt-icon-link" href="/trek">
-                  Discover Hidden Treks
+                <Link className="abt-icon-link" href="/guide">
+                  Connect With Guides
                 </Link>
               </p>
             </div>
