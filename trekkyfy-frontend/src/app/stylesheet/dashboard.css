@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dashboard-line {
+  width: 5px;
+  height: 3rem;
+  background: linear-gradient(90deg, #3a5226, #371e12);
+  border-radius: 0.5rem;
+}
+
+.main-dashboard {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.dashboard-head{
+    display: inline-block;
+    border-bottom: 2px solid #212b43;
+    color: #212b43;
+    font-family: "Montserrat",serif;
+    margin-top: 2rem;
+}
+
+.dashboards {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.dashboard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 2px solid #212b43;
+  border-radius: 0.5rem;
+  padding: 1.2rem;
+  color: #212b43;
+  font-family: "Montserrat", "serif";
+  margin: 1rem 0.5rem 0 0.5rem;
+}
+
+.dashboard h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard p {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .dashboards {
+    flex-direction: column;
+    padding: 0 0.4rem;
+  }
+  .dashboard {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+}
+
+@media ((min-width: 601px) and (max-width:950px)) {
+  .dashboards {
+    flex-direction: column;
+    padding: 0 1rem;
+  }
+  .dashboard {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+}
