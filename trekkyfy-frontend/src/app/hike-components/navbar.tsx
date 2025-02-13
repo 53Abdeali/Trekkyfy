@@ -1,14 +1,20 @@
 import Link from "next/link";
 import "@/app/stylesheet/navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faUser,
+  faUserCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
+import axiosInstance from "@/utils/axiosConfig";
+import toast from "react-hot-toast";
 
 export default function Navbar() {
   const [showNavElement, setShowNavElement] = useState(false);
   const [activeLink, setActiveLink] = useState("/");
-  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showProfileDown, setShowProfileDown] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const profileRef = useRef<HTMLLIElement>(null);
@@ -17,7 +23,7 @@ export default function Navbar() {
   useEffect(() => {
     const token = Cookies.get("access_token");
     setIsAuthenticated(!!token);
-  },[])
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -28,7 +34,7 @@ export default function Navbar() {
         return;
       }
       setShowNavElement(false);
-      setShowProfileDropdown(false);
+      setShowProfileDown(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -36,6 +42,20 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const logout = async () => {
+    try {
+      const response = await axiosInstance.post("/logout");
+      if (response.status === 200) {
+        setIsAuthenticated(false);
+        Cookies.remove("access_token");
+        window.location.href = "/";
+        toast.success("Logout Succesfully");
+      }
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   return (
     <div className="nav-main" ref={navRef}>
@@ -56,106 +76,156 @@ export default function Navbar() {
           </li>
           {isAuthenticated ? (
             <>
-              <li>
-                <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/guides" ? "active" : ""
-                  }`}
-                  href="/guides"
-                  onClick={() => setActiveLink("/guides")}
-                >
-                  Guides
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/treks" ? "active" : ""
-                  }`}
-                  href="/treks"
-                  onClick={() => setActiveLink("/treks")}
-                >
-                  Treks & Trails
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/contact" ? "active" : ""
-                  }`}
-                  href="/contact"
-                  onClick={() => setActiveLink("/contact")}
-                >
-                  Contact
-                </Link>
-              </li>
-              {/* Profile Dropdown */}
-              <li ref={profileRef} className="profile-container">
-                <span
-                  className="nav-opt-link profile-icon"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent navbar from closing
-                    setShowProfileDropdown(!showProfileDropdown);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faUser} />
-                </span>
-                {showProfileDropdown && (
-                  <div
-                    className="profile-dropdown"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Link href="/profile" className="dropdown-item">
-                      Profile
+              <div
+                ref={navRef}
+                className={showNavElement ? "mob-nav-opt" : "nav-opt"}
+              >
+                <ul className="nav-ul">
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/" ? "active" : ""
+                      }`}
+                      href="/"
+                      onClick={() => setActiveLink("/")}
+                    >
+                      Home
                     </Link>
-                    <Link href="/settings" className="dropdown-item">
-                      Settings
+                  </li>
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/about" ? "active" : ""
+                      }`}
+                      href="/about"
+                      onClick={() => setActiveLink("/about")}
+                    >
+                      About Us
                     </Link>
-                    <button className="dropdown-item logout-btn">Logout</button>
-                  </div>
-                )}
-              </li>
+                  </li>
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/services" ? "active" : ""
+                      }`}
+                      href="/services"
+                      onClick={() => setActiveLink("/services")}
+                    >
+                      Our Services
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/contact" ? "active" : ""
+                      }`}
+                      href="/contact"
+                      onClick={() => setActiveLink("/contact")}
+                    >
+                      Contact Us
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div className="nav-link">
+                <ul className="nav-ul-link">
+                  <li>
+                    <Link className="nav-opt-link" href="/login">
+                      Login / Register
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </>
           ) : (
             <>
-              <li>
-                <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/about" ? "active" : ""
-                  }`}
-                  href="/about"
-                  onClick={() => setActiveLink("/about")}
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/services" ? "active" : ""
-                  }`}
-                  href="/services"
-                  onClick={() => setActiveLink("/services")}
-                >
-                  Our Services
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/contact" ? "active" : ""
-                  }`}
-                  href="/contact"
-                  onClick={() => setActiveLink("/contact")}
-                >
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-opt-link" href="/login">
-                  Login / Register
-                </Link>
-              </li>
+              <div className={showNavElement ? "mob-nav-opt" : "nav-auth"}>
+                <ul className="nav-ul">
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/" ? "active" : ""
+                      }`}
+                      href="/"
+                      onClick={() => setActiveLink("/")}
+                    >
+                      Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/guide" ? "active" : ""
+                      }`}
+                      href="/guide"
+                      onClick={() => setActiveLink("/guide")}
+                    >
+                      Guides
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/trek-trails" ? "active" : ""
+                      }`}
+                      href="/trek-trails"
+                      onClick={() => setActiveLink("/trek-trails")}
+                    >
+                      Trek & Trails
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/explore" ? "active" : ""
+                      }`}
+                      href="/explore"
+                      onClick={() => setActiveLink("/explore")}
+                    >
+                      Explore
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className={`nav-opt-link ${
+                        activeLink === "/contact" ? "active" : ""
+                      }`}
+                      href="/contact"
+                      onClick={() => setActiveLink("/contact")}
+                    >
+                      Contact Us
+                    </Link>
+                  </li>
+                  <li ref={profileRef} className="profile-container">
+                    <span
+                      onClick={() => setShowProfileDown(!showProfileDown)}
+                      className="profile-icon"
+                    >
+                      <FontAwesomeIcon
+                        className="nav-prof-icon"
+                        icon={faUserCircle}
+                        size="lg"
+                      />
+                    </span>
+                    {showProfileDown && (
+                      <div className="profile-dropdown">
+                        <Link href="/profile" className="dropdown-item">
+                          Profile
+                        </Link>
+                        <span
+                          onClick={() => {
+                            logout();
+                            setIsAuthenticated(false);
+                          }}
+                          className="dropdown-item"
+                        >
+                          Logout
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                </ul>
+              </div>
             </>
           )}
         </ul>
