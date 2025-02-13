@@ -1,3 +1,5 @@
+"use client";
+
 import "@/app/stylesheet/hero.css";
 import Slider from "react-slick";
 import desert from "@/app/Images/desert.jpg";
@@ -7,95 +9,56 @@ import laketrail from "@/app/Images/laketrail.webp";
 import mountain from "@/app/Images/mountain.webp";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie"; 
+import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
 import axios from "axios";
 
-interface UserProfile{
-  username : string;
+interface UserProfile {
+  username: string;
 }
 
 export default function Hero() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const response = await axiosInstance.get<UserProfile>("/user-profile");
-        setProfile(response.data);
-      } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          console.error("Failed to fetch profile:", error.response?.data?.error);
-        } else {
-          console.error("An unknown error occurred:", error);
-        }
-      }
+    const token = Cookies.get("access_token");
+    if (token) {
+      fetchProfile();
     }
-    fetchProfile();
   }, []);
-  
 
-  useEffect(() => {
-    const token = Cookies.get("access_token"); 
-    setIsAuthenticated(!!token);
-  }, []);
+  async function fetchProfile() {
+    try {
+      const response = await axiosInstance.get<UserProfile>("/user-profile");
+      setProfile(response.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("Failed to fetch profile:", error.response?.data?.error);
+      } else {
+        console.error("An unknown error occurred:", error);
+      }
+      setProfile(null); 
+    }
+  }
 
   const images = [
-    {
-      back: desert,
-      text: "The Thar desert landscape at sunset.",
-    },
-    {
-      back: mountain,
-      text: "The Grand Beauty of Himalayas from Jammu and Kashmir to Arunachal Pradesh.",
-    },
-    {
-      back: misty,
-      text: "The Attraction of Western Ghats from Gujarat to Tamil Nadu.",
-    },
-    {
-      back: laketrail,
-      text: "The amazing and various lakes of Srinagar, Udaipur and Bhopal.",
-    },
-    {
-      back: mountain_trek,
-      text: "The snowy peaks of Himalayas in Jammu and Uttarakhand.",
-    },
+    { back: desert, text: "The Thar desert landscape at sunset." },
+    { back: mountain, text: "The Grand Beauty of Himalayas from Jammu and Kashmir to Arunachal Pradesh." },
+    { back: misty, text: "The Attraction of Western Ghats from Gujarat to Tamil Nadu." },
+    { back: laketrail, text: "The amazing and various lakes of Srinagar, Udaipur and Bhopal." },
+    { back: mountain_trek, text: "The snowy peaks of Himalayas in Jammu and Uttarakhand." },
   ];
 
   const settings = {
     dots: false,
     infinite: true,
     speed: 500,
-    slideToShow: 1,
-    slideToScroll: 1,
+    slidesToShow: 1,
+    slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
     arrows: false,
   };
-
-  useEffect(() => {
-    const elements = document.querySelectorAll(".animate");
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("in-view");
-        }
-      });
-    });
-
-    elements.forEach((element) => {
-      observer.observe(element);
-    });
-
-    return () => {
-      elements.forEach((element) => {
-        observer.unobserve(element);
-      });
-    };
-  }, []);
 
   return (
     <div className="hero-main">
@@ -115,28 +78,20 @@ export default function Hero() {
                 <div className="hero-overlay animate">
                   <div className="con-para">
                     <p className="hero-text animate">
-                      {profile
-                        ? `Welcome, ${profile.username}! Ready for your next adventure?`
-                        : item.text}
+                      {profile ? `Welcome, ${profile.username}! Ready for your next adventure?` : item.text}
                     </p>
                   </div>
                   <div className="hero-link-para animate">
-                    {isAuthenticated ? (
-                      <p>
-                        <Link className="hero-trail-link" href="/trails">
-                          Explore Trails
-                        </Link>
-                      </p>
-                    ) : (
+                    <p>
+                      <Link className="hero-trail-link" href="/trails">
+                        Explore Trails
+                      </Link>
+                    </p>
+                    {!profile && (
                       <>
                         <p>
                           <Link className="hero-reg-link" href="/login">
-                            Login
-                          </Link>
-                        </p>
-                        <p>
-                          <Link className="hero-reg-link" href="/register">
-                            Register
+                            Login / Register
                           </Link>
                         </p>
                       </>
