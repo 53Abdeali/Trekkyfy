@@ -3,6 +3,7 @@
 import axiosInstance from "@/utils/axiosConfig";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import Navbar from "@/app/hike-components/navbar";
 
 interface UserProfile {
   username: string;
@@ -32,6 +33,7 @@ export default function Dashboard() {
     <div>
       {profile ? (
         <div>
+          <Navbar/>
           <h2>Welcome, {profile.username}!</h2>
           <p>Email: {profile.email}</p>
         </div>
