@@ -123,7 +123,7 @@ export default function Navbar() {
         </>
       ) : (
         <>
-          <div className={showNavElement ? "mob-nav-opt" : "nav-opt"}>
+          <div className={showNavElement ? "mob-nav-opt" : "nav-opt .nav-auth"}>
             <ul className="nav-ul">
               <li>
                 <Link
