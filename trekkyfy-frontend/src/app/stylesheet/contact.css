@@ -59,7 +59,7 @@
   transform: translate(-50%, -50%);
   flex-direction: column;
   color: white;
-  z-index: 9999;
+  z-index: 99;
 }
 
 .contact-heads h1 {
