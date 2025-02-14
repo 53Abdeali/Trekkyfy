@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #212b43;
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #fff;
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+
+.explore-cont h1, .exp-para {
+  text-align: center;
+  color: #212b43;
+}
+
+.explore-select {
+  cursor: pointer;
+}
+
+.explore-circ{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.explore-load {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #212b43; /* Dark border color */
+  border-radius: 50%;
+  border-top: none; /* Initially hide the top border */
+  animation: spinner-animation 1s infinite linear;
+  display: inline-block;
+}
+
+@keyframes spinner-animation {
+  0% {
+    border-top: none;
+    border-right: 4px solid #212b43;
+    border-bottom: 4px solid #212b43;
+    border-left: 4px solid #212b43;
+  }
+  25% {
+    border-top: 4px solid #212b43;
+    border-right: none;
+    border-bottom: 4px solid #212b43;
+    border-left: 4px solid #212b43;
+  }
+  50% {
+    border-top: 4px solid #212b43;
+    border-right: 4px solid #212b43;
+    border-bottom: none;
+    border-left: 4px solid #212b43;
+  }
+  75% {
+    border-top: 4px solid #212b43;
+    border-right: 4px solid #212b43;
+    border-bottom: 4px solid #212b43;
+    border-left: none;
+  }
+  100% {
+    border-top: none;
+    border-right: 4px solid #212b43;
+    border-bottom: 4px solid #212b43;
+    border-left: 4px solid #212b43;
+  }
+}
