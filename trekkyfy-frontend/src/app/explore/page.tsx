@@ -99,7 +99,7 @@ export default function Explore() {
   return (
     <>
       {isAuthenticated && (
-        <div>
+        <div className="explore">
           <Navbar />
           <div className="explore-cont">
             <h1 className="explore-head">Explore Trails & Treks</h1>

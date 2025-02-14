@@ -167,7 +167,7 @@ export default function Navbar() {
                   Explore
                 </Link>
               </li>
-              <li>
+              <li ref={profileRef}>
                 <Link
                   className={`nav-opt-link ${
                     activeLink === "/contact" ? "active" : ""
