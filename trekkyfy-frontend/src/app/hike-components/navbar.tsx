@@ -125,7 +125,7 @@ export default function Navbar() {
         </>
       ) : (
         <>
-          <div className={showNavElement ? "mob-nav-opt" : "nav-opt nav-auth"}>
+          <div ref={navRef} className={showNavElement ? "mob-nav-opt" : "nav-opt nav-auth"}>
             <ul className="nav-ul">
               <li>
                 <Link
@@ -167,7 +167,7 @@ export default function Navbar() {
                   Explore
                 </Link>
               </li>
-              <li ref={profileRef}>
+              <li>
                 <Link
                   className={`nav-opt-link ${
                     activeLink === "/contact" ? "active" : ""
