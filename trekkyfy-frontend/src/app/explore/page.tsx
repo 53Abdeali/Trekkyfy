@@ -105,7 +105,7 @@ export default function Explore() {
             <h1 className="explore-head">Explore Trails & Treks</h1>
             <p className="exp-para">
               Explore treks and click on the play button to see how your
-              adventure could be!
+              adventure would be!
             </p>
 
             <div className="explore-inputs">
@@ -142,7 +142,7 @@ export default function Explore() {
             </div>
 
             <div className="exp-cards-main">
-              {trails.length > 0 ? (
+              {trails.length > 0 && (
                 trails.map((trail, index) => (
                   <div
                     key={`${trail.id}-${index}`}
@@ -182,10 +182,6 @@ export default function Explore() {
                     )}
                   </div>
                 ))
-              ) : (
-                <p className="text-[#212b43]">
-                  No trails found. Try adjusting the filters.
-                </p>
               )}
             </div>
             <div className="explore-circ">

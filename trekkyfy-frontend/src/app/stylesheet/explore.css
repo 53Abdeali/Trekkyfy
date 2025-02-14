@@ -1,6 +1,8 @@
-/* @tailwind base;
-@tailwind utilities;
-@tailwind components; */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -18,19 +20,107 @@
   border-radius: 0.5rem;
 }
 
-.explore-cont h1, .exp-para {
+.explore {
+  margin: 1rem 0;
+}
+
+.explore-cont h1,
+.exp-para {
   text-align: center;
   color: #212b43;
 }
 
-.explore-select {
-  cursor: pointer;
+.exp-para {
+  margin-bottom: 1rem;
 }
 
-.explore-circ{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.exp-inp-main {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  padding: 0.5rem;
+}
+
+.exp-cards-main {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0 1rem;
+}
+
+.exp-cards {
+  width: 32%;
+  height: 200px;
+  position: relative;
+  cursor: pointer;
+  border: 0.1rem solid #212b43;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.exp-cards:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.exp-cards-head,
+.exp-cards-para {
+  color: #212b43;
+}
+
+.exp-cards-link {
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  font-size: 1.7rem;
+  text-decoration: none;
+  color: #212b43;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  margin: 1rem;
+  text-align: center;
+}
+
+.exp-cards-link:hover {
+  background-color: #212b43;
+  color: #fff;
+  transition: background-color 0.3s ease-in-out;
+  border: 0.1rem solid #212b43;
+  border-radius: 50%;
+}
+
+.exp-cards-span {
+  color: #212b43;
+}
+
+.exp-inp,
+.explore-select {
+  cursor: pointer;
+  width: 30%;
+  height: 2rem;
+  padding-left: 1rem;
+  font-size: 1rem;
+  border: 0.1px solid #212b43;
+  border-radius: 0.2rem;
+  outline: none;
+  color: #212b43;
+  margin-top: 1rem;
+}
+
+.exp-inp::placeholder {
+  color: #212b43;
+}
+
+.explore-circ {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
 }
 
 .explore-load {
@@ -73,5 +163,61 @@
     border-right: 4px solid #212b43;
     border-bottom: 4px solid #212b43;
     border-left: 4px solid #212b43;
+  }
+}
+
+@media (max-width: 600px) {
+  .explore-head{
+    font-size: 1.5rem;
+    margin-top: 1rem;
+  }
+  .exp-para{
+    font-size: 0.8rem;
+    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .exp-cards-main {
+    flex-direction: column;
+  }
+  .exp-cards {
+    width: 100%;
+    height: 170px;
+  }
+  .exp-inp {
+    width: 50%;
+    padding: 0 0.5rem;
+  }
+  .explore-select {
+    width: 40%;
+    padding: 0 0.5rem;
+  }
+  .exp-cards-head {
+    font-size: 1.2rem;
+  }
+  .exp-cards-para {
+    font-size: 0.8rem;
+  }
+  .exp-cards-link{
+    bottom: 0px;
+    padding: 0;
+  }
+}
+
+@media ((min-width: 600px) and (max-width:950px)) {
+  .exp-cards {
+    width: 45%;
+    height: 200px;
+  }
+}
+
+@media ((min-width: 951px) and (max-width:1200px)) {
+  .exp-cards-head {
+    font-size: 1.2rem;
+  }
+  .exp-cards-para {
+    font-size: 0.8rem;
+  }
+  .exp-cards {
+    height: 170px;
   }
 }
