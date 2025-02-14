@@ -35,7 +35,6 @@ export default function Explore() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  // Check authentication on mount.
   useEffect(() => {
     const token = Cookies.get("access_token");
     if (!token) {
@@ -45,15 +44,12 @@ export default function Explore() {
     }
   }, [router]);
 
-  // Fetch trails on filters change.
   useEffect(() => {
     if (isAuthenticated) {
       fetchTrails(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, isAuthenticated]);
 
-  // Infinite scrolling effect.
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -100,7 +96,6 @@ export default function Explore() {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
-  // Render explore page only when authenticated.
   return (
     <>
       {isAuthenticated && (
@@ -113,7 +108,7 @@ export default function Explore() {
               adventure could be!
             </p>
 
-            {/* Filter Section */}
+
             <div className="mb-6">
               <div className="flex gap-4">
                 <input
@@ -147,7 +142,6 @@ export default function Explore() {
               </div>
             </div>
 
-            {/* Trails List */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {trails.length > 0 ? (
                 trails.map((trail, index) => (
@@ -197,7 +191,7 @@ export default function Explore() {
             </div>
             <div className="explore-circ">
               {isLoading && (
-                <div className="explore-load text-center mt-4">Loading...</div>
+                <div className="explore-load text-center mt-4"></div>
               )}
             </div>
           </div>
