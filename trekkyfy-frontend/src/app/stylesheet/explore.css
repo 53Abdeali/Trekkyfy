@@ -27,6 +27,36 @@
   margin: 1rem 0;
 }
 
+.explore-image {
+  width: 100%;
+  height: 500px;
+  position: relative;
+}
+
+.explore-image::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.explore-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.exp-heads {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+}
+
 .explore-cont h1,
 .exp-para {
   text-align: center;
@@ -35,6 +65,7 @@
 
 .exp-para {
   margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .exp-inp-main {
@@ -170,11 +201,11 @@
 }
 
 @media (max-width: 600px) {
-  .explore-head{
+  .explore-head {
     font-size: 1.5rem;
     margin-top: 1rem;
   }
-  .exp-para{
+  .exp-para {
     font-size: 0.8rem;
     padding: 0 0.5rem;
     margin-bottom: 0.5rem;
@@ -200,7 +231,7 @@
   .exp-cards-para {
     font-size: 0.8rem;
   }
-  .exp-cards-link{
+  .exp-cards-link {
     bottom: 0px;
     padding: 0;
   }

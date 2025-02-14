@@ -9,6 +9,8 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosConfig";
 import Footer from "@/app/hike-components/footer";
+import Image from "next/image";
+import explore from "@/app/Images/exp-flower.png";
 
 interface Trail {
   id: number;
@@ -102,6 +104,9 @@ export default function Explore() {
         <div className="explore">
           <Navbar />
           <div className="explore-cont">
+            <div className="explore-image">
+              <Image className="explore-img" src={explore} alt="Explore" />
+            </div>
             <h1 className="explore-head">Explore Trails & Treks</h1>
             <p className="exp-para">
               Explore treks and click on the play button to see how your
@@ -142,15 +147,10 @@ export default function Explore() {
             </div>
 
             <div className="exp-cards-main">
-              {trails.length > 0 && (
+              {trails.length > 0 &&
                 trails.map((trail, index) => (
-                  <div
-                    key={`${trail.id}-${index}`}
-                    className="exp-cards"
-                  >
-                    <h2 className="exp-cards-head">
-                      {trail.name}
-                    </h2>
+                  <div key={`${trail.id}-${index}`} className="exp-cards">
+                    <h2 className="exp-cards-head">{trail.name}</h2>
                     <p className="exp-cards-para">State: {trail.state}</p>
                     <p className="exp-cards-para">
                       Nearest City: {trail.nearest_city}
@@ -176,18 +176,13 @@ export default function Explore() {
                         <FontAwesomeIcon icon={faPlay} className="text-xl" />
                       </Link>
                     ) : (
-                      <span className="exp-cards-span">
-                        N/A
-                      </span>
+                      <span className="exp-cards-span">N/A</span>
                     )}
                   </div>
-                ))
-              )}
+                ))}
             </div>
             <div className="explore-circ">
-              {isLoading && (
-                <div className="explore-load"></div>
-              )}
+              {isLoading && <div className="explore-load"></div>}
             </div>
           </div>
           <Footer />
