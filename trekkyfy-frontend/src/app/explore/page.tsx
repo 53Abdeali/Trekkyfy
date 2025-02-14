@@ -91,7 +91,7 @@ export default function Explore() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isAuthenticated) {
       router.push("/login");
     }
   }, [isAuthenticated, router]);
