@@ -10,7 +10,7 @@ import Discount from "@/app/hike-components/discount";
 import Feedback from "@/app/hike-components/feedback";
 // import Dashboard from "@/app/hike-components/dashboard";
 // import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 
 export default function Trekkyfy() {
   // const [authenticated, setAuthenticated] = useState(false);
