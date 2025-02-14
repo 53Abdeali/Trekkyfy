@@ -101,28 +101,28 @@ export default function Explore() {
       {isAuthenticated && (
         <div>
           <Navbar />
-          <div className="explore-cont container mx-auto py-8">
-            <h1 className="text-4xl font-bold mb-6">Explore Trails & Treks</h1>
-            <p className="exp-para text-m font-bold mb-6">
+          <div className="explore-cont">
+            <h1 className="explore-head">Explore Trails & Treks</h1>
+            <p className="exp-para">
               Explore treks and click on the play button to see how your
               adventure could be!
             </p>
 
-            <div className="mb-6">
-              <div className="flex gap-4">
+            <div className="explore-inputs">
+              <div className="exp-inp-main">
                 <input
                   type="text"
                   name="state"
                   placeholder="State"
                   value={filters.state}
                   onChange={handleInputChange}
-                  className="border p-2 rounded w-full"
+                  className="exp-inp"
                 />
                 <select
                   name="difficulty"
                   value={filters.difficulty}
                   onChange={handleInputChange}
-                  className="border p-2 rounded w-full explore-select"
+                  className="explore-select"
                 >
                   <option value="">Difficulty Level</option>
                   <option value="Easy">Easy</option>
@@ -136,47 +136,47 @@ export default function Explore() {
                   placeholder="Max Duration (days)"
                   value={filters.max_duration}
                   onChange={handleInputChange}
-                  className="border p-2 rounded w-full"
+                  className="exp-inp"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="exp-cards-main">
               {trails.length > 0 ? (
                 trails.map((trail, index) => (
                   <div
                     key={`${trail.id}-${index}`}
-                    className="relative border rounded-lg p-4 shadow hover:shadow-lg transition cursor-pointer"
+                    className="exp-cards"
                   >
-                    <h2 className="text-2xl font-bold mb-2 text-[#212b43]">
+                    <h2 className="exp-cards-head">
                       {trail.name}
                     </h2>
-                    <p className="text-[#212b43]">State: {trail.state}</p>
-                    <p className="text-[#212b43]">
+                    <p className="exp-cards-para">State: {trail.state}</p>
+                    <p className="exp-cards-para">
                       Nearest City: {trail.nearest_city}
                     </p>
-                    <p className="text-[#212b43]">
+                    <p className="exp-cards-para">
                       Difficulty: {trail.difficulty_level}
                     </p>
-                    <p className="text-[#212b43]">
+                    <p className="exp-cards-para">
                       Duration: {trail.duration_days} days
                     </p>
-                    <p className="text-[#212b43]">
+                    <p className="exp-cards-para">
                       Best Time to Visit: {trail.best_time_to_visit}
                     </p>
-                    <p className="text-[#212b43]">
+                    <p className="exp-cards-para">
                       Guide Available: {trail.guide_availability ? "Yes" : "No"}
                     </p>
                     {trail.Links ? (
                       <Link
                         href={trail.Links}
                         target="_blank"
-                        className="absolute bottom-4 right-3 flex items-center justify-center w-10 h-10 bg-[#212b43] text-white rounded-full transition-all duration-300 hover:bg-white hover:text-[#212b43] shadow-md"
+                        className="exp-cards-link"
                       >
                         <FontAwesomeIcon icon={faPlay} className="text-xl" />
                       </Link>
                     ) : (
-                      <span className="absolute bottom-4 right-3 flex items-center justify-center w-12 h-12 bg-gray-400 text-white rounded-full shadow-md">
+                      <span className="exp-cards-span">
                         N/A
                       </span>
                     )}
@@ -190,7 +190,7 @@ export default function Explore() {
             </div>
             <div className="explore-circ">
               {isLoading && (
-                <div className="explore-load text-center mt-4"></div>
+                <div className="explore-load"></div>
               )}
             </div>
           </div>
