@@ -107,11 +107,13 @@ export default function Explore() {
             <div className="explore-image">
               <Image className="explore-img" src={explore} alt="Explore" />
             </div>
-            <h1 className="explore-head">Explore Trails & Treks</h1>
-            <p className="exp-para">
-              Explore treks and click on the play button to see how your
-              adventure would be!
-            </p>
+            <div className="exp-heads">
+              <h1 className="explore-head">Explore Trails & Treks</h1>
+              <p className="exp-para">
+                Explore treks and click on the play button to see how your
+                adventure would be!
+              </p>
+            </div>
 
             <div className="explore-inputs">
               <div className="exp-inp-main">
