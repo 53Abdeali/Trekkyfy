@@ -98,7 +98,7 @@ export default function Explore() {
 
   return (
     <>
-      {isAuthenticated ? (
+      {!isAuthenticated ? (
         <div>
           <Navbar />
           <div className="explore-cont container mx-auto py-8">
