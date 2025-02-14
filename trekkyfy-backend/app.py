@@ -1,5 +1,6 @@
 from flask import Flask, make_response, request, jsonify  # type: ignore
-from flask_cors import CORS  # type: ignore
+from flask_cors import CORS
+import pymysql.cursors  # type: ignore
 from extensions import db, jwt, bcrypt  # type: ignore
 from flask_jwt_extended import create_access_token, decode_token  # type: ignore
 from itsdangerous import URLSafeTimedSerializer
@@ -8,10 +9,11 @@ import secrets
 from datetime import datetime, timedelta
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError # type: ignore
 import os
+import pymysql #type: ignore
 
 # App configuration
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://trekkyfy.vercel.app"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["https://trekkyfy.vercel.app", "http://localhost:3000"]}}, supports_credentials=True)
 
 secret_key = os.getenv("SECRET_KEY", "66da30be6ce1360c4614b51ed81f8b313847a1920d814d6ef2c07bf2abb28e06")
 jwt_secret_key = os.getenv("JWT_SECRET_KEY","bde21c69993e8a62ff9e9cd1d19d8b7bbefda66cc24c2ff29f4bdb25d92592bf")
@@ -507,7 +509,53 @@ def contact_us():
         print(e)
         return jsonify({"error" : "Error in submitting the query!"}), 500
 
+def get_db_connection():
+    connection = pymysql.connect(
+        host= "mysql-21f3bc70-aliabdealifakhri53-78d7.i.aivencloud.com",
+        user= "avnadmin",
+        password= "AVNS_P-7RDq_tkUVMeTbEKnV",
+        database= "trekkyfy",
+        port= 14791,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    return connection
 
+
+@app.route('/api/explore', methods=['GET'])
+def explore():
+    state = request.args.get('state', '')
+    difficulty = request.args.get('difficulty', '')
+    max_duration = request.args.get('max_duration', '')
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 10))
+    offset = (page - 1) * limit
+
+    query = "SELECT * FROM trails_and_treks WHERE 1=1"
+    params = []
+
+    if state:
+        query += " AND state LIKE %s"
+        params.append(f"%{state}%")
+    if difficulty:
+        query += " AND difficulty_level = %s"
+        params.append(difficulty)
+    if max_duration:
+        query += " AND duration_days <= %s"
+        params.append(max_duration)
+
+    query += " LIMIT %s OFFSET %s"
+    params.extend([limit, offset])
+
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute(query, params)
+            trails = cursor.fetchall()
+        conn.close()
+        return jsonify(trails)
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"error": str(e)}), 500
 
 # API Health Check
 @app.route("/")
