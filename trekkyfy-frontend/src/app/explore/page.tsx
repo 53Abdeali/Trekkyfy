@@ -35,15 +35,25 @@ export default function Explore() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
+  // Check authentication on mount.
   useEffect(() => {
     const token = Cookies.get("access_token");
-    setIsAuthenticated(!!token);
-  }, []);
+    if (!token) {
+      router.push("/login");
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [router]);
 
+  // Fetch trails on filters change.
   useEffect(() => {
-    fetchTrails(true); 
-  }, [filters]);
+    if (isAuthenticated) {
+      fetchTrails(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, isAuthenticated]);
 
+  // Infinite scrolling effect.
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -90,22 +100,17 @@ export default function Explore() {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, router]);
-
+  // Render explore page only when authenticated.
   return (
     <>
-      {!isAuthenticated ? (
+      {isAuthenticated && (
         <div>
           <Navbar />
           <div className="explore-cont container mx-auto py-8">
             <h1 className="text-4xl font-bold mb-6">Explore Trails & Treks</h1>
-            <p className=" exp-para text-m font-bold mb-6">
-              Explore treks and click on play button to look how is your
-              adventure to be
+            <p className="exp-para text-m font-bold mb-6">
+              Explore treks and click on the play button to see how your
+              adventure could be!
             </p>
 
             {/* Filter Section */}
@@ -192,13 +197,13 @@ export default function Explore() {
             </div>
             <div className="explore-circ">
               {isLoading && (
-                <div className=" explore-load text-center mt-4"></div>
+                <div className="explore-load text-center mt-4">Loading...</div>
               )}
             </div>
           </div>
-          <Footer/>
+          <Footer />
         </div>
-      ) : null}
+      )}
     </>
   );
 }
