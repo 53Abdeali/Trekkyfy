@@ -6,15 +6,21 @@ import React, { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
 import toast from "react-hot-toast";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [showNavElement, setShowNavElement] = useState(false);
-  const [activeLink, setActiveLink] = useState("/");
+  const pathname = usePathname();
+  const [activeLink, setActiveLink] = useState(pathname || "/");
   const [showProfileDown, setShowProfileDown] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const profileRef = useRef<HTMLLIElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setActiveLink(pathname);
+  }, [pathname]);
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -71,7 +77,6 @@ export default function Navbar() {
                     activeLink === "/" ? "active" : ""
                   }`}
                   href="/"
-                  onClick={() => setActiveLink("/")}
                 >
                   Home
                 </Link>
@@ -82,7 +87,6 @@ export default function Navbar() {
                     activeLink === "/about" ? "active" : ""
                   }`}
                   href="/about"
-                  onClick={() => setActiveLink("/about")}
                 >
                   About Us
                 </Link>
@@ -93,7 +97,6 @@ export default function Navbar() {
                     activeLink === "/services" ? "active" : ""
                   }`}
                   href="/services"
-                  onClick={() => setActiveLink("/services")}
                 >
                   Our Services
                 </Link>
@@ -104,7 +107,6 @@ export default function Navbar() {
                     activeLink === "/contact" ? "active" : ""
                   }`}
                   href="/contact"
-                  onClick={() => setActiveLink("/contact")}
                 >
                   Contact Us
                 </Link>
@@ -131,7 +133,6 @@ export default function Navbar() {
                     activeLink === "/" ? "active" : ""
                   }`}
                   href="/"
-                  onClick={() => setActiveLink("/")}
                 >
                   Home
                 </Link>
@@ -142,7 +143,6 @@ export default function Navbar() {
                     activeLink === "/guide" ? "active" : ""
                   }`}
                   href="/guide"
-                  onClick={() => setActiveLink("/guide")}
                 >
                   Guides
                 </Link>
@@ -153,7 +153,6 @@ export default function Navbar() {
                     activeLink === "/trek-trails" ? "active" : ""
                   }`}
                   href="/trek-trails"
-                  onClick={() => setActiveLink("/trek-trails")}
                 >
                   Trek & Trails
                 </Link>
@@ -164,7 +163,6 @@ export default function Navbar() {
                     activeLink === "/explore" ? "active" : ""
                   }`}
                   href="/explore"
-                  onClick={() => setActiveLink("/explore")}
                 >
                   Explore
                 </Link>
@@ -175,7 +173,6 @@ export default function Navbar() {
                     activeLink === "/contact" ? "active" : ""
                   }`}
                   href="/contact"
-                  onClick={() => setActiveLink("/contact")}
                 >
                   Contact Us
                 </Link>

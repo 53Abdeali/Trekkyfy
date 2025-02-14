@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import Navbar from "../hike-components/navbar";
+import Navbar from "@/app/hike-components/navbar";
 import "@/app/stylesheet/explore.css";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -108,7 +108,6 @@ export default function Explore() {
               adventure could be!
             </p>
 
-
             <div className="mb-6">
               <div className="flex gap-4">
                 <input
@@ -152,20 +151,20 @@ export default function Explore() {
                     <h2 className="text-2xl font-bold mb-2 text-[#212b43]">
                       {trail.name}
                     </h2>
-                    <p className="text-[#212b43]-600">State: {trail.state}</p>
-                    <p className="text-[#212b43]-600">
+                    <p className="text-[#212b43]">State: {trail.state}</p>
+                    <p className="text-[#212b43]">
                       Nearest City: {trail.nearest_city}
                     </p>
-                    <p className="text-[#212b43]-600">
+                    <p className="text-[#212b43]">
                       Difficulty: {trail.difficulty_level}
                     </p>
-                    <p className="text-[#212b43]-600">
+                    <p className="text-[#212b43]">
                       Duration: {trail.duration_days} days
                     </p>
-                    <p className="text-[#212b43]-600">
+                    <p className="text-[#212b43]">
                       Best Time to Visit: {trail.best_time_to_visit}
                     </p>
-                    <p className="text-[#212b43]-600">
+                    <p className="text-[#212b43]">
                       Guide Available: {trail.guide_availability ? "Yes" : "No"}
                     </p>
                     {trail.Links ? (
@@ -184,7 +183,7 @@ export default function Explore() {
                   </div>
                 ))
               ) : (
-                <p className="text-[#212b43]-600">
+                <p className="text-[#212b43]">
                   No trails found. Try adjusting the filters.
                 </p>
               )}
