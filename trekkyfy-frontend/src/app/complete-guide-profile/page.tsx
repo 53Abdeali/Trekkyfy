@@ -8,10 +8,13 @@ import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDeleteLeft, faUpload } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
+import axiosInstance from "@/utils/axiosConfig";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function CompleteGuideProfile() {
+  const router = useRouter();
   const [guideFields, setGuideFields] = useState({
-    guideID: "",
     guide_city: "",
     guide_district: "",
     guide_state: "",
@@ -19,7 +22,7 @@ export default function CompleteGuideProfile() {
     guide_whatsapp: "",
     guide_experience: "",
     guide_languages: "",
-    guide_speciality: ""
+    guide_speciality: "",
   });
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,10 +58,13 @@ export default function CompleteGuideProfile() {
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        const uploadResponse = await fetch("https://trekkyfy.onrender.com/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+        const uploadResponse = await fetch(
+          "https://trekkyfy.onrender.com/api/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (!uploadResponse.ok) {
           throw new Error("Failed to upload file");
@@ -69,7 +75,6 @@ export default function CompleteGuideProfile() {
       }
 
       const payload = {
-        guide_id: guideFields.guideID,
         guide_city: guideFields.guide_city,
         guide_district: guideFields.guide_district,
         guide_state: guideFields.guide_state,
@@ -81,14 +86,18 @@ export default function CompleteGuideProfile() {
         guide_photo: guidePhotoUrl,
       };
 
-      const response = await fetch("https://trekkyfy.onrender.com/api/guide", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const token = Cookies.get("accessToken");
+      const response = await axiosInstance.post(
+        "https://trekkyfy.onrender.com/api/guide",
+        {
+          headers: { "Content-Type": "application/json" },
+          Authorization: `Bearer ${token}`,
+        }
+      );
 
-      if (response.ok) {
+      if (response.status === 200) {
         toast.success("Profile updated successfully!");
+        router.push("/")
       } else {
         toast.error("Failed to update profile!");
       }
@@ -107,16 +116,6 @@ export default function CompleteGuideProfile() {
       </div>
       <div className="guide-inputs">
         <form onSubmit={handleGuideUpdate}>
-          <div className="guide-input">
-            <label htmlFor="guideID">Guide ID</label>
-            <input
-              type="text"
-              name="guideID"
-              placeholder="Enter your Guide ID from mail"
-              value={guideFields.guideID}
-              onChange={handleInputChange}
-            />
-          </div>
           <div className="guide-input">
             <label htmlFor="guide_city">Your City</label>
             <input

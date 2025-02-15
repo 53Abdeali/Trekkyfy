@@ -12,6 +12,7 @@ import { toast } from "react-hot-toast";
 import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export default function Login() {
   const router = useRouter();
@@ -50,7 +51,13 @@ export default function Login() {
 
       Cookies.set("access_token", access_token, cookieOption);
       toast.success("Login successful");
-      router.push("/");
+
+      const decoded: { guide_id?: string } = jwtDecode(access_token);
+      if (decoded.guide_id) {
+        router.push("/complete-guide-profile");
+      } else {
+        router.push("/");
+      }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("Failed to fetch profile:", error.response?.data?.error);

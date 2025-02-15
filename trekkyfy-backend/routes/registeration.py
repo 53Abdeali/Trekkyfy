@@ -1,10 +1,10 @@
-from flask import Blueprint, request, jsonify  # type: ignore
+from flask import Blueprint, request, jsonify
 from models import User
 from extensions import db, bcrypt
 import random
 import string
 from extensions import mail
-from flask_mail import Message  # type:ignore
+from flask_mail import Message # type: ignore
 
 
 def generate_unique_guide_id():
@@ -87,8 +87,7 @@ def send_guide_details_email(email, guide_id):
     </div>
   </body>
 </html>
-        """
-
+    """
     msg = Message(
         "Welcome to Trekkyfy", sender="aliabdealifakhri53@gmail.com", recipients=[email]
     )
@@ -102,22 +101,18 @@ reg_bp = Blueprint("register", __name__)
 @reg_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-
     if not data:
         return jsonify({"error": "Invalid request body"}), 400
     if not data.get("email") or not data.get("password"):
         return jsonify({"error": "Email and password are required"}), 400
     if User.query.filter_by(email=data["email"]).first():
         return jsonify({"error": "User already exists"}), 400
-
     username = data.get("username")
     hashed_password = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
     role = data.get("role", "hiker")
     guide_id = None
-
     if role == "guide":
         guide_id = generate_unique_guide_id()
-
     user = User(
         username=username,
         email=data["email"],
@@ -127,8 +122,6 @@ def register():
     )
     db.session.add(user)
     db.session.commit()
-
     if role == "guide":
         send_guide_details_email(data["email"], guide_id)
-
     return jsonify({"message": "User registered successfully"}), 201
