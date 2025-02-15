@@ -89,15 +89,18 @@ export default function CompleteGuideProfile() {
       const token = Cookies.get("accessToken");
       const response = await axiosInstance.post(
         "https://trekkyfy.onrender.com/api/guide",
+        payload,
         {
-          headers: { "Content-Type": "application/json" },
-          Authorization: `Bearer ${token}`,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
-        router.push("/")
+        router.push("/");
       } else {
         toast.error("Failed to update profile!");
       }
