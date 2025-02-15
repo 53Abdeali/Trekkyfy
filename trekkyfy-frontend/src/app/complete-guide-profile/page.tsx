@@ -72,6 +72,7 @@ export default function CompleteGuideProfile() {
 
         const uploadData = await uploadResponse.json();
         guidePhotoUrl = uploadData.url;
+        console.log(guidePhotoUrl);
       }
 
       const payload = {
