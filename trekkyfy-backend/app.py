@@ -1,8 +1,7 @@
 from flask import Flask, jsonify  # type: ignore
 from flask_cors import CORS
-from extensions import db, jwt, bcrypt  # type: ignore
+from extensions import db, jwt, bcrypt, mail  # type: ignore
 from itsdangerous import URLSafeTimedSerializer
-from flask_mail import Mail # type: ignore
 import secrets
 from datetime import timedelta
 import os
@@ -30,11 +29,11 @@ app.config["MAIL_USERNAME"] = "aliabdealifakhri53@gmail.com"
 app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
 
 
-mail = Mail(app)
 s = URLSafeTimedSerializer(secret_key)
 db.init_app(app) 
 bcrypt.init_app(app)
 jwt.init_app(app)
+mail.init_app(app)
 
 # Create database tables
 with app.app_context():

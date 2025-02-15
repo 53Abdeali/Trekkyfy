@@ -1,7 +1,6 @@
 from models import Subscriber
 from flask import Blueprint, request, jsonify # type: ignore
-from extensions import db
-from app import mail
+from extensions import db, mail
 from flask_mail import Message  # type: ignore
 
 news_bp = Blueprint("newsletter", __name__)

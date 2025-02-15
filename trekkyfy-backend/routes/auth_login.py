@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response # type: ignore
 from models import User
-from extensions import db, bcrypt
+from extensions import bcrypt
 from flask_jwt_extended import create_access_token  # type: ignore
 
 log_bp = Blueprint("login", __name__)

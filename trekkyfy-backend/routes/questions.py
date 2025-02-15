@@ -1,7 +1,6 @@
 from models import Question
 from flask import Blueprint, request, jsonify # type: ignore
-from extensions import db
-from app import mail
+from extensions import db, mail
 from flask_mail import Message  # type: ignore
 
 ques_bp = Blueprint("question", __name__)
