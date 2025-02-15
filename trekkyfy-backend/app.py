@@ -1,8 +1,6 @@
 from flask import Flask, jsonify  # type: ignore
 from flask_cors import CORS
 from extensions import db, jwt, bcrypt, mail  # type: ignore
-from itsdangerous import URLSafeTimedSerializer
-import secrets
 from datetime import timedelta
 import os
 from routes import register_blueprints
@@ -13,7 +11,6 @@ CORS(app, resources={r"/*": {"origins": ["https://trekkyfy.vercel.app", "http://
 
 secret_key = os.getenv("SECRET_KEY", "66da30be6ce1360c4614b51ed81f8b313847a1920d814d6ef2c07bf2abb28e06")
 jwt_secret_key = os.getenv("JWT_SECRET_KEY","bde21c69993e8a62ff9e9cd1d19d8b7bbefda66cc24c2ff29f4bdb25d92592bf")
-salt = secrets.token_hex(16)
 
 app.config["SECRET_KEY"] = secret_key
 app.config["JWT_SECRET_KEY"] = jwt_secret_key
@@ -28,8 +25,6 @@ app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USERNAME"] = "aliabdealifakhri53@gmail.com"
 app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
 
-
-s = URLSafeTimedSerializer(secret_key)
 db.init_app(app) 
 bcrypt.init_app(app)
 jwt.init_app(app)

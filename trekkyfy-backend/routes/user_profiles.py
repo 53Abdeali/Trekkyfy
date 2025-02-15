@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify # type: ignore
 from models import User
-from extensions import db, bcrypt
 from flask_jwt_extended import decode_token  # type: ignore
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError # type: ignore
 

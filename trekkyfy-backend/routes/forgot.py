@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify # type: ignore
 from models import User
 from flask_mail import Message # type: ignore
-from app import  s, salt
+from config import  s, salt
 from extensions import mail
 
 forgot_bp = Blueprint("forgot-password", __name__)
