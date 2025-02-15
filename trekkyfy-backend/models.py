@@ -60,7 +60,7 @@ class GuideDetails(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     guide_id = db.Column(
         db.String(10),
-        db.ForeignKey("User.guide_id", ondelete="CASCADE"),
+        db.ForeignKey("user.guide_id", ondelete="CASCADE"),
         nullable=False,
     )
     guide_city = db.Column(db.String(100), nullable=False)
