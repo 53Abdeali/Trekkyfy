@@ -55,7 +55,7 @@ export default function CompleteGuideProfile() {
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        const uploadResponse = await fetch("http://localhost:5000/api/upload", {
+        const uploadResponse = await fetch("https://trekkyfy.onrender.com/api/upload", {
           method: "POST",
           body: formData,
         });
@@ -81,7 +81,7 @@ export default function CompleteGuideProfile() {
         guide_photo: guidePhotoUrl,
       };
 
-      const response = await fetch("http://localhost:5000/api/guide", {
+      const response = await fetch("https://trekkyfy.onrender.com/api/guide", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
