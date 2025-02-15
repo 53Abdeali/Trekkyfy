@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt # type: ignore
 
 guide_bp = Blueprint("Guide_Details", __name__)
 
-@guide_bp.route("/guide", methods=["POST"])
+@guide_bp.route("/guides", methods=["POST"])
 @jwt_required()
 def guide_profile():
     data = request.get_json()

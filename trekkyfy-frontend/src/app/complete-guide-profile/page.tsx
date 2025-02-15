@@ -89,7 +89,7 @@ export default function CompleteGuideProfile() {
 
       const token = Cookies.get("access_token");
       const response = await axiosInstance.post(
-        "/guide",
+        "/guides",
         payload,
         {
           headers: {
