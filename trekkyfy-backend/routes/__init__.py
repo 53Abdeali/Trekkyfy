@@ -10,6 +10,7 @@ from routes.feedback_submit import feedback_bp
 from routes.questions import ques_bp
 from routes.contact import contact_bp
 from routes.explore_trek import explore_trek_bp
+from routes.guide_complete import guide_bp
 
 def register_blueprints(app: Flask):
     # API Call for Register
@@ -44,3 +45,6 @@ def register_blueprints(app: Flask):
 
     #API for Explore_Trek
     app.register_blueprint(explore_trek_bp, url_prefix="/api")
+    
+    #API for Guide Profile Upate
+    app.register_blueprint(guide_bp, url_prefix="/api")
