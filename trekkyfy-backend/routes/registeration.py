@@ -31,7 +31,7 @@ def send_guide_details_email(email, guide_id):
         background-color: #f7f7f7;
       }}
       .trekkyfy-title {{
-        font-family: 'Alex Brush', cursive;
+        font-family: 'Alex Brush', "Montserrat", "serif";
         font-size: 2rem;
         color: #212b43;
         text-align: center;
@@ -50,7 +50,7 @@ def send_guide_details_email(email, guide_id):
         padding: 10px 20px;
         margin-top: 20px;
         font-size: 1rem;
-        color: #fff;
+        color: white;
         background-color: #212b43;
         text-decoration: none;
         border-radius: 5px;
@@ -68,7 +68,7 @@ def send_guide_details_email(email, guide_id):
         To complete your registration and finalize the necessary formalities, please click the button below to finish setting up your guide profile.
       </p>
       <p style="text-align: center;">
-        <a class="button" href="https://trekkyfy.vercel.app/complete-guide-profile?guide_id={guide_id}">Complete Profile</a>
+        <a class="button" href="http://localhost:3000/complete-guide-profile?guide_id={guide_id}">Complete Profile</a>
       </p>
       <p>
         Your unique Guide ID is: <strong>{guide_id}</strong>.
