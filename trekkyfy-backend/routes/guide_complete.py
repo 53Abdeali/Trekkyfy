@@ -10,7 +10,7 @@ def guide_profile():
     guide = GuideDetails.query.filter_by(guide_id=data["guide_id"]).first()
 
     if not guide:
-        return jsonify({"message": "Guide not found. Please register first."}), 404
+        return jsonify({"message": "Guide not found. Please register first."}), 405
 
     guide.guide_id = data.get("guide_id")
     guide.guide_city = data.get("guide_city")
