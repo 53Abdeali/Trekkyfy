@@ -1,4 +1,4 @@
-from Flask import Blueprint, jsonify, make_response # type: ignore
+from flask import Blueprint, jsonify, make_response # type: ignore
 
 logout_bp = Blueprint("logout", __name__)
 

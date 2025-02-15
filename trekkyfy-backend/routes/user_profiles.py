@@ -1,4 +1,4 @@
-from Flask import Blueprint, request, jsonify, make_response # type: ignore
+from flask import Blueprint, request, jsonify # type: ignore
 from models import User
 from extensions import db, bcrypt
 from flask_jwt_extended import decode_token  # type: ignore

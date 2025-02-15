@@ -1,5 +1,5 @@
 from models import Contact
-from Flask import Blueprint, request, jsonify # type: ignore
+from flask import Blueprint, request, jsonify # type: ignore
 from extensions import db
 from app import mail
 from flask_mail import Message  # type: ignore

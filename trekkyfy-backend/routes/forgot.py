@@ -1,4 +1,4 @@
-from Flask import Blueprint, request, jsonify # type: ignore
+from flask import Blueprint, request, jsonify # type: ignore
 from models import User
 from flask_mail import Message # type: ignore
 from app import mail, s, salt
