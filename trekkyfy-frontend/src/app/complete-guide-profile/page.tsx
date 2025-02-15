@@ -87,7 +87,7 @@ export default function CompleteGuideProfile() {
         guide_photo: guidePhotoUrl,
       };
 
-      const token = Cookies.get("accessToken");
+      const token = Cookies.get("access_token");
       const response = await axiosInstance.post(
         "https://trekkyfy.onrender.com/api/guide",
         payload,
