@@ -98,7 +98,7 @@
   border-bottom: 1px solid #005577;
 }
 
-.file-btn{
+.file-btn {
   width: 50%;
   height: 150px;
   font-size: 1.2rem;
@@ -116,12 +116,12 @@
   transition: all 0.3s ease;
 }
 
-.file-btn:hover{
+.file-btn:hover {
   color: #fff;
   background-color: #212b43;
 }
 
-.file-btn span:nth-child(1){
+.file-btn span:nth-child(1) {
   width: 50px;
   height: 50px;
   font-size: 1.8rem;
@@ -134,25 +134,25 @@
   padding: 0.5rem;
 }
 
-.selected-file{
+.selected-file {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 50%;
-  margin:0 2rem;
+  margin: 0 2rem;
   background-color: #ccc;
   border-radius: 1.1rem;
   margin-top: 1rem;
 }
 
-.selected-file p{
+.selected-file p {
   font-size: 1.2rem;
   font-weight: 500;
   color: #212b43;
   margin: 0 2rem;
 }
 
-.selected-file button{
+.selected-file button {
   border: none;
   outline: none;
   width: 2.5rem;
@@ -165,50 +165,86 @@
   border-radius: 50%;
 }
 
-.selected-file button:hover{
+.selected-file button:hover {
   background-color: #212b43;
   color: #fff;
 }
 
-.guide-check-input{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 1rem 2rem;
+.guide-check-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 2rem;
 }
 
-.guide-check{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 1rem;
-    cursor: pointer;
+.guide-check {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+  cursor: pointer;
 }
 
-.guide-check-input span{
-    padding-left: 0.5rem;
-    font-size: 1.2rem;
+.guide-check-input span {
+  padding-left: 0.5rem;
+  font-size: 1.2rem;
 }
 
-.guide-link{
-    color: #212b43;
+.guide-link {
+  color: #212b43;
 }
 
-.guide-button button{
-    color: #212b43;
-    border: 1px solid #212b43;
-    outline: none;
-    font-size: 1.2rem;
-    background-color: #005577;
-    color: #fff;
-    padding: 0.5rem 2rem;
-    border-radius: 0.5rem;
-    text-align: center;
-    cursor: pointer;
+.guide-button button {
+  color: #212b43;
+  border: 1px solid #212b43;
+  outline: none;
+  font-size: 1.2rem;
+  background-color: #005577;
+  color: #fff;
+  padding: 0.5rem 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  cursor: pointer;
 }
 
-.guide-button button:hover{
-    background-color: #212b43;
-    border: 1px solid #005577;
-    transition: all 0.3s ease-in-out;
+.guide-button button:hover {
+  background-color: #212b43;
+  border: 1px solid #005577;
+  transition: all 0.3s ease-in-out;
+}
+
+@media (max-width:600px) {
+  .guide-input{
+    padding: 2rem 0;
+    margin: 1rem 0.5rem;
+  }
+  .file-btn{
+    width: 100%;
+    margin: 0;
+    gap: 0;
+  }
+  .guide-check-input{
+    flex-direction: column;
+  }
+  .guide-check span{
+    font-size: 0.8rem;
+  }
+  .guide-input:nth-child(9){
+    padding: 2rem;
+  }
+  .guide-input label:nth-child(9){
+    padding: 0;
+  }
+}
+
+@media ((min-width:601px) and (max-width:950px)) {
+  .file-btn{
+    width: 90%;
+  }
+}
+
+@media ((min-width:951px) and (max-width:1200px)) {
+  .file-btn{
+    width: 90%;
+  }
 }
