@@ -68,7 +68,7 @@ def send_guide_details_email(email, guide_id):
         To complete your registration and finalize the necessary formalities, please click the button below to finish setting up your guide profile.
       </p>
       <p style="text-align: center;">
-        <a class="button" href="http://localhost:3000/complete-guide-profile?guide_id={guide_id}">Complete Profile</a>
+        <a class="button" href="https://trekkyfy.vercel.app/complete-guide-profile?guide_id={guide_id}">Complete Profile</a>
       </p>
       <p>
         Your unique Guide ID is: <strong>{guide_id}</strong>.
