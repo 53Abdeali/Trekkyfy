@@ -5,7 +5,7 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError # type: igno
 
 user_profile_bp = Blueprint("user_profile", __name__)
 
-user_profile_bp.route("/user-profile", methods=["GET"])
+@user_profile_bp.route("/user-profile", methods=["GET"])
 def user_profile():
     access_token = request.cookies.get("access_token")
     
