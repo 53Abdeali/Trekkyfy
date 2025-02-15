@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
 export default function Login() {
   const router = useRouter();
@@ -44,17 +44,25 @@ export default function Login() {
       });
 
       const { access_token } = response.data;
-
-      const cookieOption: Cookies.CookieAttributes = rememberMe
+      const cookieOption : Cookies.CookieAttributes = rememberMe
         ? { expires: 7, secure: true, sameSite: "None" }
         : {};
-
       Cookies.set("access_token", access_token, cookieOption);
       toast.success("Login successful");
 
       const decoded: { guide_id?: string } = jwtDecode(access_token);
+
       if (decoded.guide_id) {
-        router.push("/complete-guide-profile");
+        const profileResponse = await axiosInstance.get("/guide", {
+          headers: {
+            "Authorization": `Bearer ${access_token}`
+          }
+        });
+        if (profileResponse.data && profileResponse.data.guide_city) {
+          router.push("/");
+        } else {
+          router.push("/complete-guide-profile");
+        }
       } else {
         router.push("/");
       }
@@ -72,7 +80,6 @@ export default function Login() {
       <div className="trek-log-img">
         <h1>Trekkyfy</h1>
       </div>
-
       <div className="trek-log">
         <div className="trek-log-left">
           <Image
