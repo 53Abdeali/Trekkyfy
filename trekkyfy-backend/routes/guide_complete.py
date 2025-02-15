@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, GuideDetails
-from flask_jwt_extended import jwt_required, get_jwt # type: ignore
+from flask_jwt_extended import jwt_required, get_jwt  # type: ignore
 
 guide_bp = Blueprint("Guide_Details", __name__)
 
@@ -12,9 +12,13 @@ def guide_profile():
     guide_id = claims.get("guide_id")
     if not guide_id:
         return jsonify({"message": "Authenticated user does not have a guide id."}), 400
+
     guide = GuideDetails.query.filter_by(guide_id=guide_id).first()
     if not guide:
-        return jsonify({"message": "Guide not found. Please register first."}), 404
+        print("Guide record not found for guide_id:", guide_id)
+        guide = GuideDetails(guide_id=guide_id)
+        db.session.add(guide)
+
     guide.guide_city = data.get("guide_city")
     guide.guide_district = data.get("guide_district")
     guide.guide_state = data.get("guide_state")
@@ -24,9 +28,14 @@ def guide_profile():
     guide.guide_languages = data.get("guide_languages")
     guide.guide_speciality = data.get("guide_speciality")
     guide.guide_photo = data.get("guide_photo")
+
     try:
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": "An error occurred while updating guide details.", "error": str(e)}), 500
+        return jsonify({
+            "message": "An error occurred while updating guide details.",
+            "error": str(e)
+        }), 500
+
     return jsonify({"message": "Guide details updated successfully"})
