@@ -29,7 +29,9 @@ const GuideCard: React.FC<GuideCardProps> = ({ guide }) => {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    socketRef.current = io("https://trekkyfy.onrender.com");
+    socketRef.current = io("https://trekkyfy.onrender.com", {
+      transports: ["websocket"],
+    });
 
     socketRef.current.on("connect", () => {
       console.log("Connected to socket.io server");
