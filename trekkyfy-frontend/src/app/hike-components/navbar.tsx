@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
-  role: "guide" | "hiker";
+  guide_id?: string;
 }
 
 export default function Navbar() {
@@ -33,8 +33,12 @@ export default function Navbar() {
     if (!token) return;
     setIsAuthenticated(!!token);
     try {
-      const decoded = jwtDecode<DecodedToken>(token);
-      setUserRole(decoded.role);
+      const decoded: DecodedToken = jwtDecode(token);
+      if (decoded.guide_id) {
+        setUserRole("guide");
+      } else {
+        setUserRole("hiker");
+      }
     } catch (error) {
       console.error("Error decoding token:", error);
     }
