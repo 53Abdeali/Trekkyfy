@@ -1,3 +1,7 @@
+import eventlet
+
+eventlet.monkey_patch()
+
 from flask import Flask, jsonify, request  # type: ignore
 from flask_cors import CORS
 from extensions import db, jwt, bcrypt, mail  # type: ignore
@@ -8,10 +12,8 @@ import cloudinary  # type: ignore
 import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
 from flask_socketio import SocketIO, emit
-import eventlet
 from models import db, User
 
-eventlet.monkey_patch()
 
 # Cloudinary Configuration
 cloudinary.config(
@@ -75,6 +77,8 @@ def handle_connect():
         online_users[user_id] = "online"
         update_last_seen(user_id, "online")
         emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
+    else:
+        print("No user_id provided on connect.")
 
 
 @socketio.on("disconnect")
@@ -82,13 +86,24 @@ def handle_disconnect():
     user_id = request.args.get("user_id")
     if user_id:
         online_users.pop(user_id, None)
-        update_last_seen(user_id, datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
+        current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        update_last_seen(user_id, current_time)
+    else:
+        print("No user_id provided on disconnect.")
 
 
 def update_last_seen(user_id, status):
     user = User.query.filter_by(id=user_id).first()
     if user:
-        user.last_seen = status if status == "online" else datetime.utcnow()
+        user.last_seen = status if status == "online" else status
+        try:
+            db.session.commit()
+            print(f"Updated last_seen for user {user_id}: {user.last_seen}")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating last_seen for user {user_id}: {e}")
+    else:
+        print(f"User with id {user_id} not found.")
 
 
 # API Health Check
