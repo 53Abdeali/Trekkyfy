@@ -1,18 +1,29 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from models import User
 from extensions import db, bcrypt
 import random
 import string
 from extensions import mail
-from flask_mail import Message # type: ignore
+from flask_mail import Message  # type: ignore
 
 
 def generate_unique_guide_id():
-    letters = random.choices(string.ascii_letters, k=3)
-    digits = random.choices(string.digits, k=3)
-    guide_id = "".join(random.sample(letters + digits, 6))
-    if not User.query.filter_by(guide_id=guide_id).first():
-        return guide_id
+    while True:
+        letters = random.choices(string.ascii_letters, k=4)
+        digits = random.choices(string.digits, k=4)
+        guide_id = "G" + "".join(random.sample(letters + digits, 8))
+        if not User.query.filter_by(guide_id=guide_id).first():
+            return guide_id
+
+
+def generate_unique_hiker_id():
+    while True:
+        letters = random.choices(string.ascii_letters, k=4)
+        digits = random.choices(string.digits, k=4)
+        hiker_id = "H" + "".join(random.sample(letters + digits, 8))
+        if not User.query.filter_by(hiker_id=hiker_id).first():
+            return hiker_id
 
 
 def send_guide_details_email(email, guide_id):
@@ -113,12 +124,18 @@ def register():
     guide_id = None
     if role == "guide":
         guide_id = generate_unique_guide_id()
+
+    hiker_id = None
+    if role == "hiker":
+        hiker_id = generate_unique_hiker_id()
     user = User(
         username=username,
         email=data["email"],
         password=hashed_password,
         role=role,
         guide_id=guide_id,
+        hiker_id=hiker_id,
+        registered_on=datetime.utcnow(),
     )
     db.session.add(user)
     db.session.commit()

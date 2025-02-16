@@ -1,0 +1,163 @@
+::-webkit-scrollbar {
+  width: 8px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff;
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #212b43;
+  border-radius: 0.5rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: scroll;
+}
+
+.modal-content {
+  position: relative;
+  overflow-y: scroll;
+  width: 90%;
+  max-width: 1000px;
+  background: #fff;
+  border-radius: 8px;
+  max-height: 100vh;
+  padding: 20px;
+}
+
+.modal-close-btn {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #212b43;
+  font-size: 2rem;
+}
+
+.modal-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.modal-container {
+  flex: 1;
+  padding: 10px;
+}
+
+.modal-img-st {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.modal-img-st p{
+    margin-bottom: 1rem;
+}
+
+.modal-img-st p strong{
+    color: #212b43;
+}
+
+.modal-left h2, .modal-add{
+    color: #212b43;
+    text-align: center;
+}
+
+.modal-add{
+    margin-bottom: 2rem;
+}
+
+.modal-contact{
+    color: #212b43;
+}
+
+.vertical-divider {
+  width: 1px;
+  background-color: #ccc;
+}
+
+.modal-right p{
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    flex-direction: column;
+    margin-top: 1rem;
+}
+
+.modal-right p strong{
+    text-decoration: underline;
+    text-align: left;
+}
+
+.request-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.request-button {
+  margin-top: 15px;
+  padding: 10px 15px;
+  background-color: #212b43;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.request-button:hover {
+  background-color: #212b43;
+}
+
+@media ((min-width:601px) and (max-width:950px)) {
+    .modal-content{
+        width: 95%;
+    }
+    .request-buttons{
+        flex-direction: column-reverse;
+    }
+    .modal-right p {
+        text-align: justify;
+    }
+}
+
+@media ((min-width:951px) and (max-width:1200px)) {
+    .request-button{
+        padding: 10px 12px;
+    }
+}
+
+@media (max-width:600px) {
+    .request-buttons{
+        flex-direction: column-reverse;
+    }
+    .modal-content{
+        width: 95%;
+    }
+    .vertical-divider{
+        display: none;
+    }
+    .modal-right p{
+        text-align: justify;
+    }
+}

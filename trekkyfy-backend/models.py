@@ -9,8 +9,9 @@ class User(db.Model):
     password = db.Column(db.String(225), unique=True, nullable=False)
     role = db.Column(db.String(20), nullable=False, default="hiker")
     guide_id = db.Column(db.String(10), index=True, nullable=True, unique=True)
+    hiker_id = db.Column(db.String(10), nullable=True, unique=True)
     registered_on = db.Column(db.DateTime, default=datetime.utcnow())
-    last_seen  = db.Column(db.String(50), nullable = True)
+    last_seen = db.Column(db.String(50), nullable=True)
 
     def __repr__(self):
         return f"<User {self.email}, Role {self.role}>"
@@ -75,6 +76,31 @@ class GuideDetails(db.Model):
     guide_photo = db.Column(db.String(255))
 
     user = db.relationship("User", backref="guide_details", uselist=False)
+
     def __repr__(self):
         return f"<Guide_Details {self.guide_id}, City {self.guide_city}>"
-    
+
+
+class ChatRequests(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    hiker_id = db.Column(db.String(6), db.ForeignKey("users.hiker_id"), nullable=False)
+    guide_id = db.Column(db.String(6), db.ForeignKey("users.guide_id"), nullable=False)
+    status = db.Column(
+        db.Enum("pending", "accepted", "rejected", name="chat_status"),
+        default="pending",
+    )
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, hiker_id, guide_id, status="pending"):
+        self.hiker_id = hiker_id
+        self.guide_id = guide_id
+        self.status = status
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "hiker_id": self.hiker_id,
+            "guide_id": self.guide_id,
+            "status": self.status,
+            "created_at": self.created_at.isoformat(),
+        }

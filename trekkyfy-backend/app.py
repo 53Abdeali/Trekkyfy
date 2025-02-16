@@ -58,7 +58,9 @@ app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
 socketio = SocketIO(
     app, cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000"]
 )
+
 online_users = {}
+chat_requests = {}
 
 db.init_app(app)
 bcrypt.init_app(app)
@@ -74,51 +76,88 @@ register_blueprints(app)
 
 @socketio.on("connect")
 def handle_connect():
-    guide_id = request.args.get("guide_id")
-    if guide_id:
-        online_users[guide_id] = "online"
-        update_last_seen(guide_id, "online")
-        emit("update_status", {"guide_id": guide_id, "status": "online"}, broadcast=True)
-        print(f"Guide {guide_id} connected via websocket.")
+    user_id = request.args.get("user_id")
+    user_type = request.args.get("user_type")  # "guide" or "hiker"
+
+    if user_id and user_type:
+        online_users[user_id] = "online"
+        update_last_seen(user_id, "online")
+        emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
+        print(f"{user_type.capitalize()} {user_id} connected via websocket.")
     else:
-        print("No guide_id provided on connect.")
+        print("No user_id or user_type provided on connect.")
 
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    guide_id = request.args.get("guide_id")
-    if guide_id:
-        online_users.pop(guide_id, None)
+    user_id = request.args.get("user_id")
+    
+    if user_id:
+        online_users.pop(user_id, None)
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        update_last_seen(guide_id, current_time)
-        print(f"Guide {guide_id} disconnected; last_seen updated.")
+        update_last_seen(user_id, current_time)
+        print(f"User {user_id} disconnected; last_seen updated.")
     else:
-        print("No guide_id provided on disconnect.")
+        print("No user_id provided on disconnect.")
 
-
-@socketio.on('heartbeat')
-def handle_heartbeat(data):
+@socketio.on("send_chat_request")
+def handle_chat_request(data):
+    hiker_id = data.get("hiker_id")
     guide_id = data.get("guide_id")
-    if guide_id:
-        current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        update_last_seen(guide_id, current_time)
-        print(f"Heartbeat received for guide {guide_id}, updated last_seen to {current_time}")
+
+    if not hiker_id or not guide_id:
+        return
+
+    chat_requests[hiker_id] = guide_id  # Store pending request
+
+    emit("chat_request", {"hiker_id": hiker_id}, room=guide_id)
+    print(f"Hiker {hiker_id} sent chat request to Guide {guide_id}")
+    
+@socketio.on("respond_chat_request")
+def handle_chat_response(data):
+    guide_id = data.get("guide_id")
+    hiker_id = data.get("hiker_id")
+    accepted = data.get("accepted")
+
+    if not guide_id or not hiker_id:
+        return
+
+    if accepted:
+        emit("chat_accepted", {"guide_id": guide_id}, room=hiker_id)
+        print(f"Guide {guide_id} accepted chat request from Hiker {hiker_id}")
     else:
-        print("Heartbeat received with no guide_id.")
+        emit("chat_rejected", {"guide_id": guide_id}, room=hiker_id)
+        print(f"Guide {guide_id} rejected chat request from Hiker {hiker_id}")
+
+    # Remove request from pending list
+    chat_requests.pop(hiker_id, None)
 
 
-def update_last_seen(guide_id, status):
-    user = User.query.filter_by(guide_id=guide_id).first()
+@socketio.on("heartbeat")
+def handle_heartbeat(data):
+    user_id = data.get("user_id")
+    
+    if user_id:
+        current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        update_last_seen(user_id, current_time)
+        print(f"Heartbeat received for {user_id}, updated last_seen to {current_time}")
+    else:
+        print("Heartbeat received with no user_id.")
+
+
+def update_last_seen(user_id, status):
+    user = User.query.filter((User.guide_id == user_id) | (User.hiker_id == user_id)).first()
+    
     if user:
-        user.last_seen = status 
+        user.last_seen = status
         try:
             db.session.commit()
-            print(f"Updated last_seen for user with guide_id {guide_id}: {user.last_seen}")
+            print(f"Updated last_seen for user {user_id}: {user.last_seen}")
         except Exception as e:
             db.session.rollback()
-            print(f"Error updating last_seen for user with guide_id {guide_id}: {e}")
+            print(f"Error updating last_seen for user {user_id}: {e}")
     else:
-        print(f"User with guide_id {guide_id} not found.")
+        print(f"User {user_id} not found.")
 
 
 # API Health Check

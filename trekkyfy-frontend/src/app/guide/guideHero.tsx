@@ -1,6 +1,6 @@
 import Image from "next/image";
 import guide from "@/app/Images/guide.jpg";
-import "./guideHero.css"
+import "@/app/stylesheet/guideHero.css"
 
 export default function GuideHero() {
   return (

@@ -1,0 +1,68 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.guide-profile {
+  padding: 1rem;
+  margin: 1rem 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.guide-card {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  margin: 1rem 0;
+  border-radius: 8px;
+}
+
+.guide-card-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.guide-card-image p {
+  text-align: center;
+  width: 80%;
+  margin: 1rem 0;
+}
+
+.guide-card-image p strong {
+  color: #212b43;
+}
+
+.guide-card-img {
+  border: 2px solid #212b43;
+  border-radius: 50%;
+}
+
+.guide-card h2,
+.guide-residence {
+  color: #212b43;
+  text-align: center;
+}
+
+.guide-residence {
+  margin-bottom: 0.5rem;
+}
+
+.guide-contact {
+  color: #212b43;
+}
+
+.guide-more {
+  margin-top: 1rem;
+  text-align: center;
+  background-color: #212b43;
+  color: #fff;
+  cursor: pointer;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}

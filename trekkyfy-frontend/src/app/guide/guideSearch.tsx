@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import "@/app/stylesheet/guideSearch.css"
 
 export interface FilterCriteria {
   state: string;
@@ -30,7 +31,6 @@ const GuideSearch: React.FC<GuideSearchProps> = ({ onFilterChange }) => {
         placeholder="Filter by state"
         value={stateFilter}
         onChange={(e) => setStateFilter(e.target.value)}
-        style={{ marginRight: "10px" }}
       />
 
       <input
@@ -38,7 +38,6 @@ const GuideSearch: React.FC<GuideSearchProps> = ({ onFilterChange }) => {
         placeholder="Filter by city"
         value={cityFilter}
         onChange={(e) => setCityFilter(e.target.value)}
-        style={{ marginLeft: "10px" }}
       />
     </div>
   );

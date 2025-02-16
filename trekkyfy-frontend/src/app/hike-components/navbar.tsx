@@ -1,16 +1,23 @@
+"use client"
+
 import Link from "next/link";
 import "@/app/stylesheet/navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faUserCircle, faBell } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
 import toast from "react-hot-toast";
 import { usePathname } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
+
+import socket from "@/app/socket";
+import NotificationPopup, { ChatRequest } from "./notificationpopup";
+import HikerNotificationPopup, { ChatResponse } from "./hikernotificationpopup";
 
 interface DecodedToken {
   guide_id?: string;
+  hiker_id?: string;
 }
 
 export default function Navbar() {
@@ -19,7 +26,16 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState(pathname || "/");
   const [showProfileDown, setShowProfileDown] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // userRole can be either "guide" or "hiker"
   const [userRole, setUserRole] = useState<"guide" | "hiker" | null>(null);
+  // For guides: incoming chat requests from hikers
+  const [chatRequests, setChatRequests] = useState<ChatRequest[]>([]);
+  const [showGuideNotification, setShowGuideNotification] = useState(false);
+  // For hikers: responses from guides (accepted or rejected)
+  const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
+  const [showHikerNotification, setShowHikerNotification] = useState(false);
+  // Current hiker id (if logged in as hiker)
+  const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
 
   const profileRef = useRef<HTMLLIElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
@@ -31,19 +47,21 @@ export default function Navbar() {
   useEffect(() => {
     const token = Cookies.get("access_token");
     if (!token) return;
-    setIsAuthenticated(!!token);
+    setIsAuthenticated(true);
     try {
       const decoded: DecodedToken = jwtDecode(token);
       if (decoded.guide_id) {
         setUserRole("guide");
-      } else {
+      } else if (decoded.hiker_id) {
         setUserRole("hiker");
+        setCurrentHikerId(decoded.hiker_id);
       }
     } catch (error) {
       console.error("Error decoding token:", error);
     }
   }, []);
 
+  // Listen for clicks outside to close nav elements and dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -54,13 +72,81 @@ export default function Navbar() {
       }
       setShowNavElement(false);
       setShowProfileDown(false);
+      setShowGuideNotification(false);
+      setShowHikerNotification(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
+    return () =>
       document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, []);
+
+  // For guides: Listen for incoming chat requests via Socket.IO
+  useEffect(() => {
+    if (userRole === "guide") {
+      socket.on("incoming_chat_request", (request: ChatRequest) => {
+        setChatRequests((prev) => [...prev, request]);
+      });
+    }
+    return () => {
+      socket.off("incoming_chat_request");
+    };
+  }, [userRole]);
+
+  // For hikers: Listen for chat responses from guides via Socket.IO
+  useEffect(() => {
+    if (userRole === "hiker") {
+      socket.on(
+        "chat_response",
+        (data: { accepted: boolean; guideWhatsApp?: string; hikerId?: string; message?: string }) => {
+          // Ensure the response is meant for the current hiker
+          if (data.hikerId && data.hikerId !== currentHikerId) return;
+          setChatResponses((prev) => [...prev, data]);
+        }
+      );
+    }
+    return () => {
+      socket.off("chat_response");
+    };
+  }, [userRole, currentHikerId]);
+
+  // Handlers for guide notifications
+  const handleAccept = async (request: ChatRequest) => {
+    try {
+      const response = await axiosInstance.get("/guide");
+      if (response.status === 200) {
+        const guideWhatsAppNumber = response.data.guide_whatsapp;
+        socket.emit("chat_response", {
+          hikerId: request.hikerId,
+          accepted: true,
+          guideWhatsApp: guideWhatsAppNumber,
+        });
+  
+        setChatRequests((prev) => prev.filter((r) => r.hikerId !== request.hikerId));
+      }
+    } catch (error) {
+      console.error("Failed to fetch guide WhatsApp number:", error);
+      toast.error("Error fetching WhatsApp number.");
+    }
+  };
+
+  const handleReject = (request: ChatRequest) => {
+    socket.emit("chat_response", {
+      hikerId: request.hikerId,
+      accepted: false,
+    });
+    setChatRequests((prev) => prev.filter((r) => r.hikerId !== request.hikerId));
+  };
+
+  // Handlers for hiker notifications
+  const handleOpenChat = (guideWhatsApp: string) => {
+    const whatsappLink = `https://wa.me/${guideWhatsApp}`;
+    window.open(whatsappLink, "_blank");
+  };
+
+  const handleDismissResponse = (index: number) => {
+    setChatResponses((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const logout = async () => {
     try {
@@ -69,7 +155,7 @@ export default function Navbar() {
         setIsAuthenticated(false);
         Cookies.remove("access_token");
         window.location.href = "/";
-        toast.success("Logout Succesfully");
+        toast.success("Logout Successfully");
       }
     } catch (err) {
       console.error("Logout failed:", err);
@@ -81,18 +167,14 @@ export default function Navbar() {
       <div className="nav-logo">
         <h1>Trekkyfy</h1>
       </div>
+
       {!isAuthenticated ? (
         <>
-          <div
-            ref={navRef}
-            className={showNavElement ? "mob-nav-opt" : "nav-opt"}
-          >
+          <div ref={navRef} className={showNavElement ? "mob-nav-opt" : "nav-opt"}>
             <ul className="nav-ul">
               <li>
                 <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/" ? "active" : ""
-                  }`}
+                  className={`nav-opt-link ${activeLink === "/" ? "active" : ""}`}
                   href="/"
                 >
                   Home
@@ -100,9 +182,7 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/about" ? "active" : ""
-                  }`}
+                  className={`nav-opt-link ${activeLink === "/about" ? "active" : ""}`}
                   href="/about"
                 >
                   About Us
@@ -110,9 +190,7 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/services" ? "active" : ""
-                  }`}
+                  className={`nav-opt-link ${activeLink === "/services" ? "active" : ""}`}
                   href="/services"
                 >
                   Our Services
@@ -120,9 +198,7 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/contact" ? "active" : ""
-                  }`}
+                  className={`nav-opt-link ${activeLink === "/contact" ? "active" : ""}`}
                   href="/contact"
                 >
                   Contact Us
@@ -149,31 +225,16 @@ export default function Navbar() {
             <ul className="nav-ul">
               <li>
                 <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/" ? "active" : ""
-                  }`}
+                  className={`nav-opt-link ${activeLink === "/" ? "active" : ""}`}
                   href="/"
                 >
                   Home
                 </Link>
               </li>
-              {userRole === "guide" ? (
+              {userRole === "hiker" && (
                 <li>
                   <Link
-                    className={`nav-opt-link ${
-                      activeLink === "/hikers" ? "active" : ""
-                    }`}
-                    href="/hikers"
-                  >
-                    Hikers
-                  </Link>
-                </li>
-              ) : (
-                <li>
-                  <Link
-                    className={`nav-opt-link ${
-                      activeLink === "/guide" ? "active" : ""
-                    }`}
+                    className={`nav-opt-link ${activeLink === "/guide" ? "active" : ""}`}
                     href="/guide"
                   >
                     Guides
@@ -182,9 +243,7 @@ export default function Navbar() {
               )}
               <li>
                 <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/trek-trails" ? "active" : ""
-                  }`}
+                  className={`nav-opt-link ${activeLink === "/trek-trails" ? "active" : ""}`}
                   href="/trek-trails"
                 >
                   Trek & Trails
@@ -192,9 +251,7 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/explore" ? "active" : ""
-                  }`}
+                  className={`nav-opt-link ${activeLink === "/explore" ? "active" : ""}`}
                   href="/explore"
                 >
                   Explore
@@ -202,14 +259,40 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/contact" ? "active" : ""
-                  }`}
+                  className={`nav-opt-link ${activeLink === "/contact" ? "active" : ""}`}
                   href="/contact"
                 >
                   Contact Us
                 </Link>
               </li>
+              {/* Notification icon for guides */}
+              {userRole === "guide" && (
+                <li className="notification-container">
+                  <span
+                    onClick={() => setShowGuideNotification(!showGuideNotification)}
+                    className="notification-icon"
+                  >
+                    <FontAwesomeIcon icon={faBell} size="lg" />
+                    {chatRequests.length > 0 && (
+                      <span className="badge">{chatRequests.length}</span>
+                    )}
+                  </span>
+                </li>
+              )}
+              {/* Notification icon for hikers */}
+              {userRole === "hiker" && (
+                <li className="notification-container">
+                  <span
+                    onClick={() => setShowHikerNotification(!showHikerNotification)}
+                    className="notification-icon"
+                  >
+                    <FontAwesomeIcon icon={faBell} size="lg" />
+                    {chatResponses.length > 0 && (
+                      <span className="badge">{chatResponses.length}</span>
+                    )}
+                  </span>
+                </li>
+              )}
               <li ref={profileRef} className="profile-container">
                 <span
                   onClick={() => setShowProfileDown(!showProfileDown)}
@@ -248,6 +331,27 @@ export default function Navbar() {
           <FontAwesomeIcon className="nav-bar" icon={faBars} />
         </span>
       </div>
+
+      {/* Guide Notification Popup */}
+      {showGuideNotification && userRole === "guide" && (
+        <NotificationPopup
+          requests={chatRequests}
+          onAccept={handleAccept}
+          onReject={handleReject}
+          onClose={() => setShowGuideNotification(false)}
+        />
+      )}
+
+      {/* Hiker Notification Popup */}
+      {showHikerNotification && userRole === "hiker" && (
+        <HikerNotificationPopup
+          notifications={chatResponses}
+          onOpenChat={handleOpenChat}
+          onDismiss={handleDismissResponse}
+          onClose={() => setShowHikerNotification(false)}
+        />
+      )}
     </div>
   );
 }
+

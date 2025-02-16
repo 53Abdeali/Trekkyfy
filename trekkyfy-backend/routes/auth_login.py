@@ -27,7 +27,12 @@ def login():
             db.session.rollback()
             print("Error updating last_seen on login:", e)
 
-    additional_claims = {"guide_id": user.guide_id} if user.guide_id else {}
+    additional_claims = {} 
+    if user.guide_id:
+        additional_claims["guide_id"] = user.guide_id
+    if user.hiker_id:
+        additional_claims["hiker_id"] = user.hiker_id
+    
     access_token = create_access_token(
         identity=user.email, additional_claims=additional_claims
     )

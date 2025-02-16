@@ -1,47 +1,60 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { io, Socket } from "socket.io-client";
 
 interface TokenPayload {
   guide_id?: string;
+  hiker_id?: string;
 }
 
-const getGuideIdFromToken = (): string | null => {
+const getUserDetailsFromToken = (): {
+  user_id: string | null;
+  user_type: string | null;
+} => {
   const token = Cookies.get("access_token");
-  if (!token) return null;
+  if (!token) return { user_id: null, user_type: null };
+
   try {
     const decoded: TokenPayload = jwtDecode(token);
-    return decoded.guide_id || null;
+
+    if (decoded.guide_id)
+      return { user_id: decoded.guide_id, user_type: "guide" };
+    if (decoded.hiker_id)
+      return { user_id: decoded.hiker_id, user_type: "hiker" };
+
+    return { user_id: null, user_type: null };
   } catch (error) {
     console.error("Error decoding token:", error);
-    return null;
+    return { user_id: null, user_type: null };
   }
 };
 
-const GuideHeartbeat: React.FC = () => {
+const UserHeartbeat: React.FC = () => {
   const socketRef = useRef<Socket | null>(null);
-  const guideId = getGuideIdFromToken();
+  const { user_id, user_type } = getUserDetailsFromToken();
 
   useEffect(() => {
-    if (!guideId) {
-      console.error("No guide_id found; cannot start heartbeat.");
+    if (!user_id || !user_type) {
+      console.error("No user_id or user_type found; cannot start heartbeat.");
       return;
     }
 
     socketRef.current = io("https://trekkyfy.onrender.com", {
       transports: ["websocket"],
-      query: { guide_id: guideId },
+      query: { user_id, user_type },
     });
 
     socketRef.current.on("connect", () => {
-      console.log("Connected to socket.io server for heartbeat");
+      console.log(
+        `Connected to socket.io server as ${user_type} (ID: ${user_id})`
+      );
     });
 
     const heartbeatInterval = setInterval(() => {
-      socketRef.current?.emit("heartbeat", { guide_id: guideId });
-      console.log("Heartbeat sent for guide_id:", guideId);
+      socketRef.current?.emit("heartbeat", { user_id });
+      console.log(`Heartbeat sent for ${user_type} ID: ${user_id}`);
     }, 60000);
 
     socketRef.current.on("disconnect", () => {
@@ -52,9 +65,9 @@ const GuideHeartbeat: React.FC = () => {
       clearInterval(heartbeatInterval);
       socketRef.current?.disconnect();
     };
-  }, [guideId]);
+  }, [user_id, user_type]);
 
   return null;
 };
 
-export default GuideHeartbeat;
+export default UserHeartbeat;
