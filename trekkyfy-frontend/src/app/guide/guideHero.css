@@ -1,0 +1,123 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+.guide-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+.guide-hero-image {
+  width: 100%;
+  height: 500px;
+}
+
+.guide-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.guide-hero-content {
+  width: 80%;
+}
+
+.guide-hero-heads {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  color: #212b43;
+}
+
+.guide-hero-heads h1 {
+  font-size: 2.5rem;
+}
+
+.guide-hero-para {
+  color: #212b43;
+  font-weight: 400;
+  text-align: justify;
+  padding: 0 2rem;
+}
+
+@media (max-width: 600px) {
+  .guide-hero {
+    flex-direction: column;
+    padding: 0 0.5rem;
+  }
+  .guide-hero-image {
+    width: 100%;
+    height: 240px;
+  }
+  .guide-hero-content {
+    width: 100%;
+  }
+  .guide-hero-heads h1 {
+    text-align: center;
+    font-size: 1.5rem;
+  }
+  .guide-hero-heads p {
+    text-align: center;
+  }
+
+  .guide-hero-para {
+    padding: 0 1rem;
+  }
+}
+
+@media ((min-width: 601px) and (max-width:950px)) {
+  .guide-hero {
+    flex-direction: column;
+    padding: 0 0.5rem;
+  }
+  .guide-hero-image {
+    width: 100%;
+  }
+  .guide-hero-content {
+    width: 100%;
+  }
+  .guide-hero-heads h1 {
+    text-align: center;
+    font-size: 2rem;
+  }
+  .guide-hero-heads p {
+    text-align: center;
+  }
+
+  .guide-hero-para {
+    padding: 0 1rem;
+  }
+}
+
+@media ((min-width: 951px) and (max-width:1200px)) {
+  .guide-hero-image {
+    width: 100%;
+    height: 400px;
+  }
+  .guide-hero-content {
+    width: 80%;
+  }
+  .guide-hero-heads h1 {
+    text-align: center;
+    font-size: 2rem;
+  }
+  .guide-hero-heads p {
+    text-align: center;
+  }
+  .guide-hero-para {
+    padding: 0 1rem;
+  }
+}
