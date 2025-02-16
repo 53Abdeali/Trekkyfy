@@ -2,6 +2,33 @@ from extensions import db
 from datetime import datetime
 
 
+class ChatRequests(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    hiker_id = db.Column(db.String(6), db.ForeignKey("user.hiker_id"), nullable=False)
+    guide_id = db.Column(db.String(6), db.ForeignKey("user.guide_id"), nullable=False)
+    status = db.Column(
+        db.Enum("pending", "accepted", "rejected", name="chat_status"),
+        default="pending",
+    )
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    hiker = db.relationship("User", foreign_keys=[hiker_id], backref="hiker_requests")
+    guide = db.relationship("User", foreign_keys=[guide_id], backref="guide_requests")
+
+    def __init__(self, hiker_id, guide_id, status="pending"):
+        self.hiker_id = hiker_id
+        self.guide_id = guide_id
+        self.status = status
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "hiker_id": self.hiker_id,
+            "guide_id": self.guide_id,
+            "status": self.status,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -14,10 +41,10 @@ class User(db.Model):
     last_seen = db.Column(db.String(50), nullable=True)
 
     hiker_requests = db.relationship(
-        "ChatRequests", foreign_keys=[ChatRequests.hiker_id], backref="hiker", lazy=True # type: ignore
+        "ChatRequests", foreign_keys=[ChatRequests.hiker_id], backref="hiker", lazy=True
     )
     guide_requests = db.relationship(
-        "ChatRequests", foreign_keys=[ChatRequests.guide_id], backref="guide", lazy=True # type: ignore
+        "ChatRequests", foreign_keys=[ChatRequests.guide_id], backref="guide", lazy=True
     )
 
     def __repr__(self):
@@ -86,34 +113,3 @@ class GuideDetails(db.Model):
 
     def __repr__(self):
         return f"<Guide_Details {self.guide_id}, City {self.guide_city}>"
-
-
-class ChatRequests(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    hiker_id = db.Column(db.String(6), db.ForeignKey("user.hiker_id"), nullable=False)
-    guide_id = db.Column(db.String(6), db.ForeignKey("user.guide_id"), nullable=False)
-    status = db.Column(
-        db.Enum("pending", "accepted", "rejected", name="chat_status"),
-        default="pending",
-    )
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    hiker = db.relationship(
-        "User", foreign_keys=[hiker_id], backref="hiker_requests"
-    )
-    guide = db.relationship(
-        "User", foreign_keys=[guide_id], backref="guide_requests"
-    )
-
-    def __init__(self, hiker_id, guide_id, status="pending"):
-        self.hiker_id = hiker_id
-        self.guide_id = guide_id
-        self.status = status
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "hiker_id": self.hiker_id,
-            "guide_id": self.guide_id,
-            "status": self.status,
-            "created_at": self.created_at.isoformat(),
-        }
