@@ -110,7 +110,7 @@ const GuideCard: React.FC<GuideCardProps> = ({ guide }) => {
             <span style={{ color: "gray" }}>
               Last seen:{" "}
               {guide.last_seen
-                ? new Date(guide.last_seen).toLocaleString()
+                ? (new Date(guide.last_seen).toLocaleString() + " UTC")
                 : "N/A"}
             </span>
           )}

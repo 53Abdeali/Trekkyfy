@@ -98,7 +98,7 @@ export default function Hero() {
                   <div className="hero-link-para animate">
                     {profile && (
                       <p>
-                        <Link className="hero-trail-link" href="/trails">
+                        <Link className="hero-trail-link" href="/explore">
                           Explore Trails
                         </Link>
                       </p>
