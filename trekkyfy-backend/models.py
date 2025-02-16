@@ -13,6 +13,13 @@ class User(db.Model):
     registered_on = db.Column(db.DateTime, default=datetime.utcnow())
     last_seen = db.Column(db.String(50), nullable=True)
 
+    hiker_requests = db.relationship(
+        "ChatRequests", foreign_keys="ChatRequests.hiker_id", backref="hiker", lazy=True
+    )
+    guide_requests = db.relationship(
+        "ChatRequests", foreign_keys="ChatRequests.guide_id", backref="guide", lazy=True
+    )
+
     def __repr__(self):
         return f"<User {self.email}, Role {self.role}>"
 
@@ -90,7 +97,13 @@ class ChatRequests(db.Model):
         default="pending",
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship("User", backref="chat_requests", uselist=False)
+    hiker = db.relationship(
+        "User", foreign_keys=[hiker_id], backref="hiker_chat_requests"
+    )
+    guide = db.relationship(
+        "User", foreign_keys=[guide_id], backref="guide_chat_requests"
+    )
+
     def __init__(self, hiker_id, guide_id, status="pending"):
         self.hiker_id = hiker_id
         self.guide_id = guide_id
