@@ -14,10 +14,10 @@ class User(db.Model):
     last_seen = db.Column(db.String(50), nullable=True)
 
     hiker_requests = db.relationship(
-        "ChatRequests", foreign_keys="ChatRequests.hiker_id", backref="hiker", lazy=True
+        "ChatRequests", foreign_keys=[ChatRequests.hiker_id], backref="hiker", lazy=True # type: ignore
     )
     guide_requests = db.relationship(
-        "ChatRequests", foreign_keys="ChatRequests.guide_id", backref="guide", lazy=True
+        "ChatRequests", foreign_keys=[ChatRequests.guide_id], backref="guide", lazy=True # type: ignore
     )
 
     def __repr__(self):
@@ -98,10 +98,10 @@ class ChatRequests(db.Model):
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     hiker = db.relationship(
-        "User", foreign_keys=[hiker_id], backref="hiker_chat_requests"
+        "User", foreign_keys=[hiker_id], backref="hiker_requests"
     )
     guide = db.relationship(
-        "User", foreign_keys=[guide_id], backref="guide_chat_requests"
+        "User", foreign_keys=[guide_id], backref="guide_requests"
     )
 
     def __init__(self, hiker_id, guide_id, status="pending"):
