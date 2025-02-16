@@ -40,13 +40,6 @@ class User(db.Model):
     registered_on = db.Column(db.DateTime, default=datetime.utcnow())
     last_seen = db.Column(db.String(50), nullable=True)
 
-    hiker_requests = db.relationship(
-        "ChatRequests", foreign_keys=[ChatRequests.hiker_id], backref="hiker", lazy=True
-    )
-    guide_requests = db.relationship(
-        "ChatRequests", foreign_keys=[ChatRequests.guide_id], backref="guide", lazy=True
-    )
-
     def __repr__(self):
         return f"<User {self.email}, Role {self.role}>"
 
