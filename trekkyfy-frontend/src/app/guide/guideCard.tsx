@@ -38,6 +38,18 @@ const GuideCard: React.FC<GuideCardProps> = ({ guide }) => {
       socketRef.current?.emit("subscribe", { guideId: guide.id });
     });
 
+    socketRef.current.on("connect_error", (error) => {
+      console.error("Connection error:", error);
+    });
+
+    socketRef.current.on("connect_timeout", () => {
+      console.error("Connection timeout");
+    });
+
+    socketRef.current.on("error", (error) => {
+      console.error("General error:", error);
+    });
+
     socketRef.current.on(
       "statusUpdate",
       (data: { guideId: string; status: string }) => {
