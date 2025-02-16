@@ -25,7 +25,7 @@ body {
   justify-content: space-between;
   align-items: center;
   flex-direction: column;
-  background-image: url("../Images/mountains-7322524_1280.jpg");
+  background-image: url("/trekkyfy-frontend/public/mountains-7322524_1280.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
