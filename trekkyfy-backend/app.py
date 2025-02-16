@@ -11,6 +11,7 @@ from flask_socketio import SocketIO, emit
 import eventlet
 from models import db, User
 
+eventlet.monkey_patch()
 
 # Cloudinary Configuration
 cloudinary.config(
