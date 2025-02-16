@@ -9,6 +9,7 @@ import Testimonials from "@/app/hike-components/testimonial";
 import Discount from "@/app/hike-components/discount";
 import Feedback from "@/app/hike-components/feedback";
 import Dashboard from "@/app/hike-components/dashboard";
+import GuideHeartbeat from "@/app/hike-components/GuideHeartbeat";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
@@ -18,13 +19,18 @@ export default function Trekkyfy() {
   useEffect(() => {
     const token = Cookies.get("access_token");
     setAuthenticated(!!token);
-  },[]);
+  }, []);
 
   return (
     <div>
       <Navbar />
       <Hero />
-      {authenticated ? <Dashboard /> : ""}
+      {authenticated && (
+        <>
+          <Dashboard />
+          <GuideHeartbeat />
+        </>
+      )}
       <About />
       <Work />
       <Discount />

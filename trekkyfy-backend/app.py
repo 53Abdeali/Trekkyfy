@@ -79,6 +79,7 @@ def handle_connect():
         online_users[guide_id] = "online"
         update_last_seen(guide_id, "online")
         emit("update_status", {"guide_id": guide_id, "status": "online"}, broadcast=True)
+        print(f"Guide {guide_id} connected via websocket.")
     else:
         print("No guide_id provided on connect.")
 
@@ -90,22 +91,34 @@ def handle_disconnect():
         online_users.pop(guide_id, None)
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         update_last_seen(guide_id, current_time)
+        print(f"Guide {guide_id} disconnected; last_seen updated.")
     else:
         print("No guide_id provided on disconnect.")
 
 
+@socketio.on('heartbeat')
+def handle_heartbeat(data):
+    guide_id = data.get("guide_id")
+    if guide_id:
+        current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        update_last_seen(guide_id, current_time)
+        print(f"Heartbeat received for guide {guide_id}, updated last_seen to {current_time}")
+    else:
+        print("Heartbeat received with no guide_id.")
+
+
 def update_last_seen(guide_id, status):
-    user = User.query.filter_by(id=guide_id).first()
+    user = User.query.filter_by(guide_id=guide_id).first()
     if user:
-        user.last_seen = status if status == "online" else status
+        user.last_seen = status 
         try:
             db.session.commit()
-            print(f"Updated last_seen for user {guide_id}: {user.last_seen}")
+            print(f"Updated last_seen for user with guide_id {guide_id}: {user.last_seen}")
         except Exception as e:
             db.session.rollback()
-            print(f"Error updating last_seen for user {guide_id}: {e}")
+            print(f"Error updating last_seen for user with guide_id {guide_id}: {e}")
     else:
-        print(f"User with id {guide_id} not found.")
+        print(f"User with guide_id {guide_id} not found.")
 
 
 # API Health Check
