@@ -55,7 +55,9 @@ app.config["MAIL_USERNAME"] = "aliabdealifakhri53@gmail.com"
 app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
 
 # Enabling web socket using SocketIO
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(
+    app, cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000"]
+)
 online_users = {}
 
 db.init_app(app)
@@ -72,38 +74,38 @@ register_blueprints(app)
 
 @socketio.on("connect")
 def handle_connect():
-    user_id = request.args.get("user_id")
-    if user_id:
-        online_users[user_id] = "online"
-        update_last_seen(user_id, "online")
-        emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
+    guide_id = request.args.get("guide_id")
+    if guide_id:
+        online_users[guide_id] = "online"
+        update_last_seen(guide_id, "online")
+        emit("update_status", {"guide_id": guide_id, "status": "online"}, broadcast=True)
     else:
-        print("No user_id provided on connect.")
+        print("No guide_id provided on connect.")
 
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    user_id = request.args.get("user_id")
-    if user_id:
-        online_users.pop(user_id, None)
+    guide_id = request.args.get("guide_id")
+    if guide_id:
+        online_users.pop(guide_id, None)
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        update_last_seen(user_id, current_time)
+        update_last_seen(guide_id, current_time)
     else:
-        print("No user_id provided on disconnect.")
+        print("No guide_id provided on disconnect.")
 
 
-def update_last_seen(user_id, status):
-    user = User.query.filter_by(id=user_id).first()
+def update_last_seen(guide_id, status):
+    user = User.query.filter_by(id=guide_id).first()
     if user:
         user.last_seen = status if status == "online" else status
         try:
             db.session.commit()
-            print(f"Updated last_seen for user {user_id}: {user.last_seen}")
+            print(f"Updated last_seen for user {guide_id}: {user.last_seen}")
         except Exception as e:
             db.session.rollback()
-            print(f"Error updating last_seen for user {user_id}: {e}")
+            print(f"Error updating last_seen for user {guide_id}: {e}")
     else:
-        print(f"User with id {user_id} not found.")
+        print(f"User with id {guide_id} not found.")
 
 
 # API Health Check

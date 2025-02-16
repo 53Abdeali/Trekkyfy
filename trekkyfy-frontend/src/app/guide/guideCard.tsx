@@ -35,7 +35,7 @@ const GuideCard: React.FC<GuideCardProps> = ({ guide }) => {
 
     socketRef.current.on("connect", () => {
       console.log("Connected to socket.io server");
-      socketRef.current?.emit("subscribe", { guideId: guide.id });
+      socketRef.current?.emit("subscribe", { guide_id: guide.id });
     });
 
     socketRef.current.on("connect_error", (error) => {
@@ -52,8 +52,8 @@ const GuideCard: React.FC<GuideCardProps> = ({ guide }) => {
 
     socketRef.current.on(
       "statusUpdate",
-      (data: { guideId: string; status: string }) => {
-        if (data.guideId === guide.id) {
+      (data: { guide_id: string; status: string }) => {
+        if (data.guide_id === guide.id) {
           setIsOnline(data.status === "online");
         }
       }
