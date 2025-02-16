@@ -49,7 +49,7 @@ export default function Terms() {
       id: 3,
       title: "Booking & Payments",
       description:
-        "When you book a service through Trek Yatra, you agree to provide accurate information and make payment in accordance with the platform's policies. All payments are processed securely through our third-party payment providers.",
+        "When you book a service through Trekkfy, you agree to provide accurate information and make payment in accordance with the platform's policies. All payments are processed securely through our third-party payment providers.",
     },
     {
       id: 4,
@@ -67,13 +67,13 @@ export default function Terms() {
       id: 6,
       title: "Intellectual Property",
       description:
-        "All content, including but not limited to logos, text, images, and software, is the property of Trek Yatra or its licensors and is protected by copyright laws.",
+        "All content, including but not limited to logos, text, images, and software, is the property of Trekkfy or its licensors and is protected by copyright laws.",
     },
     {
       id: 7,
       title: "Limitation of Liability",
       description:
-        "Trek Yatra will not be liable for any indirect, incidental, or consequential damages resulting from the use of our platform or services. We make no guarantees regarding the accuracy of information provided on the platform.",
+        "Trekkfy will not be liable for any indirect, incidental, or consequential damages resulting from the use of our platform or services. We make no guarantees regarding the accuracy of information provided on the platform.",
     },
     {
       id: 8,
@@ -85,7 +85,7 @@ export default function Terms() {
       id: 9,
       title: "Governing Law",
       description:
-        "These Terms and Conditions are governed by the laws of the jurisdiction in which Trek Yatra operates. Any disputes will be resolved in the competent courts of that jurisdiction.",
+        "These Terms and Conditions are governed by the laws of the jurisdiction in which Trekkfy operates. Any disputes will be resolved in the competent courts of that jurisdiction.",
     },
     {
       id: 10,
@@ -104,7 +104,7 @@ export default function Terms() {
           <div className="tc-heads">
             <h1>TERMS AND CONDITIONS</h1>
             <p>
-              Welcome to Trek Yatra! These Terms and Conditions govern your use
+              Welcome to Trekkfy! These Terms and Conditions govern your use
               of our website and services. By accessing or using our platform,
               you agree to comply with and be bound by these terms.
             </p>

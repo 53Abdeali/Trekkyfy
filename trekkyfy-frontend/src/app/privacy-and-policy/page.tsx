@@ -87,7 +87,7 @@ export default function Privacy() {
           <div className="tc-heads">
             <h1>PRIVACY AND POLICY</h1>
             <p>
-              Trek Yatra values your privacy and is committed to protecting your
+              Trekkfy values your privacy and is committed to protecting your
               personal data. This policy outlines how we collect, use, and
               safeguard your information when you use our website and services.
             </p>
