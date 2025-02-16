@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import {jwtDecode} from "jwt-decode";
 import GuideSearch, { FilterCriteria } from "./guideSearch";
 import GuideCard from "./guideCard";
+import axiosInstance from "@/utils/axiosConfig";
 
 interface Guide {
   id: string;
@@ -66,12 +67,9 @@ const GuideProfile: React.FC = () => {
         if (filters.state) params.append("state", filters.state);
         if (filters.city) params.append("city", filters.city);
 
-        const res = await fetch(
-          `https://trekkyfy.onrender.com/api/guide?${params.toString()}`
-        );
-        const data = await res.json();
-        console.log("API Response:", data);
-        const guidesData = data.guides ? data.guides : [data];
+        const res = await axiosInstance.get(`/guide?${params.toString()}`);
+        console.log("API Response:", res.data);
+        const guidesData = res.data.guides ? res.data.guides : [res.data];
         setGuides(guidesData);
       } catch (error) {
         console.error("Error fetching guides:", error);
