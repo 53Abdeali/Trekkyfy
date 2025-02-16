@@ -18,8 +18,8 @@ export default function GuideHero() {
             At Trekkyfy, we believe that the perfect adventure begins with the
             perfect guide. Our mission is to connect you with expert guides who
             are passionate about sharing their local knowledge, hidden gems, and
-            unforgettable experiences. Whether you're exploring new terrains or
-            seeking a unique perspective on well-trodden paths, we're committed
+            unforgettable experiences. Whether you&apos;re exploring new terrains or
+            seeking a unique perspective on well-trodden paths, we&apos;re committed
             to providing you with the best guide tailored to your adventure. Let
             us help you unlock the beauty of your journey with a guide you can
             trust.

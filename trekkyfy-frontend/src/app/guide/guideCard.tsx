@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -63,7 +64,7 @@ const GuideCard: React.FC<GuideCardProps> = ({ guide }) => {
         borderRadius: "8px",
       }}
     >
-      <img
+      <Image
         src={guide.guide_photo || "/placeholder.jpg"}
         alt={`${guide.username}'s profile`}
         style={{
