@@ -77,3 +77,42 @@ def get_guide_profile():
             "last_seen": user.last_seen if user else None,
         }
     )
+
+# GET ALL GUIDES FOR HIKERS
+@guide_bp.route("/guides-profile", methods=["GET"])
+def get_all_guides():
+    state = request.args.get("state")
+    city = request.args.get("city")
+
+    query = GuideDetails.query
+
+    if state:
+        query = query.filter_by(guide_state=state)
+    if city:
+        query = query.filter_by(guide_city=city)
+
+    guides = query.all()
+
+    if not guides:
+        return jsonify({"message": "No guides found."}), 404
+
+    guides_list = [
+        {
+            "id": guide.guide_id,
+            "guide_city": guide.guide_city,
+            "guide_district": guide.guide_district,
+            "guide_state": guide.guide_state,
+            "guide_phone": guide.guide_phone,
+            "guide_whatsapp": guide.guide_whatsapp,
+            "guide_experience": guide.guide_experience,
+            "guide_languages": guide.guide_languages,
+            "guide_speciality": guide.guide_speciality,
+            "guide_photo": guide.guide_photo,
+            "username": guide.user.username if guide.user else None,
+            "email": guide.user.email if guide.user else None,
+            "last_seen": guide.user.last_seen if guide.user else None,
+        }
+        for guide in guides
+    ]
+
+    return jsonify({"guides": guides_list}), 200
