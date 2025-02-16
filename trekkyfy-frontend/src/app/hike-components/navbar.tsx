@@ -7,6 +7,11 @@ import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
 import toast from "react-hot-toast";
 import { usePathname } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+
+interface DecodedToken {
+  role: "guide" | "hiker";
+}
 
 export default function Navbar() {
   const [showNavElement, setShowNavElement] = useState(false);
@@ -14,6 +19,7 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState(pathname || "/");
   const [showProfileDown, setShowProfileDown] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<"guide" | "hiker" | null>(null);
 
   const profileRef = useRef<HTMLLIElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
@@ -24,7 +30,14 @@ export default function Navbar() {
 
   useEffect(() => {
     const token = Cookies.get("access_token");
+    if (!token) return;
     setIsAuthenticated(!!token);
+    try {
+      const decoded = jwtDecode<DecodedToken>(token);
+      setUserRole(decoded.role);
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
   }, []);
 
   useEffect(() => {
@@ -125,7 +138,10 @@ export default function Navbar() {
         </>
       ) : (
         <>
-          <div ref={navRef} className={showNavElement ? "mob-nav-opt" : "nav-opt nav-auth"}>
+          <div
+            ref={navRef}
+            className={showNavElement ? "mob-nav-opt" : "nav-opt nav-auth"}
+          >
             <ul className="nav-ul">
               <li>
                 <Link
@@ -137,16 +153,29 @@ export default function Navbar() {
                   Home
                 </Link>
               </li>
-              <li>
-                <Link
-                  className={`nav-opt-link ${
-                    activeLink === "/guide" ? "active" : ""
-                  }`}
-                  href="/guide"
-                >
-                  Guides
-                </Link>
-              </li>
+              {userRole === "guide" ? (
+                <li>
+                  <Link
+                    className={`nav-opt-link ${
+                      activeLink === "/hikers" ? "active" : ""
+                    }`}
+                    href="/hikers"
+                  >
+                    Hikers
+                  </Link>
+                </li>
+              ) : (
+                <li>
+                  <Link
+                    className={`nav-opt-link ${
+                      activeLink === "/guide" ? "active" : ""
+                    }`}
+                    href="/guide"
+                  >
+                    Guides
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link
                   className={`nav-opt-link ${

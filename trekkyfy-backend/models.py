@@ -10,6 +10,7 @@ class User(db.Model):
     role = db.Column(db.String(20), nullable=False, default="hiker")
     guide_id = db.Column(db.String(10), index=True, nullable=True, unique=True)
     registered_on = db.Column(db.DateTime, default=datetime.utcnow())
+    last_seen = db.Column(db.String(50), nullable=True)
 
     def __repr__(self):
         return f"<User {self.email}, Role {self.role}>"
@@ -74,6 +75,6 @@ class GuideDetails(db.Model):
     guide_photo = db.Column(db.String(255))
 
     user = db.relationship("User", backref="guide_details", uselist=False)
+
     def __repr__(self):
         return f"<Guide_Details {self.guide_id}, City {self.guide_city}>"
-    

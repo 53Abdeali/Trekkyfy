@@ -1,12 +1,15 @@
-from flask import Flask, jsonify  # type: ignore
+from flask import Flask, jsonify, request  # type: ignore
 from flask_cors import CORS
 from extensions import db, jwt, bcrypt, mail  # type: ignore
-from datetime import timedelta
+from datetime import datetime, timedelta
 import os
 from routes import register_blueprints
 import cloudinary  # type: ignore
 import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
+from flask_socketio import SocketIO, emit
+import eventlet
+from models import db, User
 
 
 # Cloudinary Configuration
@@ -48,6 +51,10 @@ app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USERNAME"] = "aliabdealifakhri53@gmail.com"
 app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
 
+# Enabling web socket using SocketIO
+socketio = SocketIO(app, cors_allowed_origins="*")
+online_users = {}
+
 db.init_app(app)
 bcrypt.init_app(app)
 jwt.init_app(app)
@@ -60,6 +67,29 @@ with app.app_context():
 register_blueprints(app)
 
 
+@socketio.on("connect")
+def handle_connect():
+    user_id = request.args.get("user_id")
+    if user_id:
+        online_users[user_id] = "online"
+        update_last_seen(user_id, "online")
+        emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
+
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    user_id = request.args.get("user_id")
+    if user_id:
+        online_users.pop(user_id, None)
+        update_last_seen(user_id, datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
+
+
+def update_last_seen(user_id, status):
+    user = User.query.filter_by(id=user_id).first()
+    if user:
+        user.last_seen = status if status == "online" else datetime.utcnow()
+
+
 # API Health Check
 @app.route("/")
 def home():
@@ -67,4 +97,6 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # port = int(os.environ.get("PORT", 10000))
+    # socketio.run(app, host="0.0.0.0", port=port)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
