@@ -26,7 +26,7 @@ interface Guide {
 }
 
 interface Hiker {
-  id: string;
+  hiker_id: string;
   username: string;
 }
 
@@ -44,7 +44,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       toast.error("You must be logged in to send a chat request.");
       return;
     }
-    socket.emit("chat_request", { guide_id: guide.guide_id, hiker });
+    socket.emit("chat_request", { guide_id: guide.guide_id, hiker:hiker.hiker_id });
     toast.success("Chat Request Sent!");
   };
 

@@ -24,7 +24,7 @@ interface Guide {
 }
 
 interface Hiker {
-  id: string;
+  hiker_id: string;
   username: string;
 }
 
