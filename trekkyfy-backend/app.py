@@ -1,5 +1,4 @@
 import eventlet
-
 eventlet.monkey_patch()
 
 from flask import Flask, jsonify, request  # type: ignore
@@ -26,9 +25,7 @@ cloudinary.config(
 app = Flask(__name__)
 CORS(
     app,
-    resources={
-        r"/*": {"origins": ["https://trekkyfy.vercel.app", "http://localhost:3000"]}
-    },
+    resources={r"/*": {"origins": ["https://trekkyfy.vercel.app", "http://localhost:3000"]}},
     supports_credentials=True,
 )
 
@@ -83,7 +80,7 @@ def handle_connect(sid):
 
     if user_id and user_type:
         online_users[user_id] = "online"
-        eventlet.spawn(update_last_seen(user_id, "online"))
+        eventlet.spawn_n(update_last_seen, user_id, "online")
         if user_type == "guide":
             join_room(user_id)
             print(f"Guide {user_id} joined room {user_id}")
@@ -100,7 +97,7 @@ def handle_disconnect():
     if user_id:
         online_users.pop(user_id, None)
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        eventlet.spawn(update_last_seen(user_id, current_time))
+        eventlet.spawn_n(update_last_seen, user_id, current_time)
         print(f"User {user_id} disconnected; last_seen updated.")
     else:
         print("No user_id provided on disconnect.")
@@ -123,7 +120,7 @@ def handle_chat_request(data):
         return
 
     try:
-        eventlet.spawn(process_chat_request, hiker_id, guide_id)
+        eventlet.spawn_n(process_chat_request, hiker_id, guide_id)
     except Exception as e:
         print(f"🚨 Error handling chat_request: {e}")
         socketio.emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
@@ -167,7 +164,7 @@ def handle_chat_response(data):
         print("🚨 Missing guide_id or hiker_id in chat_response")
         return
 
-    eventlet.spawn(process_chat_response, guide_id, hiker_id, accepted)
+    eventlet.spawn_n(process_chat_response, guide_id, hiker_id, accepted)
 
 
 def process_chat_response(guide_id, hiker_id, accepted):
@@ -222,7 +219,7 @@ def handle_heartbeat(data):
 
 
 def update_last_seen(user_id, status):
-    eventlet.spawn(process_update_last_seen, user_id, status)
+    eventlet.spawn_n(process_update_last_seen, user_id, status)
 
 
 def process_update_last_seen(user_id, status):
