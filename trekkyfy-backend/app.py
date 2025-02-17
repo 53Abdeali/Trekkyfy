@@ -82,7 +82,9 @@ def handle_connect():
     if user_id and user_type:
         online_users[user_id] = "online"
         update_last_seen(user_id, "online")
-        join_room("user_id")
+        if user_type == "guide":
+            join_room(user_id)
+            print(f"Guide {user_id} joined room {user_id}")
         emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
         print(f"{user_type.capitalize()} {user_id} connected via websocket.")
     else:
@@ -92,7 +94,7 @@ def handle_connect():
 @socketio.on("disconnect")
 def handle_disconnect():
     user_id = request.args.get("user_id")
-    
+
     if user_id:
         online_users.pop(user_id, None)
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -101,12 +103,14 @@ def handle_disconnect():
     else:
         print("No user_id provided on disconnect.")
 
+
 @socketio.on("send_chat_request")
 def handle_chat_request(data):
     hiker_id = data.get("hiker_id")
     guide_id = data.get("guide_id")
 
     if not hiker_id or not guide_id:
+        print("Missing guide_id or hiker data")
         return
 
     chat_requests[hiker_id] = guide_id  # Store pending request
@@ -116,7 +120,8 @@ def handle_chat_request(data):
         print(f"Hiker {hiker_id} sent chat request to Guide {guide_id}")
     else:
         print(f"Guide {guide_id} is not online, request pending.")
-    
+
+
 @socketio.on("respond_chat_request")
 def handle_chat_response(data):
     guide_id = data.get("guide_id")
@@ -127,10 +132,10 @@ def handle_chat_response(data):
         return
 
     if accepted:
-        emit("chat_response", {"guide_id": guide_id}, room=hiker_id)
+        emit("chat_response", {"guide_id": guide_id, "accepted": True}, room=hiker_id)
         print(f"Guide {guide_id} accepted chat request from Hiker {hiker_id}")
     else:
-        emit("chat_response", {"guide_id": guide_id}, room=hiker_id)
+        emit("chat_response", {"guide_id": guide_id, "accepted": False}, room=hiker_id)
         print(f"Guide {guide_id} rejected chat request from Hiker {hiker_id}")
 
     # Remove request from pending list
@@ -140,7 +145,7 @@ def handle_chat_response(data):
 @socketio.on("heartbeat")
 def handle_heartbeat(data):
     user_id = data.get("user_id")
-    
+
     if user_id:
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         update_last_seen(user_id, current_time)
@@ -150,8 +155,10 @@ def handle_heartbeat(data):
 
 
 def update_last_seen(user_id, status):
-    user = User.query.filter((User.guide_id == user_id) | (User.hiker_id == user_id)).first()
-    
+    user = User.query.filter(
+        (User.guide_id == user_id) | (User.hiker_id == user_id)
+    ).first()
+
     if user:
         user.last_seen = status
         try:
