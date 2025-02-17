@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 interface Guide {
   id: string;
-  guide_id:string;
+  guide_id: string;
   guide_city: string;
   guide_district: string;
   guide_state: string;
@@ -37,6 +37,8 @@ interface GuideModalProps {
 }
 
 const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
+  const [chatAccepted, setChatAccepted] = useState(false);
+
   const handleRequestChat = () => {
     if (!hiker) {
       toast.error("You must be logged in to send a chat request.");
@@ -45,6 +47,22 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
     socket.emit("chat_request", { guide_id: guide.guide_id, hiker });
     toast.success("Chat Request Sent!");
   };
+
+  useEffect(() => {
+    socket.on("chat_response", (data) => {
+      if (data.accepted && data.guide_id === guide.guide_id) {
+        toast.success("Chat accepted! You can now chat on WhatsApp.");
+        setChatAccepted(true);
+      } else if (data.accepted === false && data.guide_id === guide.guide_id) {
+        toast.error("Chat request rejected.");
+      }
+    });
+
+    return () => {
+      socket.off("chat_response");
+    };
+  }, [guide.guide_id]);
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -93,6 +111,20 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
                 Request Chat
               </span>
             </div>
+            {chatAccepted && (
+              <div className="whatsapp-link">
+                <p>
+                  <strong>Chat with Guide on WhatsApp:</strong>{" "}
+                  <a
+                    href={`https://wa.me/${guide.guide_whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Click here to chat
+                  </a>
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Vertical Divider */}

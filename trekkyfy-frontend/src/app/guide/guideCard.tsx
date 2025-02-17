@@ -34,6 +34,47 @@ const GuideCard: React.FC<{ guide: Guide; hiker: Hiker | null }> = ({
 }) => {
   const [isOnline, setIsOnline] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    socketRef.current = io("https://trekkyfy.onrender.com", {
+      transports: ["websocket"],
+    });
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket.io server");
+      socketRef.current?.emit("subscribe", { guide_id: guide.id });
+    });
+
+    socketRef.current.on("connect_error", (error) => {
+      console.error("Connection error:", error);
+    });
+
+    socketRef.current.on("connect_timeout", () => {
+      console.error("Connection timeout");
+    });
+
+    socketRef.current.on("error", (error) => {
+      console.error("General error:", error);
+    });
+
+    socketRef.current.on(
+      "statusUpdate",
+      (data: { guide_id: string; status: string }) => {
+        if (data.guide_id === guide.id) {
+          setIsOnline(data.status === "online");
+        }
+      }
+    );
+
+    socketRef.current.on("disconnect", () => {
+      console.log("Disconnected from socket.io server");
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, [guide.id]);
 
   useEffect(() => {
     if (showModal) {

@@ -12,7 +12,7 @@ import cloudinary  # type: ignore
 import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
 from flask_socketio import SocketIO, emit, join_room
-from models import db, User
+from models import db, User, ChatRequests
 
 
 # Cloudinary Configuration
@@ -113,7 +113,9 @@ def handle_chat_request(data):
         print("Missing guide_id or hiker data")
         return
 
-    chat_requests[hiker_id] = guide_id  # Store pending request
+    new_request = ChatRequests(hiker_id=hiker_id, guide_id=guide_id)
+    db.session.add(new_request)
+    db.session.commit()
 
     if guide_id in online_users:
         emit("chat_request", {"hiker_id": hiker_id}, room=guide_id)
@@ -131,15 +133,31 @@ def handle_chat_response(data):
     if not guide_id or not hiker_id:
         return
 
-    if accepted:
-        emit("chat_response", {"guide_id": guide_id, "accepted": True}, room=hiker_id)
-        print(f"Guide {guide_id} accepted chat request from Hiker {hiker_id}")
-    else:
-        emit("chat_response", {"guide_id": guide_id, "accepted": False}, room=hiker_id)
-        print(f"Guide {guide_id} rejected chat request from Hiker {hiker_id}")
+    request = ChatRequests.query.filter_by(
+        hiker_id=hiker_id, guide_id=guide_id, status="pending"
+    ).first()
+    if request:
+        request.status = "accepted" if accepted else "rejected"
+        db.session.commit()
 
-    # Remove request from pending list
-    chat_requests.pop(hiker_id, None)
+        # Notify the hiker
+        emit(
+            "chat_response", {"guide_id": guide_id, "accepted": accepted}, room=hiker_id
+        )
+
+        # If accepted, send WhatsApp link to hiker
+        if accepted:
+            guide = User.query.filter_by(guide_id=guide_id).first()
+            if guide and guide.guide_whatsapp:
+                whatsapp_url = f"wa.me/{guide.guide_whatsapp}"
+                emit("whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id)
+                print(
+                    f"Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
+                )
+        else:
+            print(f"Guide {guide_id} rejected chat request from Hiker {hiker_id}")
+    else:
+        print("Chat request not found or already processed.")
 
 
 @socketio.on("heartbeat")
