@@ -113,15 +113,18 @@ def handle_chat_request(data):
         print("Missing guide_id or hiker data")
         return
 
-    new_request = ChatRequests(hiker_id=hiker_id, guide_id=guide_id)
-    db.session.add(new_request)
-    db.session.commit()
+    try:
+        new_request = ChatRequests(hiker_id=hiker_id, guide_id=guide_id)
+        db.session.add(new_request)
+        db.session.commit()
 
-    if guide_id in online_users:
-        emit("chat_request", {"hiker_id": hiker_id}, room=guide_id)
-        print(f"Hiker {hiker_id} sent chat request to Guide {guide_id}")
-    else:
-        print(f"Guide {guide_id} is not online, request pending.")
+        if guide_id in online_users:
+            emit("chat_request", {"hiker_id": hiker_id}, room=guide_id)
+            print(f"Hiker {hiker_id} sent chat request to Guide {guide_id}")
+        else:
+            print(f"Guide {guide_id} is not online, request pending.")
+    except Exception as e:
+        print(f"Error handling chat_request: {e}")
 
 
 @socketio.on("chat_response")
