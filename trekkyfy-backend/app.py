@@ -118,6 +118,7 @@ def handle_chat_request(data):
             "chat_request",
             {"status": "error", "error": "Invalid request"},
             room=hiker_id,
+            namespace="/"
         )
         return
 
