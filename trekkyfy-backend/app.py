@@ -11,7 +11,7 @@ from routes import register_blueprints
 import cloudinary  # type: ignore
 import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room
 from models import db, User
 
 
@@ -82,6 +82,7 @@ def handle_connect():
     if user_id and user_type:
         online_users[user_id] = "online"
         update_last_seen(user_id, "online")
+        join_room("user_id")
         emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
         print(f"{user_type.capitalize()} {user_id} connected via websocket.")
     else:
@@ -110,8 +111,11 @@ def handle_chat_request(data):
 
     chat_requests[hiker_id] = guide_id  # Store pending request
 
-    emit("chat_request", {"hiker_id": hiker_id}, room=guide_id)
-    print(f"Hiker {hiker_id} sent chat request to Guide {guide_id}")
+    if guide_id in online_users:
+        emit("chat_request", {"hiker_id": hiker_id}, room=guide_id)
+        print(f"Hiker {hiker_id} sent chat request to Guide {guide_id}")
+    else:
+        print(f"Guide {guide_id} is not online, request pending.")
     
 @socketio.on("respond_chat_request")
 def handle_chat_response(data):
