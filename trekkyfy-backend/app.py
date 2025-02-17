@@ -56,7 +56,9 @@ app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
 
 # Enabling web socket using SocketIO
 socketio = SocketIO(
-    app, async_mode="eventlet", cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000"]
+    app,
+    async_mode="eventlet",
+    cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000"],
 )
 
 online_users = {}
@@ -104,6 +106,9 @@ def handle_disconnect():
         print("No user_id provided on disconnect.")
 
 
+from flask import copy_current_request_context
+
+
 @socketio.on("chat_request")
 def handle_chat_request(data):
     hiker_id = data.get("hiker_id")
@@ -119,30 +124,48 @@ def handle_chat_request(data):
         )
         return
 
-    try:
-        new_request = ChatRequests(
-            hiker_id=hiker_id, guide_id=guide_id, status="pending"
-        )
-        db.session.add(new_request)
-        db.session.commit()
+    @copy_current_request_context  # Ensures the function has the request context
+    def process_chat_request():
+        try:
+            # Check if request already exists
+            existing_request = ChatRequests.query.filter_by(
+                hiker_id=hiker_id, guide_id=guide_id, status="pending"
+            ).first()
+            if existing_request:
+                print(
+                    f"⚠️ Duplicate chat request from {hiker_id} to {guide_id} ignored."
+                )
+                return emit(
+                    "chat_request_response",
+                    {"status": "error", "error": "Request already sent"},
+                    room=hiker_id,
+                )
 
-        if guide_id in online_users:
-            emit(
-                "chat_request",
-                {"hiker_id": hiker_id, "guide_id": guide_id},
-                room=guide_id,
+            new_request = ChatRequests(
+                hiker_id=hiker_id, guide_id=guide_id, status="pending"
             )
-            print(f"📩 Hiker {hiker_id} sent chat request to Guide {guide_id}")
-        else:
-            print(f"❌ Guide {guide_id} is not online, request pending.")
+            db.session.add(new_request)
+            db.session.commit()
 
-        emit("chat_request_response", {"status": "success"}, room=hiker_id)
+            if guide_id in online_users:
+                emit(
+                    "chat_request",
+                    {"hiker_id": hiker_id, "guide_id": guide_id},
+                    room=guide_id,
+                )
+                print(f"📩 Hiker {hiker_id} sent chat request to Guide {guide_id}")
+            else:
+                print(f"❌ Guide {guide_id} is not online, request pending.")
 
-    except Exception as e:
-        print(f"🚨 Error handling chat_request: {e}")
-        emit(
-            "chat_request", {"status": "error", "error": str(e)}, room=hiker_id
-        )
+            emit("chat_request_response", {"status": "success"}, room=hiker_id)
+
+        except Exception as e:
+            db.session.rollback()  # Rollback in case of error
+            print(f"🚨 Error handling chat_request: {e}")
+            emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
+
+    # Run the database task in a separate thread
+    socketio.start_background_task(target=process_chat_request)
 
 
 @socketio.on("chat_response")
