@@ -84,12 +84,12 @@ export default function Navbar() {
   // For guides: Listen for incoming chat requests via Socket.IO
   useEffect(() => {
     if (userRole === "guide") {
-      socket.on("incoming_chat_request", (request: ChatRequest) => {
+      socket.on("send_chat_request", (request: ChatRequest) => {
         setChatRequests((prev) => [...prev, request]);
       });
     }
     return () => {
-      socket.off("incoming_chat_request");
+      socket.off("send_chat_request");
     };
   }, [userRole]);
 
@@ -97,7 +97,7 @@ export default function Navbar() {
   useEffect(() => {
     if (userRole === "hiker") {
       socket.on(
-        "chat_response",
+        "respond_chat_request",
         (data: { accepted: boolean; guideWhatsApp?: string; hikerId?: string; message?: string }) => {
           // Ensure the response is meant for the current hiker
           if (data.hikerId && data.hikerId !== currentHikerId) return;
@@ -106,7 +106,7 @@ export default function Navbar() {
       );
     }
     return () => {
-      socket.off("chat_response");
+      socket.off("respond_chat_request");
     };
   }, [userRole, currentHikerId]);
 
@@ -116,7 +116,7 @@ export default function Navbar() {
       const response = await axiosInstance.get("/guide");
       if (response.status === 200) {
         const guideWhatsAppNumber = response.data.guide_whatsapp;
-        socket.emit("chat_response", {
+        socket.emit("respond_chat_request", {
           hikerId: request.hikerId,
           accepted: true,
           guideWhatsApp: guideWhatsAppNumber,
@@ -131,7 +131,7 @@ export default function Navbar() {
   };
 
   const handleReject = (request: ChatRequest) => {
-    socket.emit("chat_response", {
+    socket.emit("respond_chat_request", {
       hikerId: request.hikerId,
       accepted: false,
     });
