@@ -53,6 +53,11 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       "chat_request",
       { guide_id: guide.guide_id, hiker_id: hiker.hiker_id },
       (response: ChatRequestResponse) => {
+        if (!response) {
+          console.error("No response received from server");
+          return;
+        }
+
         if (response.status === "success") {
           toast.success("Chat Request Sent!");
         } else {
