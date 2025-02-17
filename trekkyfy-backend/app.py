@@ -87,7 +87,7 @@ def handle_connect():
         if user_type == "guide":
             join_room(user_id)
             print(f"Guide {user_id} joined room {user_id}")
-        emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
+        socketio.emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
         print(f"{user_type.capitalize()} {user_id} connected via websocket.")
     else:
         print("No user_id or user_type provided on connect.")
@@ -114,7 +114,7 @@ def handle_chat_request(data):
 
     if not hiker_id or not guide_id or user_type != "hiker":
         print("🚨 Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
-        emit(
+        socketio.emit(
             "chat_request",
             {"status": "error", "error": "Invalid request"},
             room=hiker_id,
@@ -126,7 +126,7 @@ def handle_chat_request(data):
         eventlet.spawn(process_chat_request, hiker_id, guide_id)
     except Exception as e:
         print(f"🚨 Error handling chat_request: {e}")
-        emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
+        socketio.emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
 
 
 def process_chat_request(hiker_id, guide_id):
@@ -140,7 +140,7 @@ def process_chat_request(hiker_id, guide_id):
                 db.session.commit()
 
                 if guide_id in online_users:
-                    emit(
+                    socketio.emit(
                         "chat_request",
                         {"hiker_id": hiker_id, "guide_id": guide_id},
                         room=guide_id,
@@ -149,12 +149,12 @@ def process_chat_request(hiker_id, guide_id):
                 else:
                     print(f"❌ Guide {guide_id} is not online, request pending.")
 
-                emit("chat_request_response", {"status": "success"}, room=hiker_id)
+                socketio.emit("chat_request_response", {"status": "success"}, room=hiker_id)
 
             except Exception as e:
                 db.session.rollback()
                 print(f"🚨 Error processing chat request: {e}")
-                emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
+                socketio.emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
 
 
 @socketio.on("chat_response")
@@ -181,7 +181,7 @@ def process_chat_response(guide_id, hiker_id, accepted):
             db.session.commit()  # Commit the status change asynchronously
 
             # Notify the hiker
-            emit(
+            socketio.emit(
                 "chat_response",
                 {"guide_id": guide_id, "accepted": accepted},
                 room=hiker_id,
@@ -191,7 +191,7 @@ def process_chat_response(guide_id, hiker_id, accepted):
                 guide = User.query.filter_by(guide_id=guide_id).first()
                 if guide and guide.guide_whatsapp:
                     whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
-                    emit("whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id)
+                    socketio.emit("whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id)
                     print(
                         f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
                     )
