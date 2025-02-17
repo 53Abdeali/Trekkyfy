@@ -56,7 +56,9 @@ app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
 
 # Enabling web socket using SocketIO
 socketio = SocketIO(
-    app, async_mode="eventlet", cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000"]
+    app,
+    async_mode="eventlet",
+    cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000"],
 )
 
 online_users = {}
@@ -81,7 +83,7 @@ def handle_connect():
 
     if user_id and user_type:
         online_users[user_id] = "online"
-        update_last_seen(user_id, "online")
+        eventlet.spawn(update_last_seen(user_id, "online"))
         if user_type == "guide":
             join_room(user_id)
             print(f"Guide {user_id} joined room {user_id}")
@@ -98,7 +100,7 @@ def handle_disconnect():
     if user_id:
         online_users.pop(user_id, None)
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        update_last_seen(user_id, current_time)
+        eventlet.spawn(update_last_seen(user_id, current_time))
         print(f"User {user_id} disconnected; last_seen updated.")
     else:
         print("No user_id provided on disconnect.")
@@ -106,9 +108,6 @@ def handle_disconnect():
 
 @socketio.on("chat_request")
 def handle_chat_request(data):
-    eventlet.spawn(process_chat_request, data)
-
-def process_chat_request(data):
     hiker_id = data.get("hiker_id")
     guide_id = data.get("guide_id")
     user_type = data.get("user_type")
@@ -122,6 +121,14 @@ def process_chat_request(data):
         )
         return
 
+    try:
+        eventlet.spawn(process_chat_request, hiker_id, guide_id)
+    except Exception as e:
+        print(f"🚨 Error handling chat_request: {e}")
+        emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
+
+
+def process_chat_request(hiker_id, guide_id):
     try:
         new_request = ChatRequests(
             hiker_id=hiker_id, guide_id=guide_id, status="pending"
@@ -142,10 +149,9 @@ def process_chat_request(data):
         emit("chat_request_response", {"status": "success"}, room=hiker_id)
 
     except Exception as e:
-        print(f"🚨 Error handling chat_request: {e}")
-        emit(
-            "chat_request", {"status": "error", "error": str(e)}, room=hiker_id
-        )
+        db.session.rollback()
+        print(f"🚨 Error processing chat request: {e}")
+        emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
 
 
 @socketio.on("chat_response")
@@ -158,34 +164,46 @@ def handle_chat_response(data):
         print("🚨 Missing guide_id or hiker_id in chat_response")
         return
 
-    request = ChatRequests.query.filter_by(
-        hiker_id=hiker_id, guide_id=guide_id, status="pending"
-    ).first()
-    if request:
-        request.status = "accepted" if accepted else "rejected"
-        db.session.commit()
+    eventlet.spawn(process_chat_response, guide_id, hiker_id, accepted)
 
-        # Notify the hiker
-        emit(
-            "chat_response", {"guide_id": guide_id, "accepted": accepted}, room=hiker_id
-        )
 
-        if accepted:
-            guide = User.query.filter_by(guide_id=guide_id).first()
-            if guide and guide.guide_whatsapp:
-                whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
-                emit("whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id)
-                print(
-                    f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
-                )
+def process_chat_response(guide_id, hiker_id, accepted):
+    try:
+        request = ChatRequests.query.filter_by(
+            hiker_id=hiker_id, guide_id=guide_id, status="pending"
+        ).first()
+
+        if request:
+            request.status = "accepted" if accepted else "rejected"
+            db.session.commit()  # Commit the status change asynchronously
+
+            # Notify the hiker
+            emit(
+                "chat_response",
+                {"guide_id": guide_id, "accepted": accepted},
+                room=hiker_id,
+            )
+
+            if accepted:
+                guide = User.query.filter_by(guide_id=guide_id).first()
+                if guide and guide.guide_whatsapp:
+                    whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
+                    emit("whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id)
+                    print(
+                        f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
+                    )
+                else:
+                    print(
+                        f"⚠️ Guide {guide_id} accepted chat request but has no WhatsApp number."
+                    )
             else:
                 print(
-                    f"⚠️ Guide {guide_id} accepted chat request but has no WhatsApp number."
+                    f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}"
                 )
         else:
-            print(f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}")
-    else:
-        print("❌ Chat request not found or already processed.")
+            print("❌ Chat request not found or already processed.")
+    except Exception as e:
+        print(f"🚨 Error in handling chat response: {e}")
 
 
 @socketio.on("heartbeat")
@@ -201,20 +219,27 @@ def handle_heartbeat(data):
 
 
 def update_last_seen(user_id, status):
-    user = User.query.filter(
-        (User.guide_id == user_id) | (User.hiker_id == user_id)
-    ).first()
+    eventlet.spawn(process_update_last_seen, user_id, status)
 
-    if user:
-        user.last_seen = status
-        try:
-            db.session.commit()
-            print(f"Updated last_seen for user {user_id}: {user.last_seen}")
-        except Exception as e:
-            db.session.rollback()
-            print(f"Error updating last_seen for user {user_id}: {e}")
-    else:
-        print(f"User {user_id} not found.")
+
+def process_update_last_seen(user_id, status):
+    try:
+        user = User.query.filter(
+            (User.guide_id == user_id) | (User.hiker_id == user_id)
+        ).first()
+
+        if user:
+            user.last_seen = status
+            try:
+                db.session.commit()
+                print(f"Updated last_seen for user {user_id}: {user.last_seen}")
+            except Exception as e:
+                db.session.rollback()
+                print(f"Error updating last_seen for user {user_id}: {e}")
+        else:
+            print(f"User {user_id} not found.")
+    except Exception as e:
+        print(f"Error in updating last_seen: {e}")
 
 
 # API Health Check
