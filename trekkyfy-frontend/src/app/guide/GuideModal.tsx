@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
@@ -41,34 +41,53 @@ interface GuideModalProps {
   onClose: () => void;
 }
 
+interface DataDetails{
+  guide_id:string;
+  hiker_id:string;
+  accepted:boolean;
+}
+
 const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   const [chatAccepted, setChatAccepted] = useState(false);
+  const socketRef = useRef<any>(null); // Use useRef to manage the socket connection
 
   const handleRequestChat = () => {
     if (!hiker) {
       toast.error("You must be logged in to send a chat request.");
       return;
     }
-    socket.emit(
-      "chat_request",
-      { guide_id: guide.guide_id, hiker_id: hiker.hiker_id },
-      (response: ChatRequestResponse) => {
-        if (!response) {
-          console.error("No response received from server");
-          return;
-        }
+    if (socketRef.current) {
+      socketRef.current.emit(
+        "chat_request",
+        { guide_id: guide.guide_id, hiker_id: hiker.hiker_id },
+        (response: ChatRequestResponse) => {
+          if (!response) {
+            console.error("No response received from server");
+            return;
+          }
 
-        if (response.status === "success") {
-          toast.success("Chat Request Sent!");
-        } else {
-          console.error("Failed to send chat request:", response.error);
+          if (response.status === "success") {
+            toast.success("Chat Request Sent!");
+          } else {
+            console.error("Failed to send chat request:", response.error);
+          }
         }
-      }
-    );
+      );
+    }
   };
 
   useEffect(() => {
-    socket.on("chat_response", (data) => {
+    // Initialize socket connection only once
+    if (!socketRef.current) {
+      socketRef.current = socket;
+      socketRef.current.on("connect", () => {
+        console.log(`Guide connected (ID: ${guide.guide_id})`);
+        socketRef.current?.emit("guide_online", { guide_id: guide.guide_id });
+      });
+    }
+
+    // Listen for chat response
+    socketRef.current?.on("chat_response", (data:DataDetails) => {
       if (data.accepted && data.guide_id === guide.guide_id) {
         toast.success("Chat accepted! You can now chat on WhatsApp.");
         setChatAccepted(true);
@@ -78,7 +97,8 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
     });
 
     return () => {
-      socket.off("chat_response");
+      // Clean up when the modal is closed
+      socketRef.current?.off("chat_response");
     };
   }, [guide.guide_id]);
 
