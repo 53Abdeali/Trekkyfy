@@ -77,7 +77,7 @@ register_blueprints(app)
 
 
 @socketio.on("connect")
-def handle_connect():
+def handle_connect(sid):
     user_id = request.args.get("user_id")
     user_type = request.args.get("user_type")  # "guide" or "hiker"
 
@@ -87,7 +87,7 @@ def handle_connect():
         if user_type == "guide":
             join_room(user_id)
             print(f"Guide {user_id} joined room {user_id}")
-        socketio.emit("update_status", {"user_id": user_id, "status": "online"}, broadcast=True)
+        socketio.emit("update_status", {"user_id": user_id, "status": "online"}, to=user_id)
         print(f"{user_type.capitalize()} {user_id} connected via websocket.")
     else:
         print("No user_id or user_type provided on connect.")
