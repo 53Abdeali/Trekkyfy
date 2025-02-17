@@ -8,6 +8,11 @@ import "@/app/stylesheet/guidemodal.css";
 import socket from "@/app/socket";
 import toast from "react-hot-toast";
 
+interface ChatRequestResponse {
+  status: "success" | "error";
+  error?: string;
+}
+
 interface Guide {
   id: string;
   guide_id: string;
@@ -44,8 +49,17 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       toast.error("You must be logged in to send a chat request.");
       return;
     }
-    socket.emit("chat_request", { guide_id: guide.guide_id, hiker:hiker.hiker_id });
-    toast.success("Chat Request Sent!");
+    socket.emit(
+      "chat_request",
+      { guide_id: guide.guide_id, hiker_id: hiker.hiker_id },
+      (response: ChatRequestResponse) => {
+        if (response.status === "success") {
+          toast.success("Chat Request Sent!");
+        } else {
+          console.error("Failed to send chat request:", response.error);
+        }
+      }
+    );
   };
 
   useEffect(() => {
