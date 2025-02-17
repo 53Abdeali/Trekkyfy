@@ -104,7 +104,7 @@ def handle_disconnect():
         print("No user_id provided on disconnect.")
 
 
-@socketio.on("send_chat_request")
+@socketio.on("chat_request")
 def handle_chat_request(data):
     hiker_id = data.get("hiker_id")
     guide_id = data.get("guide_id")
@@ -122,7 +122,7 @@ def handle_chat_request(data):
         print(f"Guide {guide_id} is not online, request pending.")
 
 
-@socketio.on("respond_chat_request")
+@socketio.on("chat_response")
 def handle_chat_response(data):
     guide_id = data.get("guide_id")
     hiker_id = data.get("hiker_id")
