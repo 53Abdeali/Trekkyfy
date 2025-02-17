@@ -8,6 +8,7 @@ import "@/app/stylesheet/guideCard.css";
 
 interface Guide {
   id: string;
+  guide_id:string;
   guide_city: string;
   guide_district: string;
   guide_state: string;

@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 
 interface Guide {
   id: string;
+  guide_id:string;
   guide_city: string;
   guide_district: string;
   guide_state: string;
@@ -41,7 +42,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       toast.error("You must be logged in to send a chat request.");
       return;
     }
-    socket.emit("chat_request", { guide_id: guide.id, hiker });
+    socket.emit("chat_request", { guide_id: guide.guide_id, hiker });
     toast.success("Chat Request Sent!");
   };
   return (
