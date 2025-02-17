@@ -113,7 +113,7 @@ def handle_chat_request(data):
     if not hiker_id or not guide_id or user_type != "hiker":
         print("🚨 Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
         emit(
-            "chat_request_response",
+            "chat_request",
             {"status": "error", "error": "Invalid request"},
             room=hiker_id,
         )
@@ -141,7 +141,7 @@ def handle_chat_request(data):
     except Exception as e:
         print(f"🚨 Error handling chat_request: {e}")
         emit(
-            "chat_request_response", {"status": "error", "error": str(e)}, room=hiker_id
+            "chat_request", {"status": "error", "error": str(e)}, room=hiker_id
         )
 
 
