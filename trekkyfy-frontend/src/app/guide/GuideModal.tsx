@@ -57,6 +57,13 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       toast.error("You must be logged in to send a chat request.");
       return;
     }
+
+    console.log("📡 Emitting chat_request:", {
+      guide_id: guide.guide_id,
+      hiker_id: hiker.hiker_id,
+      user_type: "hiker",
+    });
+
     if (socketRef.current) {
       socketRef.current.emit(
         "chat_request",

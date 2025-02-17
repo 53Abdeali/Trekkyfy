@@ -108,23 +108,41 @@ def handle_disconnect():
 def handle_chat_request(data):
     hiker_id = data.get("hiker_id")
     guide_id = data.get("guide_id")
+    user_type = data.get("user_type")
 
-    if not hiker_id or not guide_id:
-        print("Missing guide_id or hiker data")
+    if not hiker_id or not guide_id or user_type != "hiker":
+        print("🚨 Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
+        emit(
+            "chat_request_response",
+            {"status": "error", "error": "Invalid request"},
+            room=hiker_id,
+        )
         return
 
     try:
-        new_request = ChatRequests(hiker_id=hiker_id, guide_id=guide_id)
+        new_request = ChatRequests(
+            hiker_id=hiker_id, guide_id=guide_id, status="pending"
+        )
         db.session.add(new_request)
         db.session.commit()
 
         if guide_id in online_users:
-            emit("chat_request", {"hiker_id": hiker_id}, room=guide_id)
-            print(f"Hiker {hiker_id} sent chat request to Guide {guide_id}")
+            emit(
+                "chat_request",
+                {"hiker_id": hiker_id, "guide_id": guide_id},
+                room=guide_id,
+            )
+            print(f"📩 Hiker {hiker_id} sent chat request to Guide {guide_id}")
         else:
-            print(f"Guide {guide_id} is not online, request pending.")
+            print(f"❌ Guide {guide_id} is not online, request pending.")
+
+        emit("chat_request_response", {"status": "success"}, room=hiker_id)
+
     except Exception as e:
-        print(f"Error handling chat_request: {e}")
+        print(f"🚨 Error handling chat_request: {e}")
+        emit(
+            "chat_request_response", {"status": "error", "error": str(e)}, room=hiker_id
+        )
 
 
 @socketio.on("chat_response")
@@ -134,6 +152,7 @@ def handle_chat_response(data):
     accepted = data.get("accepted")
 
     if not guide_id or not hiker_id:
+        print("🚨 Missing guide_id or hiker_id in chat_response")
         return
 
     request = ChatRequests.query.filter_by(
@@ -148,19 +167,22 @@ def handle_chat_response(data):
             "chat_response", {"guide_id": guide_id, "accepted": accepted}, room=hiker_id
         )
 
-        # If accepted, send WhatsApp link to hiker
         if accepted:
             guide = User.query.filter_by(guide_id=guide_id).first()
             if guide and guide.guide_whatsapp:
-                whatsapp_url = f"wa.me/{guide.guide_whatsapp}"
+                whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
                 emit("whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id)
                 print(
-                    f"Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
+                    f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
+                )
+            else:
+                print(
+                    f"⚠️ Guide {guide_id} accepted chat request but has no WhatsApp number."
                 )
         else:
-            print(f"Guide {guide_id} rejected chat request from Hiker {hiker_id}")
+            print(f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}")
     else:
-        print("Chat request not found or already processed.")
+        print("❌ Chat request not found or already processed.")
 
 
 @socketio.on("heartbeat")
