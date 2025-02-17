@@ -4,8 +4,8 @@ from datetime import datetime
 
 class ChatRequests(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    hiker_id = db.Column(db.String(20), db.ForeignKey("user.hiker_id"), nullable=False)
-    guide_id = db.Column(db.String(20), db.ForeignKey("user.guide_id"), nullable=False)
+    hiker_id = db.Column(db.String(10), db.ForeignKey("user.hiker_id"), nullable=False)
+    guide_id = db.Column(db.String(10), db.ForeignKey("user.guide_id"), nullable=False)
     status = db.Column(
         db.Enum("pending", "accepted", "rejected", name="chat_status"),
         default="pending",
