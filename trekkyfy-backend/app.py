@@ -106,6 +106,9 @@ def handle_disconnect():
 
 @socketio.on("chat_request")
 def handle_chat_request(data):
+    eventlet.spawn(process_chat_request, data)
+
+def process_chat_request(data):
     hiker_id = data.get("hiker_id")
     guide_id = data.get("guide_id")
     user_type = data.get("user_type")
