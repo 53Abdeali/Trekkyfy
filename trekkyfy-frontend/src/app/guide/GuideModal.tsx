@@ -42,10 +42,10 @@ interface GuideModalProps {
   onClose: () => void;
 }
 
-interface DataDetails{
-  guide_id:string;
-  hiker_id:string;
-  accepted:boolean;
+interface DataDetails {
+  guide_id: string;
+  hiker_id: string;
+  accepted: boolean;
 }
 
 const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
@@ -60,7 +60,11 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
     if (socketRef.current) {
       socketRef.current.emit(
         "chat_request",
-        { guide_id: guide.guide_id, hiker_id: hiker.hiker_id },
+        {
+          guide_id: guide.guide_id,
+          hiker_id: hiker.hiker_id,
+          user_type: "hiker",
+        },
         (response: ChatRequestResponse) => {
           if (!response) {
             console.error("No response received from server");
@@ -78,30 +82,40 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   };
 
   useEffect(() => {
-    // Initialize socket connection only once
     if (!socketRef.current) {
       socketRef.current = socket;
       socketRef.current.on("connect", () => {
-        console.log(`Guide connected (ID: ${guide.guide_id})`);
-        socketRef.current?.emit("guide_online", { guide_id: guide.guide_id });
+        if (hiker) {
+          console.log(`Hiker connected (ID: ${hiker.hiker_id})`);
+          socketRef.current?.emit("hiker_online", {
+            hiker_id: hiker.hiker_id,
+            user_type: "hiker",
+          });
+        } else {
+          console.log(`Guide connected (ID: ${guide.guide_id})`);
+          socketRef.current?.emit("guide_online", {
+            guide_id: guide.guide_id,
+            user_type: "guide",
+          });
+        }
       });
     }
 
-    // Listen for chat response
-    socketRef.current?.on("chat_response", (data:DataDetails) => {
-      if (data.accepted && data.guide_id === guide.guide_id) {
+    socketRef.current?.on("chat_response", (data: DataDetails) => {
+      if (data.guide_id !== guide.guide_id) return;
+
+      if (data.accepted) {
         toast.success("Chat accepted! You can now chat on WhatsApp.");
         setChatAccepted(true);
-      } else if (data.accepted === false && data.guide_id === guide.guide_id) {
+      } else {
         toast.error("Chat request rejected.");
       }
     });
 
     return () => {
-      // Clean up when the modal is closed
       socketRef.current?.off("chat_response");
     };
-  }, [guide.guide_id]);
+  }, [guide.guide_id, hiker]);
 
   return (
     <div className="modal-overlay">
