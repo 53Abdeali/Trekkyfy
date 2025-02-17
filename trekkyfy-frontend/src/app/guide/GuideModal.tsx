@@ -7,6 +7,7 @@ import { faClose } from "@fortawesome/free-solid-svg-icons";
 import "@/app/stylesheet/guidemodal.css";
 import socket from "@/app/socket";
 import toast from "react-hot-toast";
+import { Socket } from "socket.io-client";
 
 interface ChatRequestResponse {
   status: "success" | "error";
@@ -49,7 +50,7 @@ interface DataDetails{
 
 const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   const [chatAccepted, setChatAccepted] = useState(false);
-  const socketRef = useRef<any>(null); // Use useRef to manage the socket connection
+  const socketRef = useRef<Socket | null>(null);
 
   const handleRequestChat = () => {
     if (!hiker) {
