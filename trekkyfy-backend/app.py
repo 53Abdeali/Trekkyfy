@@ -129,29 +129,30 @@ def handle_chat_request(data):
 
 
 def process_chat_request(hiker_id, guide_id):
-    try:
-        new_request = ChatRequests(
-            hiker_id=hiker_id, guide_id=guide_id, status="pending"
-        )
-        db.session.add(new_request)
-        db.session.commit()
-
-        if guide_id in online_users:
-            emit(
-                "chat_request",
-                {"hiker_id": hiker_id, "guide_id": guide_id},
-                room=guide_id,
+    with app.app_context():
+        try:
+            new_request = ChatRequests(
+                hiker_id=hiker_id, guide_id=guide_id, status="pending"
             )
-            print(f"📩 Hiker {hiker_id} sent chat request to Guide {guide_id}")
-        else:
-            print(f"❌ Guide {guide_id} is not online, request pending.")
+            db.session.add(new_request)
+            db.session.commit()
 
-        emit("chat_request_response", {"status": "success"}, room=hiker_id)
+            if guide_id in online_users:
+                emit(
+                    "chat_request",
+                    {"hiker_id": hiker_id, "guide_id": guide_id},
+                    room=guide_id,
+                )
+                print(f"📩 Hiker {hiker_id} sent chat request to Guide {guide_id}")
+            else:
+                print(f"❌ Guide {guide_id} is not online, request pending.")
 
-    except Exception as e:
-        db.session.rollback()
-        print(f"🚨 Error processing chat request: {e}")
-        emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
+            emit("chat_request_response", {"status": "success"}, room=hiker_id)
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"🚨 Error processing chat request: {e}")
+            emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
 
 
 @socketio.on("chat_response")
@@ -223,23 +224,24 @@ def update_last_seen(user_id, status):
 
 
 def process_update_last_seen(user_id, status):
-    try:
-        user = User.query.filter(
-            (User.guide_id == user_id) | (User.hiker_id == user_id)
-        ).first()
+    with app.app_context():
+        try:
+            user = User.query.filter(
+                (User.guide_id == user_id) | (User.hiker_id == user_id)
+            ).first()
 
-        if user:
-            user.last_seen = status
-            try:
-                db.session.commit()
-                print(f"Updated last_seen for user {user_id}: {user.last_seen}")
-            except Exception as e:
-                db.session.rollback()
-                print(f"Error updating last_seen for user {user_id}: {e}")
-        else:
-            print(f"User {user_id} not found.")
-    except Exception as e:
-        print(f"Error in updating last_seen: {e}")
+            if user:
+                user.last_seen = status
+                try:
+                    db.session.commit()
+                    print(f"Updated last_seen for user {user_id}: {user.last_seen}")
+                except Exception as e:
+                    db.session.rollback()
+                    print(f"Error updating last_seen for user {user_id}: {e}")
+            else:
+                print(f"User {user_id} not found.")
+        except Exception as e:
+            print(f"Error in updating last_seen: {e}")
 
 
 # API Health Check
