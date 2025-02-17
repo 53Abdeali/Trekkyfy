@@ -98,7 +98,8 @@ def get_all_guides():
 
     guides_list = [
         {
-            "id": guide.guide_id,
+            "id": guide.id,
+            "guide_id":guide.guide_id,
             "guide_city": guide.guide_city,
             "guide_district": guide.guide_district,
             "guide_state": guide.guide_state,
