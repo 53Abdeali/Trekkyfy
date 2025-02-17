@@ -112,7 +112,7 @@ def handle_chat_request(data):
     chat_requests[hiker_id] = guide_id  # Store pending request
 
     if guide_id in online_users:
-        emit("send_chat_request", {"hiker_id": hiker_id}, room=guide_id)
+        emit("chat_request", {"hiker_id": hiker_id}, room=guide_id)
         print(f"Hiker {hiker_id} sent chat request to Guide {guide_id}")
     else:
         print(f"Guide {guide_id} is not online, request pending.")
@@ -127,10 +127,10 @@ def handle_chat_response(data):
         return
 
     if accepted:
-        emit("chat_accepted", {"guide_id": guide_id}, room=hiker_id)
+        emit("chat_response", {"guide_id": guide_id}, room=hiker_id)
         print(f"Guide {guide_id} accepted chat request from Hiker {hiker_id}")
     else:
-        emit("chat_rejected", {"guide_id": guide_id}, room=hiker_id)
+        emit("chat_response", {"guide_id": guide_id}, room=hiker_id)
         print(f"Guide {guide_id} rejected chat request from Hiker {hiker_id}")
 
     # Remove request from pending list
