@@ -8,7 +8,7 @@ import "@/app/stylesheet/guideCard.css";
 
 interface Guide {
   id: string;
-  guide_id:string;
+  guide_id: string;
   guide_city: string;
   guide_district: string;
   guide_state: string;
@@ -32,49 +32,7 @@ const GuideCard: React.FC<{ guide: Guide; hiker: Hiker | null }> = ({
   guide,
   hiker,
 }) => {
-  const [isOnline, setIsOnline] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const socketRef = useRef<Socket | null>(null);
-
-  useEffect(() => {
-    socketRef.current = io("https://trekkyfy.onrender.com", {
-      transports: ["websocket"],
-    });
-
-    socketRef.current.on("connect", () => {
-      console.log("Connected to socket.io server");
-      socketRef.current?.emit("subscribe", { guide_id: guide.id });
-    });
-
-    socketRef.current.on("connect_error", (error) => {
-      console.error("Connection error:", error);
-    });
-
-    socketRef.current.on("connect_timeout", () => {
-      console.error("Connection timeout");
-    });
-
-    socketRef.current.on("error", (error) => {
-      console.error("General error:", error);
-    });
-
-    socketRef.current.on(
-      "statusUpdate",
-      (data: { guide_id: string; status: string }) => {
-        if (data.guide_id === guide.id) {
-          setIsOnline(data.status === "online");
-        }
-      }
-    );
-
-    socketRef.current.on("disconnect", () => {
-      console.log("Disconnected from socket.io server");
-    });
-
-    return () => {
-      socketRef.current?.disconnect();
-    };
-  }, [guide.id]);
 
   useEffect(() => {
     if (showModal) {
@@ -105,15 +63,13 @@ const GuideCard: React.FC<{ guide: Guide; hiker: Hiker | null }> = ({
             />
             <p>
               <strong>Status:</strong>{" "}
-              {isOnline ? (
-                <span style={{ color: "green" }}>Online</span>
-              ) : (
+              {guide.last_seen ? (
                 <span style={{ color: "gray" }}>
                   Last seen:{" "}
-                  {guide.last_seen
-                    ? new Date(guide.last_seen).toLocaleString() + " UTC"
-                    : "N/A"}
+                  {new Date(guide.last_seen).toLocaleString() + " UTC"}
                 </span>
+              ) : (
+                <span style={{ color: "gray" }}>N/A</span>
               )}
             </p>
           </div>
