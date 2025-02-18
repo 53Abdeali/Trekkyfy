@@ -146,7 +146,7 @@ def process_chat_request(hiker_id, guide_id):
                 else:
                     print(f"❌ Guide {guide_id} is not online, request pending.")
 
-                socketio.emit("chat_request_response", {"status": "success"}, room=hiker_id)
+                socketio.emit("chat_request", {"status": "success"}, room=hiker_id)
 
             except Exception as e:
                 db.session.rollback()
