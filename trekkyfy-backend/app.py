@@ -246,7 +246,7 @@ def process_update_last_seen(user_id, status):
 # API Health Check
 @app.route("/")
 def home():
-    return jsonify({"message": "The Python app is running successfully on port 5000!"})
+    return jsonify({"message": "The Python app is running successfully on the port number 5000!"})
 
 
 if __name__ == "__main__":
