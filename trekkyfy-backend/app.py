@@ -55,7 +55,7 @@ app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
 socketio = SocketIO(
     app,
     async_mode="eventlet",
-    cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000"],
+    cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000", "*"],
 )
 
 online_users = {}
