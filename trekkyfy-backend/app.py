@@ -136,7 +136,7 @@ def process_chat_request(hiker_id, guide_id):
                 db.session.add(new_request)
                 db.session.commit()
 
-                if guide_id in online_users:
+                if hiker_id in online_users:
                     socketio.emit(
                         "chat_request",
                         {"hiker_id": hiker_id, "guide_id": guide_id},
