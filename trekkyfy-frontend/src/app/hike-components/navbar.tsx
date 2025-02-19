@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import "@/app/stylesheet/navbar.css";
@@ -9,9 +9,9 @@ import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
 import toast from "react-hot-toast";
 import { usePathname } from "next/navigation";
-import {jwtDecode} from "jwt-decode";
+import {jwtDecode }from "jwt-decode";
 
-import {getSocket} from "@/app/socket";
+import { getSocket, initializeSocket } from "@/app/socket";
 import NotificationPopup, { ChatRequest } from "./notificationpopup";
 import HikerNotificationPopup, { ChatResponse } from "./hikernotificationpopup";
 
@@ -35,7 +35,8 @@ export default function Navbar() {
   const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
   const [showHikerNotification, setShowHikerNotification] = useState(false);
   // Current hiker id (if logged in as hiker)
-  const [currenthiker_id, setCurrenthiker_id] = useState<string | null>(null);
+  const [guideId, setGuideId] = useState<string | null>(null);
+  const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
 
   const profileRef = useRef<HTMLLIElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
@@ -54,7 +55,7 @@ export default function Navbar() {
         setUserRole("guide");
       } else if (decoded.hiker_id) {
         setUserRole("hiker");
-        setCurrenthiker_id(decoded.hiker_id);
+        setCurrentHikerId(decoded.hiker_id);
       }
     } catch (error) {
       console.error("Error decoding token:", error);
@@ -81,11 +82,25 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const socket = getSocket();
+  const [socket, setSocket] = useState(() => {
+    return getSocket();
+  });
+
+  useEffect(() => {
+    if (userRole === "guide" && guideId) {
+      const guideSocket = initializeSocket(guideId, "", "guide");
+      setSocket(guideSocket);
+    } else if (userRole === "hiker" && currentHikerId) {
+      const hikerSocket = initializeSocket(currentHikerId, "", "hiker");
+      setSocket(hikerSocket);
+    }
+  }, [userRole, guideId, currentHikerId]);
+
   // For guides: Listen for incoming chat requests via Socket.IO
   useEffect(() => {
     if (userRole === "guide" && socket) {
       socket.on("chat_request", (request: ChatRequest) => {
+        console.log("Received chat request:", request);
         setChatRequests((prev) => [...prev, request]);
       });
     }
@@ -97,11 +112,16 @@ export default function Navbar() {
   // For hikers: Listen for chat responses from guides via Socket.IO
   useEffect(() => {
     if (userRole === "hiker" && socket) {
-      socket?.on(
+      socket.on(
         "chat_response",
-        (data: { accepted: boolean; guideWhatsApp?: string; hiker_id?: string; message?: string }) => {
+        (data: {
+          accepted: boolean;
+          guideWhatsApp?: string;
+          hikerId?: string;
+          message?: string;
+        }) => {
           // Ensure the response is meant for the current hiker
-          if (data.hiker_id && data.hiker_id !== currenthiker_id) return;
+          if (data.hikerId && data.hikerId !== currentHikerId) return;
           setChatResponses((prev) => [...prev, data]);
         }
       );
@@ -109,7 +129,7 @@ export default function Navbar() {
     return () => {
       socket?.off("chat_response");
     };
-  }, [userRole, currenthiker_id, socket]);
+  }, [userRole, currentHikerId, socket]);
 
   // Handlers for guide notifications
   const handleAccept = async (request: ChatRequest) => {
@@ -118,12 +138,14 @@ export default function Navbar() {
       if (response.status === 200) {
         const guideWhatsAppNumber = response.data.guide_whatsapp;
         socket?.emit("chat_response", {
-          hiker_id: request.hiker_id,
+          hikerId: request.hikerId,
           accepted: true,
           guideWhatsApp: guideWhatsAppNumber,
         });
-  
-        setChatRequests((prev) => prev.filter((r) => r.hiker_id !== request.hiker_id));
+
+        setChatRequests((prev) =>
+          prev.filter((r) => r.hikerId !== request.hikerId)
+        );
       }
     } catch (error) {
       console.error("Failed to fetch guide WhatsApp number:", error);
@@ -133,10 +155,12 @@ export default function Navbar() {
 
   const handleReject = (request: ChatRequest) => {
     socket?.emit("chat_response", {
-      hiker_id: request.hiker_id,
+      hikerId: request.hikerId,
       accepted: false,
     });
-    setChatRequests((prev) => prev.filter((r) => r.hiker_id !== request.hiker_id));
+    setChatRequests((prev) =>
+      prev.filter((r) => r.hikerId !== request.hikerId)
+    );
   };
 
   // Handlers for hiker notifications
@@ -270,7 +294,9 @@ export default function Navbar() {
               {userRole === "guide" && (
                 <li className="notification-container">
                   <span
-                    onClick={() => setShowGuideNotification(!showGuideNotification)}
+                    onClick={() =>
+                      setShowGuideNotification(!showGuideNotification)
+                    }
                     className="notification-icon"
                   >
                     <FontAwesomeIcon icon={faBell} size="lg" />
@@ -284,7 +310,9 @@ export default function Navbar() {
               {userRole === "hiker" && (
                 <li className="notification-container">
                   <span
-                    onClick={() => setShowHikerNotification(!showHikerNotification)}
+                    onClick={() =>
+                      setShowHikerNotification(!showHikerNotification)
+                    }
                     className="notification-icon"
                   >
                     <FontAwesomeIcon icon={faBell} size="lg" />
@@ -334,7 +362,7 @@ export default function Navbar() {
       </div>
 
       {/* Guide Notification Popup */}
-      {!showGuideNotification && userRole === "guide" && (
+      {showGuideNotification && userRole === "guide" && (
         <NotificationPopup
           requests={chatRequests}
           onAccept={handleAccept}
@@ -344,7 +372,7 @@ export default function Navbar() {
       )}
 
       {/* Hiker Notification Popup */}
-      {!showHikerNotification && userRole === "hiker" && (
+      {showHikerNotification && userRole === "hiker" && (
         <HikerNotificationPopup
           notifications={chatResponses}
           onOpenChat={handleOpenChat}
@@ -355,4 +383,3 @@ export default function Navbar() {
     </div>
   );
 }
-

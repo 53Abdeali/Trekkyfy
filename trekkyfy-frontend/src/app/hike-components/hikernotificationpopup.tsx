@@ -8,7 +8,7 @@ export interface ChatResponse {
   accepted: boolean;
   guideWhatsApp?: string;
   message?: string;
-  hiker_id?: string;
+  hikerId?: string;
 }
 
 interface HikerNotificationPopupProps {
