@@ -170,12 +170,13 @@ def handle_chat_response(data):
     guide_id = data.get("guide_id")
     hiker_id = data.get("hiker_id")
     accepted = data.get("accepted")
+    guide_whatsapp = data.get("guideWhatsapp")
 
     if not guide_id or not hiker_id:
         print("🚨 Missing guide_id or hiker_id in chat_response")
         return
 
-    eventlet.spawn_n(process_chat_response, guide_id, hiker_id, accepted)
+    eventlet.spawn_n(process_chat_response, guide_id, hiker_id, accepted, guide_whatsapp)
 
 
 def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
