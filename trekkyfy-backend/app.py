@@ -258,7 +258,7 @@ def process_update_last_seen(user_id, status):
 @app.route("/")
 def home():
     return jsonify(
-        {"message": "The Python app is running successfully on the port number 5000!"}
+        {"message": "The Python app is running successfully on the port number 5000 and on render as well!"}
     )
 
 
