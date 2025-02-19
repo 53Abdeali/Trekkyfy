@@ -18,6 +18,7 @@ import { jwtDecode } from "jwt-decode";
 import { getSocket, initializeSocket } from "@/app/socket";
 import NotificationPopup, { ChatRequest } from "./notificationpopup";
 import HikerNotificationPopup, { ChatResponse } from "./hikernotificationpopup";
+import axios from "axios";
 
 interface DecodedToken {
   guide_id?: string;
@@ -49,8 +50,8 @@ export default function Navbar() {
     setActiveLink(pathname);
   }, [pathname]);
 
+  const token = Cookies.get("access_token");
   useEffect(() => {
-    const token = Cookies.get("access_token");
     if (!token) return;
     setIsAuthenticated(true);
     try {
@@ -152,7 +153,10 @@ export default function Navbar() {
   // Handlers for guide notifications
   const handleAccept = async (request: ChatRequest) => {
     try {
-      const response = await axiosInstance.get("/guide", {
+      const response = await axios.get("/guide", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         params: { guide_id: guideId },
       });
       if (response.status === 200) {
