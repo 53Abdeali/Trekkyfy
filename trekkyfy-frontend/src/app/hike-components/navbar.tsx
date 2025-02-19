@@ -179,10 +179,13 @@ export default function Navbar() {
   };
 
   const handleReject = (request: ChatRequest) => {
-    socket?.emit("chat_response", {
-      hikerId: request.hikerId,
+    const payload = {
+      guide_id: guideId,
+      hiker_id: request.hikerId,
       accepted: false,
-    });
+    };
+    console.log("Emitting chat_response with payload:", payload);
+    socket?.emit("chat_response", payload);
     setChatRequests((prev) =>
       prev.filter((r) => r.hikerId !== request.hikerId)
     );
