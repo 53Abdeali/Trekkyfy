@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { usePathname } from "next/navigation";
 import {jwtDecode} from "jwt-decode";
 
-import socket from "@/app/socket";
+import {getSocket} from "@/app/socket";
 import NotificationPopup, { ChatRequest } from "./notificationpopup";
 import HikerNotificationPopup, { ChatResponse } from "./hikernotificationpopup";
 
@@ -81,22 +81,23 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const socket = getSocket();
   // For guides: Listen for incoming chat requests via Socket.IO
   useEffect(() => {
-    if (userRole === "guide") {
+    if (userRole === "guide" && socket) {
       socket.on("chat_request", (request: ChatRequest) => {
         setChatRequests((prev) => [...prev, request]);
       });
     }
     return () => {
-      socket.off("chat_request");
+      socket?.off("chat_request");
     };
-  }, [userRole]);
+  }, [userRole, socket]);
 
   // For hikers: Listen for chat responses from guides via Socket.IO
   useEffect(() => {
-    if (userRole === "hiker") {
-      socket.on(
+    if (userRole === "hiker" && socket) {
+      socket?.on(
         "chat_response",
         (data: { accepted: boolean; guideWhatsApp?: string; hikerId?: string; message?: string }) => {
           // Ensure the response is meant for the current hiker
@@ -106,9 +107,9 @@ export default function Navbar() {
       );
     }
     return () => {
-      socket.off("chat_response");
+      socket?.off("chat_response");
     };
-  }, [userRole, currentHikerId]);
+  }, [userRole, currentHikerId, socket]);
 
   // Handlers for guide notifications
   const handleAccept = async (request: ChatRequest) => {
@@ -116,7 +117,7 @@ export default function Navbar() {
       const response = await axiosInstance.get("/guide");
       if (response.status === 200) {
         const guideWhatsAppNumber = response.data.guide_whatsapp;
-        socket.emit("chat_response", {
+        socket?.emit("chat_response", {
           hikerId: request.hikerId,
           accepted: true,
           guideWhatsApp: guideWhatsAppNumber,
@@ -131,7 +132,7 @@ export default function Navbar() {
   };
 
   const handleReject = (request: ChatRequest) => {
-    socket.emit("chat_response", {
+    socket?.emit("chat_response", {
       hikerId: request.hikerId,
       accepted: false,
     });

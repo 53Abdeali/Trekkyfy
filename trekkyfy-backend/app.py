@@ -1,4 +1,5 @@
 import eventlet
+
 eventlet.monkey_patch()
 
 from flask import Flask, jsonify, request  # type: ignore
@@ -25,7 +26,9 @@ cloudinary.config(
 app = Flask(__name__)
 CORS(
     app,
-    resources={r"/*": {"origins": ["https://trekkyfy.vercel.app", "http://localhost:3000"]}},
+    resources={
+        r"/*": {"origins": ["https://trekkyfy.vercel.app", "http://localhost:3000"]}
+    },
     supports_credentials=True,
 )
 
@@ -84,7 +87,9 @@ def handle_connect(sid):
         if user_type == "guide":
             join_room(user_id)
             print(f"Guide {user_id} joined room {user_id}")
-        socketio.emit("update_status", {"user_id": user_id, "status": "online"}, to=user_id)
+        socketio.emit(
+            "update_status", {"user_id": user_id, "status": "online"}, to=user_id
+        )
         print(f"{user_type.capitalize()} {user_id} connected via websocket.")
     else:
         print("No user_id or user_type provided on connect.")
@@ -115,7 +120,7 @@ def handle_chat_request(data):
             "chat_request",
             {"status": "error", "error": "Invalid request"},
             room=hiker_id,
-            namespace="/"
+            namespace="/",
         )
         return
 
@@ -123,12 +128,14 @@ def handle_chat_request(data):
         eventlet.spawn_n(process_chat_request, hiker_id, guide_id)
     except Exception as e:
         print(f"🚨 Error handling chat_request: {e}")
-        socketio.emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
+        socketio.emit(
+            "chat_request", {"status": "error", "error": str(e)}, room=hiker_id
+        )
 
 
 def process_chat_request(hiker_id, guide_id):
     with app.app_context():
-        with app.test_request_context(): 
+        with app.test_request_context():
             try:
                 new_request = ChatRequests(
                     hiker_id=hiker_id, guide_id=guide_id, status="pending"
@@ -136,22 +143,24 @@ def process_chat_request(hiker_id, guide_id):
                 db.session.add(new_request)
                 db.session.commit()
 
-                if hiker_id in online_users:
+                try:
                     socketio.emit(
                         "chat_request",
                         {"hiker_id": hiker_id, "guide_id": guide_id},
                         room=guide_id,
                     )
                     print(f"📩 Hiker {hiker_id} sent chat request to Guide {guide_id}")
-                else:
-                    print(f"❌ Guide {guide_id} is not online, request pending.")
+                    socketio.emit("chat_request", {"status": "success"}, room=hiker_id)
 
-                socketio.emit("chat_request", {"status": "success"}, room=hiker_id)
+                except Exception as e:
+                    print(f"❌ Guide {guide_id} is not online, request pending.", e)
 
             except Exception as e:
                 db.session.rollback()
                 print(f"🚨 Error processing chat request: {e}")
-                socketio.emit("chat_request", {"status": "error", "error": str(e)}, room=hiker_id)
+                socketio.emit(
+                    "chat_request", {"status": "error", "error": str(e)}, room=hiker_id
+                )
 
 
 @socketio.on("chat_response")
@@ -188,7 +197,9 @@ def process_chat_response(guide_id, hiker_id, accepted):
                 guide = User.query.filter_by(guide_id=guide_id).first()
                 if guide and guide.guide_whatsapp:
                     whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
-                    socketio.emit("whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id)
+                    socketio.emit(
+                        "whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id
+                    )
                     print(
                         f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
                     )
@@ -246,7 +257,9 @@ def process_update_last_seen(user_id, status):
 # API Health Check
 @app.route("/")
 def home():
-    return jsonify({"message": "The Python app is running successfully on the port number 5000!"})
+    return jsonify(
+        {"message": "The Python app is running successfully on the port number 5000!"}
+    )
 
 
 if __name__ == "__main__":

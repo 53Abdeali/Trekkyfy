@@ -5,7 +5,7 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import "@/app/stylesheet/guidemodal.css";
-import socket from "@/app/socket";
+import { getSocket } from "@/app/socket";
 import toast from "react-hot-toast";
 import { Socket } from "socket.io-client";
 
@@ -90,8 +90,8 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = socket;
-      socketRef.current.on("connect", () => {
+      socketRef.current = getSocket();
+      socketRef.current?.on("connect", () => {
         if (hiker) {
           console.log(`Hiker connected (ID: ${hiker.hiker_id})`);
           socketRef.current?.emit("hiker_online", {
