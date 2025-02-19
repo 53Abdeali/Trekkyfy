@@ -206,7 +206,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                 "guide_id": guide_id,
                 "accepted": accepted,
                 "guideWhatsApp": guide_whatsapp,
-                "hikerId": hiker_id,
+                "hiker_id": hiker_id,
             },
             room=hiker_id,
         )
