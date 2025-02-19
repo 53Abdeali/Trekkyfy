@@ -126,6 +126,7 @@ def handle_chat_request(data):
 
     try:
         eventlet.spawn_n(process_chat_request, hiker_id, guide_id)
+        return {"status": "success"}
     except Exception as e:
         print(f"🚨 Error handling chat_request: {e}")
         socketio.emit(
