@@ -12,6 +12,7 @@ from routes.contact import contact_bp
 from routes.explore_trek import explore_trek_bp
 from routes.guide_complete import guide_bp
 from routes.image_upload import image_upload_bp
+from routes.pending_requests import pending_req_bp
 
 def register_blueprints(app: Flask):
     # API Call for Register
@@ -52,5 +53,8 @@ def register_blueprints(app: Flask):
     
     #API for Guide Profile Photo Upload on Cloudinary
     app.register_blueprint(image_upload_bp, url_prefix="/api")
+    
+    #API for Pending Requests
+    app.register_blueprint(pending_req_bp, url_prefix="/api")
     
     

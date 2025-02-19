@@ -135,6 +135,20 @@ export default function Navbar() {
     };
   }, [userRole, currentHikerId, socket]);
 
+  useEffect(() => {
+    if (userRole === "guide") {
+      axiosInstance
+        .get("/pending-requests")
+        .then((res) => {
+          console.log("Fetching pending request", res.data);
+          setChatRequests(res.data);
+        })
+        .catch((err) => {
+          console.log("Error fetching pending request", err);
+        });
+    }
+  });
+
   // Handlers for guide notifications
   const handleAccept = async (request: ChatRequest) => {
     try {
