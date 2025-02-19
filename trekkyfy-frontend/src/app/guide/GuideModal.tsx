@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
+import "@/app/stylesheet/guidemodal.css";
 import { initializeSocket } from "@/app/socket";
 import toast from "react-hot-toast";
 import { Socket } from "socket.io-client";
@@ -35,7 +36,7 @@ interface Hiker {
   username: string;
 }
 
-interface HikerModalProps {
+interface GuideModalProps {
   guide: Guide;
   hiker: Hiker | null;
   onClose: () => void;
@@ -47,55 +48,61 @@ interface DataDetails {
   accepted: boolean;
 }
 
-const HikerModal: React.FC<HikerModalProps> = ({ guide, hiker, onClose }) => {
-  const [chatRequested, setChatRequested] = useState(false);
-  const [whatsappLink, setWhatsappLink] = useState("");
+const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
+  const [chatAccepted, setChatAccepted] = useState(false);
   const socketRef = useRef<Socket | null>(null);
-  
-  if (!hiker) {
-    return null;
-  }
+
+  const userType = hiker ? "hiker" : "guide";
+  const userId = hiker ? hiker.hiker_id : guide.guide_id;
 
   useEffect(() => {
-    const socket = initializeSocket(hiker.hiker_id, guide.guide_id, "hiker");
-    socketRef.current = socket;
+    socketRef.current = initializeSocket(userId, guide.guide_id, userType);
 
-    socket.on("connect", () => {
-      console.log(`Hiker connected (ID: ${hiker.hiker_id})`);
-      socket.emit("hiker_online", {
-        hiker_id: hiker.hiker_id,
-        user_type: "hiker",
-      });
+    socketRef.current?.on("connect", () => {
+      if (userType === "hiker") {
+        console.log(`Hiker connected (ID: ${hiker?.hiker_id})`);
+        socketRef.current?.emit("hiker_online", {
+          hiker_id: hiker?.hiker_id,
+          user_type: "hiker",
+        });
+      } else {
+        console.log(`Guide connected (ID: ${guide.guide_id})`);
+        socketRef.current?.emit("guide_online", {
+          guide_id: guide.guide_id,
+          user_type: "guide",
+        });
+      }
     });
 
-    socket.on("chat_response", (data: DataDetails) => {
-      if (data.hiker_id !== hiker.hiker_id) return;
+    socketRef.current?.on("chat_response", (data: DataDetails) => {
+      if (data.guide_id !== guide.guide_id) return;
       if (data.accepted) {
-        toast.success("Chat accepted! Redirecting to WhatsApp.");
-        setWhatsappLink(`https://wa.me/${guide.guide_whatsapp}`);
+        toast.success("Chat accepted! You can now chat on WhatsApp.");
+        setChatAccepted(true);
       } else {
-        toast.error("Chat request was rejected by the guide.");
+        toast.error("Chat request rejected.");
       }
     });
 
     return () => {
-      socket.off("chat_response");
+      socketRef.current?.off("chat_response");
     };
-  }, [guide.guide_id, hiker.hiker_id, guide.guide_whatsapp]);
+  }, [guide.guide_id, hiker, userId, userType]);
 
   const handleRequestChat = () => {
-    if (!socketRef.current) {
-      toast.error("Socket not connected.");
+    // Only hiker users should be able to request a chat.
+    if (!hiker) {
+      toast.error("You must be logged in as a hiker to send a chat request.");
       return;
     }
 
-    console.log("📡 Emitting chat_request from hiker:", {
+    console.log("📡 Emitting chat_request:", {
       guide_id: guide.guide_id,
       hiker_id: hiker.hiker_id,
       user_type: "hiker",
     });
 
-    socketRef.current.emit(
+    socketRef.current?.emit(
       "chat_request",
       {
         guide_id: guide.guide_id,
@@ -109,10 +116,9 @@ const HikerModal: React.FC<HikerModalProps> = ({ guide, hiker, onClose }) => {
         }
         if (response.status === "success") {
           toast.success("Chat Request Sent!");
-          setChatRequested(true);
+          console.log("Chat request sent successfully!");
         } else {
           console.error("Failed to send chat request:", response.error);
-          toast.error("Failed to send chat request.");
         }
       }
     );
@@ -159,16 +165,19 @@ const HikerModal: React.FC<HikerModalProps> = ({ guide, hiker, onClose }) => {
               </p>
             </div>
             <div className="request-buttons">
+              <span className="request-button">
+                Request Pricing & Availability
+              </span>
               <span className="request-button" onClick={handleRequestChat}>
                 Request Chat
               </span>
             </div>
-            {chatRequested && whatsappLink && (
+            {chatAccepted && (
               <div className="whatsapp-link">
                 <p>
                   <strong>Chat with Guide on WhatsApp:</strong>{" "}
                   <a
-                    href={whatsappLink}
+                    href={`https://wa.me/${guide.guide_whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -178,10 +187,24 @@ const HikerModal: React.FC<HikerModalProps> = ({ guide, hiker, onClose }) => {
               </div>
             )}
           </div>
+
+          <div className="vertical-divider" />
+          <div className="modal-container modal-right">
+            <p>
+              <strong>Experience:</strong>{" "}
+              <span> {guide.guide_experience}</span>
+            </p>
+            <p>
+              <strong>Languages:</strong> {guide.guide_languages}
+            </p>
+            <p>
+              <strong>Speciality:</strong> {guide.guide_speciality}
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default HikerModal;
+export default GuideModal;
