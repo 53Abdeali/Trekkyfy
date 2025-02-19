@@ -4,8 +4,8 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
-import "@/app/stylesheet/guidemodal.css";
-import { getSocket } from "@/app/socket";
+import "@/app/stylesheet/hikermodal.css";
+import { initializeSocket } from "@/app/socket";
 import toast from "react-hot-toast";
 import { Socket } from "socket.io-client";
 
@@ -36,7 +36,7 @@ interface Hiker {
   username: string;
 }
 
-interface GuideModalProps {
+interface HikerModalProps {
   guide: Guide;
   hiker: Hiker | null;
   onClose: () => void;
@@ -48,82 +48,76 @@ interface DataDetails {
   accepted: boolean;
 }
 
-const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
-  const [chatAccepted, setChatAccepted] = useState(false);
+const HikerModal: React.FC<HikerModalProps> = ({ guide, hiker, onClose }) => {
+  if (!hiker) {
+    return null;
+  }
+
+  const [chatRequested, setChatRequested] = useState(false);
+  const [whatsappLink, setWhatsappLink] = useState("");
   const socketRef = useRef<Socket | null>(null);
 
+  useEffect(() => {
+    const socket = initializeSocket(hiker.hiker_id, guide.guide_id, "hiker");
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      console.log(`Hiker connected (ID: ${hiker.hiker_id})`);
+      socket.emit("hiker_online", {
+        hiker_id: hiker.hiker_id,
+        user_type: "hiker",
+      });
+    });
+
+    socket.on("chat_response", (data: DataDetails) => {
+      if (data.hiker_id !== hiker.hiker_id) return;
+      if (data.accepted) {
+        toast.success("Chat accepted! Redirecting to WhatsApp.");
+        setWhatsappLink(`https://wa.me/${guide.guide_whatsapp}`);
+      } else {
+        toast.error("Chat request was rejected by the guide.");
+      }
+    });
+
+    return () => {
+      socket.off("chat_response");
+    };
+  }, [guide.guide_id, hiker.hiker_id, guide.guide_whatsapp]);
+
   const handleRequestChat = () => {
-    if (!hiker) {
-      toast.error("You must be logged in to send a chat request.");
+    if (!socketRef.current) {
+      toast.error("Socket not connected.");
       return;
     }
 
-    console.log("📡 Emitting chat_request:", {
+    console.log("📡 Emitting chat_request from hiker:", {
       guide_id: guide.guide_id,
       hiker_id: hiker.hiker_id,
       user_type: "hiker",
     });
 
-    if (socketRef.current) {
-      socketRef.current.emit(
-        "chat_request",
-        {
-          guide_id: guide.guide_id,
-          hiker_id: hiker.hiker_id,
-          user_type: "hiker",
-        },
-        (response: ChatRequestResponse) => {
-          if (!response) {
-            console.error("No response received from server");
-            return;
-          }
-
-          if (response.status === "success") {
-            toast.success("Chat Request Sent!");
-            console.log("Chat request sent succesfully!")
-          } else {
-            console.error("Failed to send chat request:", response.error);
-          }
+    socketRef.current.emit(
+      "chat_request",
+      {
+        guide_id: guide.guide_id,
+        hiker_id: hiker.hiker_id,
+        user_type: "hiker",
+      },
+      (response: ChatRequestResponse) => {
+        if (!response) {
+          console.error("No response received from server");
+          return;
         }
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (!socketRef.current) {
-      socketRef.current = getSocket();
-      socketRef.current?.on("connect", () => {
-        if (hiker) {
-          console.log(`Hiker connected (ID: ${hiker.hiker_id})`);
-          socketRef.current?.emit("hiker_online", {
-            hiker_id: hiker.hiker_id,
-            user_type: "hiker",
-          });
+        if (response.status === "success") {
+          toast.success("Chat Request Sent!");
+          setChatRequested(true);
         } else {
-          console.log(`Guide connected (ID: ${guide.guide_id})`);
-          socketRef.current?.emit("guide_online", {
-            guide_id: guide.guide_id,
-            user_type: "guide",
-          });
+          console.error("Failed to send chat request:", response.error);
+          toast.error("Failed to send chat request.");
         }
-      });
-    }
-
-    socketRef.current?.on("chat_response", (data: DataDetails) => {
-      if (data.guide_id !== guide.guide_id) return;
-
-      if (data.accepted) {
-        toast.success("Chat accepted! You can now chat on WhatsApp.");
-        setChatAccepted(true);
-      } else {
-        toast.error("Chat request rejected.");
       }
-    });
-
-    return () => {
-      socketRef.current?.off("chat_response");
-    };
-  }, [guide.guide_id, hiker]);
+    );
+  };
 
   return (
     <div className="modal-overlay">
@@ -166,19 +160,16 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
               </p>
             </div>
             <div className="request-buttons">
-              <span className="request-button">
-                Request Pricing & Availability
-              </span>
               <span className="request-button" onClick={handleRequestChat}>
                 Request Chat
               </span>
             </div>
-            {chatAccepted && (
+            {chatRequested && whatsappLink && (
               <div className="whatsapp-link">
                 <p>
                   <strong>Chat with Guide on WhatsApp:</strong>{" "}
                   <a
-                    href={`https://wa.me/${guide.guide_whatsapp}`}
+                    href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -188,27 +179,10 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
               </div>
             )}
           </div>
-
-          {/* Vertical Divider */}
-          <div className="vertical-divider" />
-
-          {/* Right Container */}
-          <div className="modal-container modal-right">
-            <p>
-              <strong>Experience:</strong>{" "}
-              <span> {guide.guide_experience}</span>
-            </p>
-            <p>
-              <strong>Languages:</strong> {guide.guide_languages}
-            </p>
-            <p>
-              <strong>Speciality:</strong> {guide.guide_speciality}
-            </p>
-          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default GuideModal;
+export default HikerModal;
