@@ -188,7 +188,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
             request.status = "accepted" if accepted else "rejected"
             db.session.commit()
         else:
-            print("❌ Chat request not found or already processed.")
+            print("❌ Chat request not found or already processed!")
 
         new_response = ChatResponses(
             hiker_id=hiker_id,
