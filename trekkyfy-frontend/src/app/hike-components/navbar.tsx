@@ -3,13 +3,17 @@
 import Link from "next/link";
 import "@/app/stylesheet/navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faUserCircle, faBell } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faUserCircle,
+  faBell,
+} from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import axiosInstance from "@/utils/axiosConfig";
 import toast from "react-hot-toast";
 import { usePathname } from "next/navigation";
-import {jwtDecode }from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 import { getSocket, initializeSocket } from "@/app/socket";
 import NotificationPopup, { ChatRequest } from "./notificationpopup";
@@ -53,6 +57,7 @@ export default function Navbar() {
       const decoded: DecodedToken = jwtDecode(token);
       if (decoded.guide_id) {
         setUserRole("guide");
+        setGuideId(decoded.guide_id);
       } else if (decoded.hiker_id) {
         setUserRole("hiker");
         setCurrentHikerId(decoded.hiker_id);
@@ -78,8 +83,7 @@ export default function Navbar() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const [socket, setSocket] = useState(() => {
@@ -195,11 +199,16 @@ export default function Navbar() {
 
       {!isAuthenticated ? (
         <>
-          <div ref={navRef} className={showNavElement ? "mob-nav-opt" : "nav-opt"}>
+          <div
+            ref={navRef}
+            className={showNavElement ? "mob-nav-opt" : "nav-opt"}
+          >
             <ul className="nav-ul">
               <li>
                 <Link
-                  className={`nav-opt-link ${activeLink === "/" ? "active" : ""}`}
+                  className={`nav-opt-link ${
+                    activeLink === "/" ? "active" : ""
+                  }`}
                   href="/"
                 >
                   Home
@@ -207,7 +216,9 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${activeLink === "/about" ? "active" : ""}`}
+                  className={`nav-opt-link ${
+                    activeLink === "/about" ? "active" : ""
+                  }`}
                   href="/about"
                 >
                   About Us
@@ -215,7 +226,9 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${activeLink === "/services" ? "active" : ""}`}
+                  className={`nav-opt-link ${
+                    activeLink === "/services" ? "active" : ""
+                  }`}
                   href="/services"
                 >
                   Our Services
@@ -223,7 +236,9 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${activeLink === "/contact" ? "active" : ""}`}
+                  className={`nav-opt-link ${
+                    activeLink === "/contact" ? "active" : ""
+                  }`}
                   href="/contact"
                 >
                   Contact Us
@@ -250,7 +265,9 @@ export default function Navbar() {
             <ul className="nav-ul">
               <li>
                 <Link
-                  className={`nav-opt-link ${activeLink === "/" ? "active" : ""}`}
+                  className={`nav-opt-link ${
+                    activeLink === "/" ? "active" : ""
+                  }`}
                   href="/"
                 >
                   Home
@@ -259,7 +276,9 @@ export default function Navbar() {
               {userRole === "hiker" && (
                 <li>
                   <Link
-                    className={`nav-opt-link ${activeLink === "/guide" ? "active" : ""}`}
+                    className={`nav-opt-link ${
+                      activeLink === "/guide" ? "active" : ""
+                    }`}
                     href="/guide"
                   >
                     Guides
@@ -268,7 +287,9 @@ export default function Navbar() {
               )}
               <li>
                 <Link
-                  className={`nav-opt-link ${activeLink === "/trek-trails" ? "active" : ""}`}
+                  className={`nav-opt-link ${
+                    activeLink === "/trek-trails" ? "active" : ""
+                  }`}
                   href="/trek-trails"
                 >
                   Trek & Trails
@@ -276,7 +297,9 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${activeLink === "/explore" ? "active" : ""}`}
+                  className={`nav-opt-link ${
+                    activeLink === "/explore" ? "active" : ""
+                  }`}
                   href="/explore"
                 >
                   Explore
@@ -284,7 +307,9 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  className={`nav-opt-link ${activeLink === "/contact" ? "active" : ""}`}
+                  className={`nav-opt-link ${
+                    activeLink === "/contact" ? "active" : ""
+                  }`}
                   href="/contact"
                 >
                   Contact Us
