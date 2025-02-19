@@ -30,8 +30,8 @@ class ChatRequests(db.Model):
 
 class ChatResponses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    hiker_id = db.Column(db.String(50), nullable=False)
-    guide_id = db.Column(db.String(50), nullable=False)
+    hiker_id = db.Column(db.String(50), db.ForeignKey("user.hiker_id"), nullable=False)
+    guide_id = db.Column(db.String(50), db.ForeignKey("user.guide_id"), nullable=False)
     accepted = db.Column(db.Boolean, nullable=False)
     guide_whatsapp = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
