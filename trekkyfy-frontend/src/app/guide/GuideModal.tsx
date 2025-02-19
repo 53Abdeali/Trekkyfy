@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
-import "@/app/stylesheet/hikermodal.css";
 import { initializeSocket } from "@/app/socket";
 import toast from "react-hot-toast";
 import { Socket } from "socket.io-client";
