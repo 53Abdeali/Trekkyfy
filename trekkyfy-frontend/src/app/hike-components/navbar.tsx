@@ -35,7 +35,7 @@ export default function Navbar() {
   const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
   const [showHikerNotification, setShowHikerNotification] = useState(false);
   // Current hiker id (if logged in as hiker)
-  const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
+  const [currenthiker_id, setCurrenthiker_id] = useState<string | null>(null);
 
   const profileRef = useRef<HTMLLIElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
@@ -54,7 +54,7 @@ export default function Navbar() {
         setUserRole("guide");
       } else if (decoded.hiker_id) {
         setUserRole("hiker");
-        setCurrentHikerId(decoded.hiker_id);
+        setCurrenthiker_id(decoded.hiker_id);
       }
     } catch (error) {
       console.error("Error decoding token:", error);
@@ -87,7 +87,6 @@ export default function Navbar() {
     if (userRole === "guide" && socket) {
       socket.on("chat_request", (request: ChatRequest) => {
         setChatRequests((prev) => [...prev, request]);
-        setShowGuideNotification(true);
       });
     }
     return () => {
@@ -100,9 +99,9 @@ export default function Navbar() {
     if (userRole === "hiker" && socket) {
       socket?.on(
         "chat_response",
-        (data: { accepted: boolean; guideWhatsApp?: string; hikerId?: string; message?: string }) => {
+        (data: { accepted: boolean; guideWhatsApp?: string; hiker_id?: string; message?: string }) => {
           // Ensure the response is meant for the current hiker
-          if (data.hikerId && data.hikerId !== currentHikerId) return;
+          if (data.hiker_id && data.hiker_id !== currenthiker_id) return;
           setChatResponses((prev) => [...prev, data]);
         }
       );
@@ -110,7 +109,7 @@ export default function Navbar() {
     return () => {
       socket?.off("chat_response");
     };
-  }, [userRole, currentHikerId, socket]);
+  }, [userRole, currenthiker_id, socket]);
 
   // Handlers for guide notifications
   const handleAccept = async (request: ChatRequest) => {
@@ -119,12 +118,12 @@ export default function Navbar() {
       if (response.status === 200) {
         const guideWhatsAppNumber = response.data.guide_whatsapp;
         socket?.emit("chat_response", {
-          hikerId: request.hikerId,
+          hiker_id: request.hiker_id,
           accepted: true,
           guideWhatsApp: guideWhatsAppNumber,
         });
   
-        setChatRequests((prev) => prev.filter((r) => r.hikerId !== request.hikerId));
+        setChatRequests((prev) => prev.filter((r) => r.hiker_id !== request.hiker_id));
       }
     } catch (error) {
       console.error("Failed to fetch guide WhatsApp number:", error);
@@ -134,10 +133,10 @@ export default function Navbar() {
 
   const handleReject = (request: ChatRequest) => {
     socket?.emit("chat_response", {
-      hikerId: request.hikerId,
+      hiker_id: request.hiker_id,
       accepted: false,
     });
-    setChatRequests((prev) => prev.filter((r) => r.hikerId !== request.hikerId));
+    setChatRequests((prev) => prev.filter((r) => r.hiker_id !== request.hiker_id));
   };
 
   // Handlers for hiker notifications
@@ -335,7 +334,7 @@ export default function Navbar() {
       </div>
 
       {/* Guide Notification Popup */}
-      {showGuideNotification && userRole === "guide" && (
+      {!showGuideNotification && userRole === "guide" && (
         <NotificationPopup
           requests={chatRequests}
           onAccept={handleAccept}
@@ -345,7 +344,7 @@ export default function Navbar() {
       )}
 
       {/* Hiker Notification Popup */}
-      {showHikerNotification && userRole === "hiker" && (
+      {!showHikerNotification && userRole === "hiker" && (
         <HikerNotificationPopup
           notifications={chatResponses}
           onOpenChat={handleOpenChat}
