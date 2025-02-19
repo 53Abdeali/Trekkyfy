@@ -191,7 +191,7 @@ export default function Navbar() {
   useEffect(() => {
     if (userRole === "hiker" && currentHikerId) {
       axiosInstance
-        .get("/api/pending-responses")
+        .get("/pending-responses")
         .then((res) => {
           console.log("Fetched pending responses:", res.data);
           setChatResponses(res.data);

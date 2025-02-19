@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt  # type: ignore
 chat_resp_bp = Blueprint("Chat Responses", __name__)
 
 
-@chat_resp_bp.route("/chat-responses", methods=["GET"])
+@chat_resp_bp.route("/pending-responses", methods=["GET"])
 @jwt_required()
 def get_chat_resp():
     claims = get_jwt()
