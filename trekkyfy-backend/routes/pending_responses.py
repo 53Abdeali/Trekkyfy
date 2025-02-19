@@ -15,7 +15,7 @@ def get_chat_resp():
         return jsonify({"error": "Hiker ID not found"}), 400
 
     try:
-        responses = ChatResponses.query.filtre_by(
+        responses = ChatResponses.query.filter_by(
             hiker_id=hiker_id, notified=False
         ).all()
         result = []
