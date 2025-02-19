@@ -80,7 +80,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
         toast.success("Chat accepted! You can now chat on WhatsApp.");
         setChatAccepted(true);
       } else {
-        toast.error("Chat request rejected.");
+        toast.error("Apologies, chat request rejected.");
       }
     });
 
