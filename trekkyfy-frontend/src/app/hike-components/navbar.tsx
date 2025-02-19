@@ -195,7 +195,7 @@ export default function Navbar() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          params: { guide_id: guideId },
+          params: { hiker_id: currentHikerId },
         })
         .then((res) => {
           console.log("Fetched pending responses:", res.data);
