@@ -12,7 +12,7 @@ import cloudinary  # type: ignore
 import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
 from flask_socketio import SocketIO, emit, join_room
-from models import db, User, ChatRequests
+from models import db, User, ChatRequests, ChatResponses
 
 
 # Cloudinary Configuration
@@ -178,7 +178,7 @@ def handle_chat_response(data):
     eventlet.spawn_n(process_chat_response, guide_id, hiker_id, accepted)
 
 
-def process_chat_response(guide_id, hiker_id, accepted):
+def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
     try:
         request = ChatRequests.query.filter_by(
             hiker_id=hiker_id, guide_id=guide_id, status="pending"
@@ -186,35 +186,47 @@ def process_chat_response(guide_id, hiker_id, accepted):
 
         if request:
             request.status = "accepted" if accepted else "rejected"
-            db.session.commit()  # Commit the status change asynchronously
-
-            # Notify the hiker
-            socketio.emit(
-                "chat_response",
-                {"guide_id": guide_id, "accepted": accepted},
-                room=hiker_id,
-            )
-
-            if accepted:
-                guide = User.query.filter_by(guide_id=guide_id).first()
-                if guide and guide.guide_whatsapp:
-                    whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
-                    socketio.emit(
-                        "whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id
-                    )
-                    print(
-                        f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
-                    )
-                else:
-                    print(
-                        f"⚠️ Guide {guide_id} accepted chat request but has no WhatsApp number."
-                    )
-            else:
-                print(
-                    f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}"
-                )
+            db.session.commit()
         else:
             print("❌ Chat request not found or already processed.")
+
+        new_response = ChatResponses(
+            hiker_id=hiker_id,
+            guide_id=guide_id,
+            accepted=accepted,
+            guide_whatsapp=guide_whatsapp,
+        )
+        db.session.add(new_response)
+        db.session.commit()
+
+        socketio.emit(
+            "chat_response",
+            {
+                "guide_id": guide_id,
+                "accepted": accepted,
+                "guideWhatsApp": guide_whatsapp,
+                "hikerId": hiker_id,
+            },
+            room=hiker_id,
+        )
+
+        if accepted:
+            guide = User.query.filter_by(guide_id=guide_id).first()
+            if guide and guide.guide_whatsapp:
+                whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
+                socketio.emit(
+                    "whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id
+                )
+                print(
+                    f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
+                )
+            else:
+                print(
+                    f"⚠️ Guide {guide_id} accepted chat request but has no WhatsApp number."
+                )
+        else:
+            print(f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}")
+
     except Exception as e:
         print(f"🚨 Error in handling chat response: {e}")
 

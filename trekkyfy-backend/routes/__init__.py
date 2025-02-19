@@ -13,6 +13,7 @@ from routes.explore_trek import explore_trek_bp
 from routes.guide_complete import guide_bp
 from routes.image_upload import image_upload_bp
 from routes.pending_requests import pending_req_bp
+from routes.pending_responses import chat_resp_bp
 
 def register_blueprints(app: Flask):
     # API Call for Register
@@ -56,5 +57,8 @@ def register_blueprints(app: Flask):
     
     #API for Pending Requests
     app.register_blueprint(pending_req_bp, url_prefix="/api")
+    
+    #API for Pending Responses
+    app.register_blueprint(chat_resp_bp, url_prefix="/api")
     
     

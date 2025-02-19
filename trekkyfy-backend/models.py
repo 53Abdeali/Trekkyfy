@@ -28,6 +28,30 @@ class ChatRequests(db.Model):
             "created_at": self.created_at.isoformat(),
         }
 
+class ChatResponses(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    hiker_id = db.Column(db.String(50), nullable=False)
+    guide_id = db.Column(db.String(50), nullable=False)
+    accepted = db.Column(db.Boolean, nullable=False)
+    guide_whatsapp = db.Column(db.String(20))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    notified = db.Column(db.Boolean, default=False)
+    hiker = db.relationship("User", foreign_keys=[hiker_id], backref="hiker_responses")
+    guide = db.relationship("User", foreign_keys=[guide_id], backref="guide_responses")
+    
+    def __repr__(self, hiker_id, guide_id, status):
+        self.hiker_id = hiker_id
+        self.guide_id = guide_id
+        self.status = status
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "hiker_id": self.hiker_id,
+            "guide_id": self.guide_id,
+            "status": self.status,
+            "created_at": self.created_at.isoformat(),
+        }
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

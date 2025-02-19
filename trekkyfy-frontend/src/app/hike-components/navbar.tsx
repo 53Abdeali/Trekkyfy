@@ -162,6 +162,7 @@ export default function Navbar() {
       if (response.status === 200) {
         const guideWhatsAppNumber = response.data.guide_whatsapp;
         socket?.emit("chat_response", {
+          guide_id: guideId,
           hikerId: request.hikerId,
           accepted: true,
           guideWhatsApp: guideWhatsAppNumber,
@@ -186,6 +187,20 @@ export default function Navbar() {
       prev.filter((r) => r.hikerId !== request.hikerId)
     );
   };
+
+  useEffect(() => {
+    if (userRole === "hiker" && currentHikerId) {
+      axiosInstance
+        .get("/api/pending-responses")
+        .then((res) => {
+          console.log("Fetched pending responses:", res.data);
+          setChatResponses(res.data);
+        })
+        .catch((err) => {
+          console.error("Error fetching pending responses:", err);
+        });
+    }
+  }, [userRole, currentHikerId]);
 
   // Handlers for hiker notifications
   const handleOpenChat = (guideWhatsApp: string) => {
