@@ -48,13 +48,13 @@ interface DataDetails {
 }
 
 const HikerModal: React.FC<HikerModalProps> = ({ guide, hiker, onClose }) => {
-  if (!hiker) {
-    return null;
-  }
-
   const [chatRequested, setChatRequested] = useState(false);
   const [whatsappLink, setWhatsappLink] = useState("");
   const socketRef = useRef<Socket | null>(null);
+  
+  if (!hiker) {
+    return null;
+  }
 
   useEffect(() => {
     const socket = initializeSocket(hiker.hiker_id, guide.guide_id, "hiker");
