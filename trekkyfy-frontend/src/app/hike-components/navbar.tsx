@@ -138,7 +138,7 @@ export default function Navbar() {
   useEffect(() => {
     if (userRole === "guide" && guideId) {
       axiosInstance
-        .get("/pending-requests")
+        .get("/pending-requests", { params: { guide_id: guideId } })
         .then((res) => {
           console.log("Fetching pending request", res.data);
           setChatRequests(res.data);
@@ -147,7 +147,7 @@ export default function Navbar() {
           console.log("Error fetching pending request", err);
         });
     }
-  },[userRole, guideId]);
+  }, [userRole, guideId]);
 
   // Handlers for guide notifications
   const handleAccept = async (request: ChatRequest) => {
