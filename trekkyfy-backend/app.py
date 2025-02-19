@@ -151,6 +151,7 @@ def process_chat_request(hiker_id, guide_id):
                     )
                     print(f"📩 Hiker {hiker_id} sent chat request to Guide {guide_id}")
                     socketio.emit("chat_request", {"status": "success"}, room=hiker_id)
+                    return {"status": "success"}
 
                 except Exception as e:
                     print(f"❌ Guide {guide_id} is not online, request pending.", e)
@@ -258,7 +259,9 @@ def process_update_last_seen(user_id, status):
 @app.route("/")
 def home():
     return jsonify(
-        {"message": "The Python app is running successfully on the port number 5000 and on render as well!"}
+        {
+            "message": "The Python app is running successfully on the port number 5000 and on render as well!"
+        }
     )
 
 
