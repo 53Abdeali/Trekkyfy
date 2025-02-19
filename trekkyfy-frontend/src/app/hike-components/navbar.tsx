@@ -152,7 +152,9 @@ export default function Navbar() {
   // Handlers for guide notifications
   const handleAccept = async (request: ChatRequest) => {
     try {
-      const response = await axiosInstance.get("/guide");
+      const response = await axiosInstance.get("/guide", {
+        params: { guide_id: guideId },
+      });
       if (response.status === 200) {
         const guideWhatsAppNumber = response.data.guide_whatsapp;
         socket?.emit("chat_response", {
