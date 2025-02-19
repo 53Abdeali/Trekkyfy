@@ -87,6 +87,7 @@ export default function Navbar() {
     if (userRole === "guide" && socket) {
       socket.on("chat_request", (request: ChatRequest) => {
         setChatRequests((prev) => [...prev, request]);
+        setShowGuideNotification(true);
       });
     }
     return () => {
