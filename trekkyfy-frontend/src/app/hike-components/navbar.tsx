@@ -163,7 +163,7 @@ export default function Navbar() {
         const guideWhatsAppNumber = response.data.guide_whatsapp;
         socket?.emit("chat_response", {
           guide_id: guideId,
-          hikerId: request.hikerId,
+          hiker_id: request.hikerId,
           accepted: true,
           guideWhatsApp: guideWhatsAppNumber,
         });
