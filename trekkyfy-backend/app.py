@@ -12,7 +12,7 @@ import cloudinary  # type: ignore
 import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
 from flask_socketio import SocketIO, emit, join_room
-from models import db, User, ChatRequests, ChatResponses
+from models import GuideDetails, db, User, ChatRequests, ChatResponses
 
 
 # Cloudinary Configuration
@@ -225,7 +225,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                     )
 
                     if accepted:
-                        guide = User.query.filter_by(guide_id=guide_id).first()
+                        guide = GuideDetails.query.filter_by(guide_id=guide_id).first()
                         if guide and guide.guide_whatsapp:
                             whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
                             socketio.emit(
