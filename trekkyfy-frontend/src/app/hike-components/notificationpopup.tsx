@@ -5,7 +5,7 @@ import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export interface ChatRequest {
   hikerUsername: string;
-  hikerId: string;
+ hiker_id: string;
   guideId: string;
 }
 
@@ -34,7 +34,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
             <li>No new requests</li>
           ) : (
             requests.map((req) => (
-              <li key={req.hikerId} className="request-item">
+              <li key={req.hiker_id} className="request-item">
                 <span>{req.hikerUsername} is requesting for chat</span>
                 <div className="action-icons">
                   <FontAwesomeIcon

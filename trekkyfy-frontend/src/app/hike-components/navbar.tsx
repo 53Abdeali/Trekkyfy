@@ -61,7 +61,7 @@ export default function Navbar() {
         setGuideId(decoded.guide_id);
       } else if (decoded.hiker_id) {
         setUserRole("hiker");
-        setCurrentHikerId(decoded.hiker_id);
+       setCurrentHikerId(decoded.hiker_id);
       }
     } catch (error) {
       console.error("Error decoding token:", error);
@@ -95,11 +95,11 @@ export default function Navbar() {
     if (userRole === "guide" && guideId) {
       const guideSocket = initializeSocket(guideId, "", "guide");
       setSocket(guideSocket);
-    } else if (userRole === "hiker" && currentHikerId) {
+    } else if (userRole === "hiker" &&currentHikerId) {
       const hikerSocket = initializeSocket(currentHikerId, "", "hiker");
       setSocket(hikerSocket);
     }
-  }, [userRole, guideId, currentHikerId]);
+  }, [userRole, guideId,currentHikerId]);
 
   // For guides: Listen for incoming chat requests via Socket.IO
   useEffect(() => {
@@ -122,11 +122,11 @@ export default function Navbar() {
         (data: {
           accepted: boolean;
           guideWhatsApp?: string;
-          hikerId?: string;
+          hiker_id?: string;
           message?: string;
         }) => {
           // Ensure the response is meant for the current hiker
-          if (data.hikerId && data.hikerId !== currentHikerId) return;
+          if (data.hiker_id && data.hiker_id !==currentHikerId) return;
           setChatResponses((prev) => [...prev, data]);
         }
       );
@@ -134,7 +134,7 @@ export default function Navbar() {
     return () => {
       socket?.off("chat_response");
     };
-  }, [userRole, currentHikerId, socket]);
+  }, [userRole,currentHikerId, socket]);
 
   useEffect(() => {
     if (userRole === "guide" && guideId) {
@@ -161,15 +161,19 @@ export default function Navbar() {
       });
       if (response.status === 200) {
         const guideWhatsAppNumber = response.data.guide_whatsapp;
-        socket?.emit("chat_response", {
+        const payload = {
           guide_id: guideId,
-          hiker_id: request.hikerId,
+          hiker_id: request.hiker_id,
           accepted: true,
           guideWhatsApp: guideWhatsAppNumber,
+        };
+        console.log("Emitting chat_response with payload:", payload);
+        socket?.emit("chat_response", {
+          payload,
         });
 
         setChatRequests((prev) =>
-          prev.filter((r) => r.hikerId !== request.hikerId)
+          prev.filter((r) => r.hiker_id !== request.hiker_id)
         );
       }
     } catch (error) {
@@ -181,24 +185,24 @@ export default function Navbar() {
   const handleReject = (request: ChatRequest) => {
     const payload = {
       guide_id: guideId,
-      hiker_id: request.hikerId,
+      hiker_id: request.hiker_id,
       accepted: false,
     };
     console.log("Emitting chat_response with payload:", payload);
     socket?.emit("chat_response", payload);
     setChatRequests((prev) =>
-      prev.filter((r) => r.hikerId !== request.hikerId)
+      prev.filter((r) => r.hiker_id !== request.hiker_id)
     );
   };
 
   useEffect(() => {
-    if (userRole === "hiker" && currentHikerId) {
+    if (userRole === "hiker" &&currentHikerId) {
       axiosInstance
         .get("/pending-responses", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          params: { hiker_id: currentHikerId },
+          params: { hiker_id:currentHikerId },
         })
         .then((res) => {
           console.log("Fetched pending responses:", res.data);
@@ -208,7 +212,7 @@ export default function Navbar() {
           console.error("Error fetching pending responses:", err);
         });
     }
-  }, [userRole, currentHikerId]);
+  }, [userRole,currentHikerId]);
 
   // Handlers for hiker notifications
   const handleOpenChat = (guideWhatsApp: string) => {
