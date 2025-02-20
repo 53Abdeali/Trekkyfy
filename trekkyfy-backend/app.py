@@ -188,8 +188,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                 ).first()
 
                 if request:
-                    for req in request :
-                        req.status = "accepted" if accepted else "rejected"
+                    request.status = "accepted" if accepted else "rejected"
                     db.session.commit()
                 
                     new_response = ChatResponses(
