@@ -121,6 +121,7 @@ def handle_chat_request(data):
             {"status": "error", "error": "Invalid request"},
             room=hiker_id,
             namespace="/",
+            ignore_queue=True
         )
         return
 
