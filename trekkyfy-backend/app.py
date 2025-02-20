@@ -231,7 +231,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                                 room=hiker_id,
                             )
                             print(
-                                f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
+                                f"✅ Guide {guide_id} accepted chat request, WhatsApp link has been sent to Hiker {hiker_id}"
                             )
                         else:
                             print(
