@@ -181,7 +181,7 @@ def handle_chat_response(data):
     guide_id = data.get("guide_id")
     hiker_id = data.get("hiker_id")
     accepted = data.get("accepted")
-    guide_whatsapp = data.get("guideWhatsapp")
+    guide_whatsapp = data.get("guide_whatsapp")
 
     if not guide_id or not hiker_id:
         print("🚨 Missing guide_id or hiker_id in chat_response")
@@ -218,7 +218,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                         {
                             "guide_id": guide_id,
                             "accepted": accepted,
-                            "guideWhatsApp": guide_whatsapp,
+                            "guide_whatsapp": guide_whatsapp,
                             "hiker_id": hiker_id,
                         },
                         room=hiker_id,

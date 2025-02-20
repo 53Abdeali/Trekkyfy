@@ -6,14 +6,14 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export interface ChatResponse {
   accepted: boolean;
-  guideWhatsApp?: string;
+  guide_whatsApp?: string;
   message?: string;
   hiker_id?: string;
 }
 
 interface HikerNotificationPopupProps {
   notifications: ChatResponse[];
-  onOpenChat: (guideWhatsApp: string) => void;
+  onOpenChat: (guide_whatsapp: string) => void;
   onDismiss: (index: number) => void;
   onClose: () => void;
 }
@@ -42,8 +42,8 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                     <span>Your chat request was accepted!</span>
                     <button
                       onClick={() => {
-                        if (notif.guideWhatsApp)
-                          onOpenChat(notif.guideWhatsApp);
+                        if (notif.guide_whatsApp)
+                          onOpenChat(notif.guide_whatsApp);
                         onDismiss(index);
                       }}
                     >

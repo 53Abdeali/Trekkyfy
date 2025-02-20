@@ -121,7 +121,7 @@ export default function Navbar() {
         "chat_response",
         (data: {
           accepted: boolean;
-          guideWhatsApp?: string;
+          guide_whatsapp?: string;
           hiker_id?: string;
           message?: string;
         }) => {
@@ -165,7 +165,7 @@ export default function Navbar() {
           guide_id: guideId,
           hiker_id: request.hiker_id,
           accepted: true,
-          guideWhatsApp: guideWhatsAppNumber,
+          guide_whatsapp: guideWhatsAppNumber,
         };
         console.log("Emitting chat_response with payload:", payload);
         socket?.emit("chat_response", payload);
@@ -213,8 +213,8 @@ export default function Navbar() {
   }, [userRole, currentHikerId]);
 
   // Handlers for hiker notifications
-  const handleOpenChat = (guideWhatsApp: string) => {
-    const whatsappLink = `https://wa.me/${guideWhatsApp}`;
+  const handleOpenChat = (guide_whatsapp: string) => {
+    const whatsappLink = `https://wa.me/${guide_whatsapp}`;
     window.open(whatsappLink, "_blank");
   };
 
