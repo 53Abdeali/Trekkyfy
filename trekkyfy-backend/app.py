@@ -121,7 +121,7 @@ def handle_chat_request(data):
             {"status": "error", "error": "Invalid request"},
             room=hiker_id,
             namespace="/",
-            ignore_queue=True
+            ignore_queue=True,
         )
         return
 
@@ -145,13 +145,20 @@ def process_chat_request(hiker_id, guide_id):
                 db.session.add(new_request)
                 db.session.commit()
 
+                hiker = User.query.filter_by(hiker_id=hiker_id).first()
+                hiker_username = hiker.username if hiker else "Unknown"
+
                 try:
                     socketio.emit(
                         "chat_request",
-                        {"hiker_id": hiker_id, "guide_id": guide_id},
+                        {
+                            "hiker_id": hiker_id,
+                            "guide_id": guide_id,
+                            "hikerUsername": hiker_username,
+                        },
                         room=guide_id,
                     )
-                    print(f"📩 Hiker {hiker_id} sent chat request to Guide {guide_id}")
+                    print(f"📩 Hiker {hiker_id} - ({hiker_username}) sent chat request to Guide {guide_id}")
                     socketio.emit("chat_request", {"status": "success"}, room=hiker_id)
                     return {"status": "success"}
 
@@ -177,7 +184,9 @@ def handle_chat_response(data):
         print("🚨 Missing guide_id or hiker_id in chat_response")
         return
 
-    eventlet.spawn_n(process_chat_response, guide_id, hiker_id, accepted, guide_whatsapp)
+    eventlet.spawn_n(
+        process_chat_response, guide_id, hiker_id, accepted, guide_whatsapp
+    )
 
 
 def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
@@ -191,7 +200,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                 if request:
                     request.status = "accepted" if accepted else "rejected"
                     db.session.commit()
-                
+
                     new_response = ChatResponses(
                         hiker_id=hiker_id,
                         guide_id=guide_id,
@@ -217,7 +226,9 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                         if guide and guide.guide_whatsapp:
                             whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
                             socketio.emit(
-                                "whatsapp_link", {"whatsapp_url": whatsapp_url}, room=hiker_id
+                                "whatsapp_link",
+                                {"whatsapp_url": whatsapp_url},
+                                room=hiker_id,
                             )
                             print(
                                 f"✅ Guide {guide_id} accepted chat request, WhatsApp link sent to Hiker {hiker_id}"
@@ -226,10 +237,12 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                             print(
                                 f"⚠️ Guide {guide_id} accepted chat request but has no WhatsApp number."
                             )
-                            
+
                     else:
-                        print(f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}")
-                
+                        print(
+                            f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}"
+                        )
+
                 else:
                     print("❌ Chat request not found or already processed!")
 
