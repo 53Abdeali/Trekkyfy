@@ -168,7 +168,7 @@ def process_chat_request(hiker_id, guide_id):
 @socketio.on("chat_response")
 def handle_chat_response(data):
     guide_id = data.get("guide_id")
-    hiker_id = data.get("hiker_id") or data.get("hikerId")
+    hiker_id = data.get("hiker_id")
     accepted = data.get("accepted")
     guide_whatsapp = data.get("guideWhatsapp")
 
