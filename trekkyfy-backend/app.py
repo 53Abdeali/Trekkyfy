@@ -113,6 +113,9 @@ def handle_chat_request(data):
     hiker_id = data.get("hiker_id")
     guide_id = data.get("guide_id")
     user_type = data.get("user_type")
+    
+    hiker = User.query.filter_by(hiker_id=hiker_id).first()
+    hiker_username = hiker.username if hiker else "Unknown"
 
     if not hiker_id or not guide_id or user_type != "hiker":
         print("🚨 Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
@@ -126,7 +129,7 @@ def handle_chat_request(data):
         return
 
     try:
-        eventlet.spawn_n(process_chat_request, hiker_id, guide_id)
+        eventlet.spawn_n(process_chat_request, hiker_id, guide_id, hiker_username)
         return {"status": "success"}
     except Exception as e:
         print(f"🚨 Error handling chat_request: {e}")
@@ -135,7 +138,7 @@ def handle_chat_request(data):
         )
 
 
-def process_chat_request(hiker_id, guide_id):
+def process_chat_request(hiker_id, guide_id, hiker_username):
     with app.app_context():
         with app.test_request_context():
             try:
