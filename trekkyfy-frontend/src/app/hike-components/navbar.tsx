@@ -168,9 +168,7 @@ export default function Navbar() {
           guideWhatsApp: guideWhatsAppNumber,
         };
         console.log("Emitting chat_response with payload:", payload);
-        socket?.emit("chat_response", {
-          payload,
-        });
+        socket?.emit("chat_response", payload);
 
         setChatRequests((prev) =>
           prev.filter((r) => r.hiker_id !== request.hiker_id)
