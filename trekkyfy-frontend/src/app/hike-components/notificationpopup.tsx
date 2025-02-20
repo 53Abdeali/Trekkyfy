@@ -35,7 +35,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
           ) : (
             requests.map((req) => (
               <li key={req.hiker_id} className="request-item">
-                <span>{req.hikerUsername} is requesting for chat</span>
+                <span>{req.hikerUsername} - {req.hiker_id} is requesting for chat</span>
                 <div className="action-icons">
                   <FontAwesomeIcon
                     icon={faCheck}
