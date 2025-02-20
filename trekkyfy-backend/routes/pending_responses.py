@@ -16,7 +16,7 @@ def get_chat_resp():
 
     try:
         responses = ChatResponses.query.filter_by(
-            hiker_id=hiker_id, notified=False
+            hiker_id=hiker_id, notified=False, accepted = True
         ).all()
         result = []
         for resp in responses:
