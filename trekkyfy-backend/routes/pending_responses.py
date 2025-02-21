@@ -15,16 +15,18 @@ def get_chat_resp():
         return jsonify({"error": "Hiker ID not found"}), 400
 
     try:
-        responses = ChatResponses.query.filter_by(hiker_id=hiker_id).all()
+        responses = db.session.query(ChatResponses, GuideDetails.guide_whatsapp, User.username).join(
+            GuideDetails, ChatResponses.guide_id == GuideDetails.guide_id
+        ).join(User, User.guide_id == GuideDetails.guide_id).filter(ChatResponses.hiker_id == hiker_id).all()
         result = []
-        for resp in responses:
+        for resp, guide_whatsapp, guide_username in responses:
             result.append(
                 {
                     "guide_id": resp.guide_id,
                     "hiker_id": resp.hiker_id,
                     "accepted": resp.accepted,
-                    # "guide_whatsapp": resp.guide.guide_whatsapp if resp.guide else None,
-                    "guide_username": resp.guide.username if resp.guide.user else None,
+                    "guide_whatsapp": guide_whatsapp,
+                    "guide_username": guide_username,
                     "created_at": resp.created_at.isoformat(),
                 }
             )
