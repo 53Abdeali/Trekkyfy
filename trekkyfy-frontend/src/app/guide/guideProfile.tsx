@@ -26,12 +26,12 @@ interface Guide {
 
 interface Hiker{
   hiker_id:string;
-  username:string;
+  hiker_username:string;
 }
 
 interface DecodedToken{
   hiker_id:string;
-  username:string;
+  hiker_username:string;
 }
 
 const GuideProfile: React.FC = () => {
@@ -50,7 +50,7 @@ const GuideProfile: React.FC = () => {
     if (token) {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
-        setHiker({ hiker_id: decoded.hiker_id, username: decoded.username });
+        setHiker({ hiker_id: decoded.hiker_id, hiker_username: decoded.hiker_username });
       } catch (error) {
         console.error("Error decoding token:", error);
       }
