@@ -7,6 +7,8 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 export interface ChatResponse {
   accepted: boolean;
   guide_whatsapp?: string;
+  guide_username?: string;
+  guide_id?: string;
   message?: string;
   hiker_id?: string;
 }
@@ -39,7 +41,11 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
               <li key={index} className="request-item">
                 {notif.accepted ? (
                   <>
-                    <span>Your chat request was accepted!</span>
+                    <span>
+                      Your chat request was accepted by{" "}
+                      <strong>{notif.guide_username}</strong> (Guide ID:{" "}
+                      <strong>{notif.guide_id}</strong>)
+                    </span>
                     <button
                       onClick={() => {
                         if (notif.guide_whatsapp)
@@ -52,7 +58,11 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                   </>
                 ) : (
                   <>
-                    <span>Your chat request was rejected.</span>
+                    <span>
+                      Your chat request was rejected by{" "}
+                      <strong>{notif.guide_username}</strong> (Guide ID:{" "}
+                      <strong>{notif.guide_id}</strong>)
+                    </span>
                     <button onClick={() => onDismiss(index)}>
                       <FontAwesomeIcon icon={faTimes} />
                     </button>
