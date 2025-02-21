@@ -214,6 +214,10 @@ export default function Navbar() {
 
   // Handlers for hiker notifications
   const handleOpenChat = (guide_whatsapp: string) => {
+    if (!guide_whatsapp) {
+      console.error("❌ No WhatsApp number available!");
+      return;
+    }
     const whatsappLink = `https://wa.me/${guide_whatsapp}`;
     window.open(whatsappLink, "_blank");
   };
