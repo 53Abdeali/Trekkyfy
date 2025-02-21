@@ -24,7 +24,7 @@ interface Guide {
 
 interface Hiker {
   hiker_id: string;
-  username: string;
+  hiker_username: string;
 }
 
 const GuideCard: React.FC<{ guide: Guide; hiker: Hiker | null }> = ({
