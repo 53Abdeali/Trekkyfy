@@ -77,6 +77,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
     console.log("📡 Emitting chat_request:", {
       guide_id: guide.guide_id,
       hiker_id: hiker.hiker_id,
+      hiker_username: hiker.hiker_username,
       user_type: "hiker",
     });
 
