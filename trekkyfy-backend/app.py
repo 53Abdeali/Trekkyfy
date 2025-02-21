@@ -187,6 +187,9 @@ def handle_chat_response(data):
         print("🚨 Missing guide_id or hiker_id in chat_response")
         return
 
+    accepted = True if str(accepted).strip().lower() in ["true", "1", "yes"] else False
+    print(f"🔍 DEBUG: accepted={accepted}, type={type(accepted)}")
+    
     eventlet.spawn_n(
         process_chat_response, guide_id, hiker_id, accepted, guide_whatsapp
     )
