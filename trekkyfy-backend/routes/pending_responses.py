@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
-from models import ChatResponses
+from models import ChatResponses, GuideDetails
 from flask_jwt_extended import jwt_required, get_jwt  # type: ignore
 
 chat_resp_bp = Blueprint("Chat Responses", __name__)
@@ -15,17 +15,17 @@ def get_chat_resp():
         return jsonify({"error": "Hiker ID not found"}), 400
 
     try:
-        responses = ChatResponses.query.filter_by(
-            hiker_id=hiker_id, notified=False
-        ).all()
+        responses = db.session.query(ChatResponses, GuideDetails.guide_whatsapp).join(
+            GuideDetails, ChatResponses.guide_id == GuideDetails.guide_id
+        ).filter(ChatResponses.hiker_id == hiker_id).all()
         result = []
-        for resp in responses:
+        for resp, guide_whatsapp in responses:
             result.append(
                 {
                     "guide_id": resp.guide_id,
                     "hiker_id": resp.hiker_id,
                     "accepted": resp.accepted,
-                    "guideWhatsApp": resp.guide_whatsapp,
+                    "guide_whatsapp": guide_whatsapp,
                     "created_at": resp.created_at.isoformat(),
                 }
             )
