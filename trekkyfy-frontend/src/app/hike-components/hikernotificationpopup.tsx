@@ -6,7 +6,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export interface ChatResponse {
   accepted: boolean;
-  guide_whatsApp?: string;
+  guide_whatsapp?: string;
   message?: string;
   hiker_id?: string;
 }
@@ -42,8 +42,8 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                     <span>Your chat request was accepted!</span>
                     <button
                       onClick={() => {
-                        if (notif.guide_whatsApp)
-                          onOpenChat(notif.guide_whatsApp);
+                        if (notif.guide_whatsapp)
+                          onOpenChat(notif.guide_whatsapp);
                         onDismiss(index);
                       }}
                     >

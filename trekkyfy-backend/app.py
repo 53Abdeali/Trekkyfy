@@ -228,6 +228,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                         guide = GuideDetails.query.filter_by(guide_id=guide_id).first()
                         if guide and guide.guide_whatsapp:
                             whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
+                            print(whatsapp_url)
                             socketio.emit(
                                 "whatsapp_link",
                                 {"whatsapp_url": whatsapp_url},
