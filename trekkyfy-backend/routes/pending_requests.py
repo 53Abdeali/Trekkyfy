@@ -21,6 +21,7 @@ def pend_req():
                 {
                     "hiker_id": req.hiker_id,
                     "guide_id": req.guide_id,
+                    "hiker_username": req.hiker.username if req.hiker else "Unknown",
                     "status": req.status,
                 }
             )
