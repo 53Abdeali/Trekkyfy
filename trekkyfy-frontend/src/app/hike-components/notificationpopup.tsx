@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export interface ChatRequest {
-  username: string;
+  hiker_username: string;
   hiker_id: string;
   guideId: string;
 }
@@ -35,7 +35,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
           ) : (
             requests.map((req) => (
               <li key={req.hiker_id} className="request-item">
-                <span>{req.username} - {req.hiker_id} is requesting for chat</span>
+                <span>{req.hiker_username} - {req.hiker_id} is requesting for chat</span>
                 <div className="action-icons">
                   <FontAwesomeIcon
                     icon={faCheck}

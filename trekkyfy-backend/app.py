@@ -157,7 +157,7 @@ def process_chat_request(hiker_id, guide_id, hiker_username):
                         {
                             "hiker_id": hiker_id,
                             "guide_id": guide_id,
-                            "hikerUsername": hiker_username,
+                            "hiker_username": hiker_username,
                         },
                         room=guide_id,
                     )

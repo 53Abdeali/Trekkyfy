@@ -33,7 +33,7 @@ interface Guide {
 
 interface Hiker {
   hiker_id: string;
-  username: string;
+  hiker_username: string;
 }
 
 interface GuideModalProps {
@@ -42,14 +42,7 @@ interface GuideModalProps {
   onClose: () => void;
 }
 
-interface DataDetails {
-  guide_id: string;
-  hiker_id: string;
-  accepted: boolean;
-}
-
 const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
-  const [chatAccepted, setChatAccepted] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
   const userType = hiker ? "hiker" : "guide";
@@ -73,24 +66,9 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
         });
       }
     });
-
-    socketRef.current?.on("chat_response", (data: DataDetails) => {
-      if (data.guide_id !== guide.guide_id) return;
-      if (data.accepted) {
-        toast.success("Chat accepted! You can now chat on WhatsApp.");
-        setChatAccepted(true);
-      } else {
-        toast.error("Apologies, chat request rejected.");
-      }
-    });
-
-    return () => {
-      socketRef.current?.off("chat_response");
-    };
   }, [guide.guide_id, hiker, userId, userType]);
 
   const handleRequestChat = () => {
-    // Only hiker users should be able to request a chat.
     if (!hiker) {
       toast.error("You must be logged in as a hiker to send a chat request.");
       return;
@@ -107,6 +85,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       {
         guide_id: guide.guide_id,
         hiker_id: hiker.hiker_id,
+        hiker_username: hiker.hiker_username,
         user_type: "hiker",
       },
       (response: ChatRequestResponse) => {
@@ -172,20 +151,6 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
                 Request Chat
               </span>
             </div>
-            {chatAccepted && (
-              <div className="whatsapp-link">
-                <p>
-                  <strong>Chat with Guide on WhatsApp:</strong>{" "}
-                  <a
-                    href={`https://wa.me/${guide.guide_whatsapp}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Click here to chat
-                  </a>
-                </p>
-              </div>
-            )}
           </div>
 
           <div className="vertical-divider" />
