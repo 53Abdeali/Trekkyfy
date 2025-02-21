@@ -225,6 +225,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                     )
 
                     if accepted:
+                        print(f"✅ Accepted condition triggered for guide {guide_id}")
                         guide = GuideDetails.query.filter_by(guide_id=guide_id).first()
                         if guide and guide.guide_whatsapp:
                             whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
