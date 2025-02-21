@@ -23,7 +23,7 @@ def get_chat_resp():
                     "guide_id": resp.guide_id,
                     "hiker_id": resp.hiker_id,
                     "accepted": resp.accepted,
-                    "guide_whatsapp": resp.guide.guide_whatsapp if resp.guide else None,
+                    # "guide_whatsapp": resp.guide.guide_whatsapp if resp.guide else None,
                     "guide_username": resp.guide.username if resp.guide.user else None,
                     "created_at": resp.created_at.isoformat(),
                 }
