@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
@@ -44,7 +44,7 @@ interface GuideModalProps {
 
 const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   const socketRef = useRef<Socket | null>(null);
-
+  const [requestPending, setRequestPending] = useState<boolean>(false);
   const userType = hiker ? "hiker" : "guide";
   const userId = hiker ? hiker.hiker_id : guide.guide_id;
 
@@ -74,6 +74,11 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       return;
     }
 
+    if (requestPending) {
+      toast.error("Chat request already pending. Please wait for a response.");
+      return;
+    }
+
     console.log("📡 Emitting chat_request:", {
       guide_id: guide.guide_id,
       hiker_id: hiker.hiker_id,
@@ -97,6 +102,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
         if (response.status === "success") {
           toast.success("Chat Request Sent!");
           console.log("Chat request sent successfully!");
+          setRequestPending(true);
         } else {
           console.error("Failed to send chat request:", response.error);
         }
@@ -148,8 +154,15 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
               <span className="request-button">
                 Request Pricing & Availability
               </span>
-              <span className="request-button" onClick={handleRequestChat}>
-                Request Chat
+              <span
+                className="request-button"
+                onClick={handleRequestChat}
+                style={{
+                  pointerEvents: requestPending ? "none" : "auto",
+                  opacity: requestPending ? 0.5 : 1,
+                }}
+              >
+                {requestPending ? "Request Pending" : "Request Chat"}
               </span>
             </div>
           </div>
