@@ -8,7 +8,7 @@ import { jwtDecode } from "jwt-decode";
 
 interface Guide {
   id: string;
-  guide_id:string;
+  guide_id: string;
   guide_city: string;
   guide_district: string;
   guide_state: string;
@@ -23,14 +23,14 @@ interface Guide {
   last_seen?: string;
 }
 
-interface Hiker{
-  hiker_id:string;
-  hiker_username:string;
+interface Hiker {
+  hiker_id: string;
+  hiker_username: string;
 }
 
-interface DecodedToken{
-  hiker_id:string;
-  hiker_username:string;
+interface DecodedToken {
+  hiker_id: string;
+  hiker_username: string;
 }
 
 const GuideProfile: React.FC = () => {
@@ -49,7 +49,10 @@ const GuideProfile: React.FC = () => {
     if (token) {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
-        setHiker({ hiker_id: decoded.hiker_id, hiker_username: decoded.hiker_username });
+        setHiker({
+          hiker_id: decoded.hiker_id,
+          hiker_username: decoded.hiker_username,
+        });
       } catch (error) {
         console.error("Error decoding token:", error);
       }
@@ -85,7 +88,9 @@ const GuideProfile: React.FC = () => {
     <div>
       <GuideSearch onFilterChange={setFilters} />
       {loading ? (
-        <p>Loading guides...</p>
+        <div className="guide-prof-circ">
+          <div className="guide-prof-load"></div>
+        </div>
       ) : (
         <div className="guides-list">
           {guides.length > 0 ? (
@@ -93,7 +98,7 @@ const GuideProfile: React.FC = () => {
               <GuideCard key={guide.id} guide={guide} hiker={hiker} />
             ))
           ) : (
-            <p>No guides found with the selected filters.</p>
+            <p className="guide-not-found">No guides found with the selected filters.</p>
           )}
         </div>
       )}
