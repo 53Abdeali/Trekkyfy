@@ -57,7 +57,10 @@ export default function Notification() {
   useEffect(() => {
     if (userRole === "guide" && guideId) {
       axiosInstance
-        .get("/pending-requests", { params: { guide_id: guideId } })
+        .get("/pending-requests", {
+          params: { guide_id: guideId },
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((res) => {
           console.log("Fetching pending request", res.data);
           setChatRequests(res.data);
@@ -67,7 +70,10 @@ export default function Notification() {
         });
     } else if (userRole === "hiker" && currentHikerId) {
       axiosInstance
-        .get("/pending-responses", { params: { hiker_id: currentHikerId } })
+        .get("/pending-responses", {
+          params: { hiker_id: currentHikerId },
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((res) => {
           setChatResponses(res.data);
         })
