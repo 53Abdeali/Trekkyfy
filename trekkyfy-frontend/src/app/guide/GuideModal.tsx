@@ -74,7 +74,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   const checkChatRequestStatus = async () => {
     if (!hiker) return;
     try {
-      const res = await axiosInstance.get("/pending-responses", {
+      const res = await axiosInstance.get("/pending-requests", {
         params: { guide_id: guide.guide_id},
         headers: {Authorization:`Bearer ${token}`}
       });
