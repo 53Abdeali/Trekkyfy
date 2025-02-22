@@ -5,6 +5,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Montserrat", "serif";
 }
 
 .guide-profile {
@@ -68,4 +69,19 @@
   cursor: pointer;
   padding: 1rem;
   border-radius: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .guides-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .guide-profile {
+    justify-content: center;
+    width: 90%;
+  }
+  .guide-card {
+    padding: 0.7rem;
+  }
 }

@@ -16,8 +16,8 @@ export interface ChatResponse {
 
 interface HikerNotificationPopupProps {
   notifications: ChatResponse[];
-  onOpenChat: (guide_whatsapp: string) => void;
-  onDismiss: (index: number) => void;
+  onOpenChat: (guide_whatsapp: string, guide_id?: string) => void;
+  onDismiss: (guide_id?: string) => void;
 }
 
 const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
@@ -47,8 +47,8 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                     <button
                       onClick={() => {
                         if (notif.guide_whatsapp)
-                          onOpenChat(notif.guide_whatsapp);
-                        onDismiss(index);
+                          onOpenChat(notif.guide_whatsapp, notif.guide_id);
+                        onDismiss(notif.guide_id);
                       }}
                       className="chat-btn"
                     >
@@ -56,7 +56,7 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                     </button>
                     <button
                       onClick={() => {
-                        onDismiss(index);
+                        onDismiss(notif.guide_id);
                       }}
                       className="dismiss-btn"
                     >
@@ -70,7 +70,7 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                       <strong>{notif.guide_username}</strong> (Guide ID:{" "}
                       <strong>{notif.guide_id}</strong>)
                     </span>
-                    <button onClick={() => onDismiss(index)}>
+                    <button onClick={() => onDismiss(notif.guide_id)}>
                       <FontAwesomeIcon icon={faTimes} />
                     </button>
                   </>

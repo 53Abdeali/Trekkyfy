@@ -53,6 +53,19 @@ body {
   padding: 0 2rem;
 }
 
+.guide-note{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.gd-nt{
+  color: #212b43;
+  font-style:italic;
+  font-weight: 600;
+}
+
 @media (max-width: 600px) {
   .guide-hero {
     flex-direction: column;
@@ -76,6 +89,9 @@ body {
   .guide-hero-para {
     padding: 0 1rem;
     margin-bottom: 2rem;
+  }
+  .gd-nt{
+    padding: 0 1rem;
   }
 }
 

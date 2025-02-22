@@ -43,7 +43,7 @@ export default function Notification() {
 
   useEffect(() => {
     if (!token) {
-      //   router.push("/login");
+      router.push("/login");
       return;
     }
     try {
@@ -132,17 +132,20 @@ export default function Notification() {
     );
   };
 
-  const handleOpenChat = (guide_whatsapp: string) => {
+  const handleOpenChat = (guide_whatsapp: string, guide_id?: string) => {
     if (!guide_whatsapp) {
       console.error("❌ No WhatsApp number available!");
       return;
     }
     const whatsappLink = `https://wa.me/${guide_whatsapp}`;
     window.open(whatsappLink, "_blank");
+    setChatResponses((prev) => prev.filter((r) => r.guide_id !== guide_id));
   };
 
-  const handleDismissResponse = (index: number) => {
-    setChatResponses((prev) => prev.filter((_, i) => i !== index));
+  const handleDismissResponse = (guide_id?: string) => {
+    setChatResponses((prev) =>
+      prev.filter((r) => r.guide_id !== guide_id)
+    );
   };
 
   const logout = async () => {
