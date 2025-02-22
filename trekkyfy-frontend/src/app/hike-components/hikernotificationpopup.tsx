@@ -60,7 +60,7 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                       }}
                       className="dismiss-btn"
                     >
-                      Dismiss Chat
+                      Dismiss
                     </button>
                   </>
                 ) : (
