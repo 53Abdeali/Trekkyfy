@@ -75,10 +75,14 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
     if (!hiker) return;
     try {
       const res = await axiosInstance.get("/pending-responses", {
-        params: { guide_id: guide.guide_id, hiker_id: hiker.hiker_id },
+        params: { guide_id: guide.guide_id},
         headers: {Authorization:`Bearer ${token}`}
       });
-      setRequestPending(res.data.accepted);
+      const pending = res.data.some(
+        (req: { hiker_id: string; status: string }) =>
+          req.hiker_id === hiker.hiker_id && req.status === "pending"
+      );
+      setRequestPending(pending);
     } catch (error) {
       console.error("Error checking chat request status:", error);
     }
