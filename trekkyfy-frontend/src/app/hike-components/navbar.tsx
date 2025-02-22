@@ -123,6 +123,36 @@ export default function Navbar() {
     };
   }, [userRole, currentHikerId, socket]);
 
+  useEffect(() => {
+    if (userRole === "guide" && guideId) {
+      axiosInstance
+        .get("/pending-requests", {
+          params: { guide_id: guideId },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          console.log("Fetching pending request", res.data);
+          setChatRequests(res.data);
+        })
+        .catch((err) => {
+          console.log("Error fetching pending request", err);
+        });
+    } else if (userRole === "hiker" && currentHikerId) {
+      axiosInstance
+        .get("/pending-responses", {
+          params: { hiker_id: currentHikerId },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setChatResponses(res.data);
+        })
+        .catch((err) => {
+          console.error("Error fetching pending responses:", err);
+          toast.error("Error fetching notifications.");
+        });
+    }
+  }, [userRole, guideId, currentHikerId]);
+
   const logout = async () => {
     try {
       const response = await axiosInstance.post("/logout");
