@@ -8,6 +8,8 @@ import "@/app/stylesheet/guidemodal.css";
 import { initializeSocket } from "@/app/socket";
 import toast from "react-hot-toast";
 import { Socket } from "socket.io-client";
+import axiosInstance from "@/utils/axiosConfig";
+import Cookies from "js-cookie";
 
 interface ChatRequestResponse {
   status: "success" | "error";
@@ -47,6 +49,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   const [requestPending, setRequestPending] = useState<boolean>(false);
   const userType = hiker ? "hiker" : "guide";
   const userId = hiker ? hiker.hiker_id : guide.guide_id;
+  const token = Cookies.get("access_token");
 
   useEffect(() => {
     socketRef.current = initializeSocket(userId, guide.guide_id, userType);
@@ -67,6 +70,28 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       }
     });
   }, [guide.guide_id, hiker, userId, userType]);
+
+  const checkChatRequestStatus = async () => {
+    if (!hiker) return;
+    try {
+      const res = await axiosInstance.get("/pending-responses", {
+        params: { guide_id: guide.guide_id, hiker_id: hiker.hiker_id },
+        headers: {Authorization:`Bearer ${token}`}
+      });
+      setRequestPending(res.data.accepted);
+    } catch (error) {
+      console.error("Error checking chat request status:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (hiker) {
+      checkChatRequestStatus();
+      const intervalId = setInterval(checkChatRequestStatus, 5000);
+      return () => clearInterval(intervalId);
+    }
+  }, [guide.guide_id, hiker]);
+
 
   const handleRequestChat = () => {
     if (!hiker) {
