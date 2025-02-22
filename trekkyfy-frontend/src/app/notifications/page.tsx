@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NotificationPopup, {
   ChatRequest,
 } from "@/app/hike-components/notificationpopup";
@@ -16,7 +16,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import "@/app/stylesheet/notification.css";
-import { faArrowCircleLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowCircleLeft,
+  faUserCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface DecodedToken {
@@ -30,10 +33,13 @@ export default function Notification() {
   const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
   const [guideId, setGuideId] = useState<string | null>(null);
   const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
+  const [showProfileDown, setShowProfileDown] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const socket = getSocket();
   const token = Cookies.get("access_token");
   const router = useRouter();
+  const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!token) {
@@ -139,39 +145,85 @@ export default function Notification() {
     setChatResponses((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const logout = async () => {
+    try {
+      const response = await axiosInstance.post("/logout");
+      if (response.status === 200) {
+        setIsAuthenticated(false);
+        Cookies.remove("access_token");
+        window.location.href = "/";
+        toast.success("Logout Successfully");
+      }
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
   return (
-    <div className="notifications-page">
-      <header>
-        <h1>
-          Notifications{" "}
-          <span>
-            {userRole === "guide" && chatResponses.length > 0 && (
-              <span className="badge">{chatResponses.length}</span>
+    <>
+      {isAuthenticated && (
+        <div className="notifications-page">
+          <header>
+            <Link className="not-link" href="/">
+              <FontAwesomeIcon className="not-icon" icon={faArrowCircleLeft} />
+            </Link>
+            <h1>
+              Notifications{" "}
+              <span>
+                {userRole === "guide" && chatResponses.length > 0 && (
+                  <span className="badge">{chatResponses.length}</span>
+                )}
+                {userRole === "hiker" && chatResponses.length > 0 && (
+                  <span className="badge">{chatResponses.length}</span>
+                )}
+              </span>
+            </h1>
+            <div ref={profileRef} className="profile-container">
+              <span
+                onClick={() => setShowProfileDown(!showProfileDown)}
+                className="profile-icon"
+              >
+                <FontAwesomeIcon
+                  className="nav-prof-icon"
+                  icon={faUserCircle}
+                  size="lg"
+                />
+              </span>
+              {showProfileDown && (
+                <div className="profile-dropdown">
+                  <Link href="/profile" className="dropdown-item">
+                    Profile
+                  </Link>
+                  <span
+                    onClick={() => {
+                      logout();
+                      setIsAuthenticated(false);
+                    }}
+                    className="dropdown-item"
+                  >
+                    Logout
+                  </span>
+                </div>
+              )}
+            </div>
+          </header>
+          <main>
+            {userRole === "guide" ? (
+              <NotificationPopup
+                requests={chatRequests}
+                onAccept={handleAccept}
+                onReject={handleReject}
+              />
+            ) : (
+              <HikerNotificationPopup
+                notifications={chatResponses}
+                onOpenChat={handleOpenChat}
+                onDismiss={handleDismissResponse}
+              />
             )}
-            {userRole === "hiker" && chatResponses.length > 0 && (
-              <span className="badge">{chatResponses.length}</span>
-            )}
-          </span>
-        </h1>
-        <Link className="not-link" href="/">
-          <FontAwesomeIcon className="not-icon" icon={faArrowCircleLeft} />
-        </Link>
-      </header>
-      <main>
-        {userRole === "guide" ? (
-          <NotificationPopup
-            requests={chatRequests}
-            onAccept={handleAccept}
-            onReject={handleReject}
-          />
-        ) : (
-          <HikerNotificationPopup
-            notifications={chatResponses}
-            onOpenChat={handleOpenChat}
-            onDismiss={handleDismissResponse}
-          />
-        )}
-      </main>
-    </div>
+          </main>
+        </div>
+      )}
+    </>
   );
 }

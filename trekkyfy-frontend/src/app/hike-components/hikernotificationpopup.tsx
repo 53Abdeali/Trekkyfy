@@ -3,6 +3,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import "@/app/stylesheet/notification.css"
 
 export interface ChatResponse {
   accepted: boolean;
@@ -51,6 +52,13 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                       }}
                     >
                       Open Chat
+                    </button>
+                    <button
+                      onClick={() => {
+                        onDismiss(index);
+                      }}
+                    >
+                      Dismiss Chat
                     </button>
                   </>
                 ) : (
