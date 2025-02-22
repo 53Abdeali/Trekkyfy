@@ -161,7 +161,7 @@ export default function Notification() {
 
   return (
     <>
-      {isAuthenticated && (
+      {!isAuthenticated && (
         <div className="notifications-page">
           <header>
             <Link className="not-link" href="/">
