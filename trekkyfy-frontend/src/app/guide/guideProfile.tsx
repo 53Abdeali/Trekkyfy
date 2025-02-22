@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import GuideSearch, { FilterCriteria } from "./guideSearch";
 import GuideCard from "./guideCard";
 import axiosInstance from "@/utils/axiosConfig";
-import "@/app/stylesheet/guideProfile.css";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 

@@ -17,21 +17,18 @@ interface HikerNotificationPopupProps {
   notifications: ChatResponse[];
   onOpenChat: (guide_whatsapp: string) => void;
   onDismiss: (index: number) => void;
-  onClose: () => void;
 }
 
 const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
   notifications,
   onOpenChat,
   onDismiss,
-  onClose,
 }) => {
   return (
     <div className="notification-popup-overlay">
       <div className="notification-popup">
         <div className="popup-header">
           <h3>Chat Responses</h3>
-          <button onClick={onClose}>Close</button>
         </div>
         <ul className="request-list">
           {notifications.length === 0 ? (

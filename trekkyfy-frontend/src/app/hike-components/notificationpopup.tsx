@@ -13,21 +13,18 @@ interface NotificationPopupProps {
   requests: ChatRequest[];
   onAccept: (request: ChatRequest) => void;
   onReject: (request: ChatRequest) => void;
-  onClose: () => void;
 }
 
 const NotificationPopup: React.FC<NotificationPopupProps> = ({
   requests,
   onAccept,
   onReject,
-  onClose,
 }) => {
   return (
     <div className="notification-popup-overlay">
       <div className="notification-popup">
         <div className="popup-header">
           <h3>Chat Requests</h3>
-          <button onClick={onClose}>Close</button>
         </div>
         <ul className="request-list">
           {requests.length === 0 ? (

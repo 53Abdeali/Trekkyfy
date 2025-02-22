@@ -152,6 +152,19 @@
   font-size: 2rem;
 }
 
+.notification-icon {
+  text-align: center;
+  color: #212b43;
+  position: relative;
+  font-size: 2rem;
+}
+
+.badge {
+  top: 0;
+  position: absolute;
+  font-size: 1rem;
+}
+
 @media (max-width: 600px) {
   .nav-logo {
     width: 50%;

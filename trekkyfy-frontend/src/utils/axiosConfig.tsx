@@ -1,8 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
+
+const baseURL = "https://trekkyfy.onrender.com/api";
 
 const axiosInstance = axios.create({
-  baseURL: 'https://trekkyfy.onrender.com/api', 
-  withCredentials: true, 
+  baseURL,
+  withCredentials: true,
 });
 
 export default axiosInstance;

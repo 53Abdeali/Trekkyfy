@@ -16,9 +16,8 @@ import { usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 import { getSocket, initializeSocket } from "@/app/socket";
-import NotificationPopup, { ChatRequest } from "./notificationpopup";
-import HikerNotificationPopup, { ChatResponse } from "./hikernotificationpopup";
-import axios from "axios";
+import { ChatRequest } from "./notificationpopup";
+import { ChatResponse } from "./hikernotificationpopup";
 
 interface DecodedToken {
   guide_id?: string;
@@ -31,15 +30,9 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState(pathname || "/");
   const [showProfileDown, setShowProfileDown] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // userRole can be either "guide" or "hiker"
   const [userRole, setUserRole] = useState<"guide" | "hiker" | null>(null);
-  // For guides: incoming chat requests from hikers
   const [chatRequests, setChatRequests] = useState<ChatRequest[]>([]);
-  const [showGuideNotification, setShowGuideNotification] = useState(false);
-  // For hikers: responses from guides (accepted or rejected)
   const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
-  const [showHikerNotification, setShowHikerNotification] = useState(false);
-  // Current hiker id (if logged in as hiker)
   const [guideId, setGuideId] = useState<string | null>(null);
   const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
 
@@ -66,9 +59,8 @@ export default function Navbar() {
     } catch (error) {
       console.error("Error decoding token:", error);
     }
-  }, []);
+  }, [token]);
 
-  // Listen for clicks outside to close nav elements and dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -79,8 +71,6 @@ export default function Navbar() {
       }
       setShowNavElement(false);
       setShowProfileDown(false);
-      setShowGuideNotification(false);
-      setShowHikerNotification(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -101,7 +91,6 @@ export default function Navbar() {
     }
   }, [userRole, guideId, currentHikerId]);
 
-  // For guides: Listen for incoming chat requests via Socket.IO
   useEffect(() => {
     if (userRole === "guide" && socket) {
       socket.on("chat_request", (request: ChatRequest) => {
@@ -114,7 +103,6 @@ export default function Navbar() {
     };
   }, [userRole, socket]);
 
-  // For hikers: Listen for chat responses from guides via Socket.IO
   useEffect(() => {
     if (userRole === "hiker" && socket) {
       socket.on(
@@ -125,7 +113,6 @@ export default function Navbar() {
           hiker_id?: string;
           message?: string;
         }) => {
-          // Ensure the response is meant for the current hiker
           if (data.hiker_id && data.hiker_id !== currentHikerId) return;
           setChatResponses((prev) => [...prev, data]);
         }
@@ -135,96 +122,6 @@ export default function Navbar() {
       socket?.off("chat_response");
     };
   }, [userRole, currentHikerId, socket]);
-
-  useEffect(() => {
-    if (userRole === "guide" && guideId) {
-      axiosInstance
-        .get("/pending-requests", { params: { guide_id: guideId } })
-        .then((res) => {
-          console.log("Fetching pending request", res.data);
-          setChatRequests(res.data);
-        })
-        .catch((err) => {
-          console.log("Error fetching pending request", err);
-        });
-    }
-  }, [userRole, guideId]);
-
-  // Handlers for guide notifications
-  const handleAccept = async (request: ChatRequest) => {
-    try {
-      const response = await axios.get("/guide", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: { guide_id: guideId },
-      });
-      if (response.status === 200) {
-        const guideWhatsAppNumber = response.data.guide_whatsapp;
-        const payload = {
-          guide_id: guideId,
-          hiker_id: request.hiker_id,
-          accepted: true,
-          guide_whatsapp: guideWhatsAppNumber,
-        };
-        console.log("Emitting chat_response with payload:", payload);
-        socket?.emit("chat_response", payload);
-
-        setChatRequests((prev) =>
-          prev.filter((r) => r.hiker_id !== request.hiker_id)
-        );
-      }
-    } catch (error) {
-      console.error("Failed to fetch guide WhatsApp number:", error);
-      toast.error("Error fetching WhatsApp number.");
-    }
-  };
-
-  const handleReject = (request: ChatRequest) => {
-    const payload = {
-      guide_id: guideId,
-      hiker_id: request.hiker_id,
-      accepted: false,
-    };
-    console.log("Emitting chat_response with payload:", payload);
-    socket?.emit("chat_response", payload);
-    setChatRequests((prev) =>
-      prev.filter((r) => r.hiker_id !== request.hiker_id)
-    );
-  };
-
-  useEffect(() => {
-    if (userRole === "hiker" && currentHikerId) {
-      axiosInstance
-        .get("/pending-responses", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: { hiker_id: currentHikerId },
-        })
-        .then((res) => {
-          console.log("Fetched pending responses:", res.data);
-          setChatResponses(res.data);
-        })
-        .catch((err) => {
-          console.error("Error fetching pending responses:", err);
-        });
-    }
-  }, [userRole, currentHikerId]);
-
-  // Handlers for hiker notifications
-  const handleOpenChat = (guide_whatsapp: string) => {
-    if (!guide_whatsapp) {
-      console.error("❌ No WhatsApp number available!");
-      return;
-    }
-    const whatsappLink = `https://wa.me/${guide_whatsapp}`;
-    window.open(whatsappLink, "_blank");
-  };
-
-  const handleDismissResponse = (index: number) => {
-    setChatResponses((prev) => prev.filter((_, i) => i !== index));
-  };
 
   const logout = async () => {
     try {
@@ -364,38 +261,19 @@ export default function Navbar() {
                   Contact Us
                 </Link>
               </li>
-              {/* Notification icon for guides */}
-              {userRole === "guide" && (
-                <li className="notification-container">
-                  <span
-                    onClick={() =>
-                      setShowGuideNotification(!showGuideNotification)
-                    }
-                    className="notification-icon"
-                  >
+              <li className="notification-container">
+                <Link href="/notifications">
+                  <span className="notification-icon">
                     <FontAwesomeIcon icon={faBell} size="lg" />
-                    {chatRequests.length > 0 && (
+                    {userRole === "guide" && chatRequests.length > 0 && (
                       <span className="badge">{chatRequests.length}</span>
                     )}
-                  </span>
-                </li>
-              )}
-              {/* Notification icon for hikers */}
-              {userRole === "hiker" && (
-                <li className="notification-container">
-                  <span
-                    onClick={() =>
-                      setShowHikerNotification(!showHikerNotification)
-                    }
-                    className="notification-icon"
-                  >
-                    <FontAwesomeIcon icon={faBell} size="lg" />
-                    {chatResponses.length > 0 && (
+                    {userRole === "hiker" && chatResponses.length > 0 && (
                       <span className="badge">{chatResponses.length}</span>
                     )}
                   </span>
-                </li>
-              )}
+                </Link>
+              </li>
               <li ref={profileRef} className="profile-container">
                 <span
                   onClick={() => setShowProfileDown(!showProfileDown)}
@@ -434,26 +312,6 @@ export default function Navbar() {
           <FontAwesomeIcon className="nav-bar" icon={faBars} />
         </span>
       </div>
-
-      {/* Guide Notification Popup */}
-      {showGuideNotification && userRole === "guide" && (
-        <NotificationPopup
-          requests={chatRequests}
-          onAccept={handleAccept}
-          onReject={handleReject}
-          onClose={() => setShowGuideNotification(false)}
-        />
-      )}
-
-      {/* Hiker Notification Popup */}
-      {showHikerNotification && userRole === "hiker" && (
-        <HikerNotificationPopup
-          notifications={chatResponses}
-          onOpenChat={handleOpenChat}
-          onDismiss={handleDismissResponse}
-          onClose={() => setShowHikerNotification(false)}
-        />
-      )}
     </div>
   );
 }

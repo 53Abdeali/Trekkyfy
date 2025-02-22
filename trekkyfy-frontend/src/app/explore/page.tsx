@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/app/hike-components/navbar";
 import "@/app/stylesheet/explore.css";
 import Link from "next/link";
@@ -46,29 +46,7 @@ export default function Explore() {
     }
   }, [router]);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchTrails(true);
-    }
-  }, [filters, isAuthenticated]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - 200
-      ) {
-        if (!isLoading && hasMore) {
-          fetchTrails(false);
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isLoading, hasMore]);
-
-  const fetchTrails = async (isNewFilter: boolean) => {
+  const fetchTrails = useCallback(async (isNewFilter: boolean) => {
     setIsLoading(true);
     try {
       const response = await axiosInstance.get("/explore", {
@@ -90,7 +68,29 @@ export default function Explore() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters, page]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchTrails(true);
+    }
+  }, [filters, isAuthenticated, fetchTrails]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 200
+      ) {
+        if (!isLoading && hasMore) {
+          fetchTrails(false);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLoading, hasMore, fetchTrails]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
