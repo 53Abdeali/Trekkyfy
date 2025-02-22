@@ -50,6 +50,7 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                           onOpenChat(notif.guide_whatsapp);
                         onDismiss(index);
                       }}
+                      className="chat-btn"
                     >
                       Open Chat
                     </button>
@@ -57,6 +58,7 @@ const HikerNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                       onClick={() => {
                         onDismiss(index);
                       }}
+                      className="dismiss-btn"
                     >
                       Dismiss Chat
                     </button>

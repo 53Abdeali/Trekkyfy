@@ -116,7 +116,7 @@ li.request-item {
   font-size: 1.1rem;
 }
 
-.request-item button {
+.chat-button {
   border: none;
   outline: none;
   padding: 0.5rem 1rem;
@@ -125,4 +125,63 @@ li.request-item {
   border-radius: 0.5rem;
   margin: 1rem;
   font-size: 1rem;
+}
+
+.dismiss-btn {
+  border: none;
+  outline: none;
+  padding: 0.5rem 1rem;
+  border: 2px solid #212b43;
+  color: #212b43;
+  border-radius: 0.5rem;
+  margin: 1rem;
+  font-size: 1rem;
+}
+
+.chat-button:hover {
+  background-color: #fff;
+  border: 2px solid #212b43;
+  color: #212b43;
+  transition: all 0.5s ease-in-out;
+}
+
+.dismiss-btn:hover {
+  background-color: #212b43;
+  color: #fff;
+  transition: all 0.5s ease-in-out;
+}
+
+.action-icons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem;
+}
+
+.accept-icon {
+  border-radius: 50%;
+  color: #fff;
+  background-color: #212b43;
+  margin-right: 1rem;
+  padding: 0.5rem;
+}
+
+.reject-icon {
+  border-radius: 50%;
+  color: #212b43;
+  border: 2px solid #212b43;
+  padding: 0.5rem;
+}
+
+.accept-icon:hover {
+  background-color: #fff;
+  border: 2px solid #212b43;
+  color: #212b43;
+  transition: all 0.5s ease-in-out;
+}
+
+.reject-icon:hover {
+  background-color: #212b43;
+  color: #fff;
+  transition: all 0.5s ease-in-out;
 }

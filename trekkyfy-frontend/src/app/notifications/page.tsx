@@ -170,8 +170,8 @@ export default function Notification() {
             <h1>
               Notifications{" "}
               <span>
-                {userRole === "guide" && chatResponses.length > 0 && (
-                  <span className="badge">{chatResponses.length}</span>
+                {userRole === "guide" && chatRequests.length > 0 && (
+                  <span className="badge">{chatRequests.length}</span>
                 )}
                 {userRole === "hiker" && chatResponses.length > 0 && (
                   <span className="badge">{chatResponses.length}</span>
