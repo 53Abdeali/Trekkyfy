@@ -187,10 +187,12 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
           return;
         }
         if (response.status === "success") {
-          toast.success("Chat Request Sent!");
-          console.log("Chat request sent successfully!");
+          console.log("Price and Availability request sent successfully!");
         } else {
-          console.error("Failed to send chat request:", response.error);
+          console.error(
+            "Failed to send Price and Availability request:",
+            response.error
+          );
         }
       }
     );
