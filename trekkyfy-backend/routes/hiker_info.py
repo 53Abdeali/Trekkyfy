@@ -26,17 +26,7 @@ def price_avl_req():
     trek_place = data.get("trek_place")
     hiking_members = data.get("hiking_members")
     trek_date = datetime.strptime(data.get("trek_date"), "%Y-%m-%d").date()
-    trek_time_str = data["trek_time"]
-
-    if len(trek_time_str) == 5:
-        trek_time = datetime.strptime(trek_time_str, "%H:%M").time()
-    elif len(trek_time_str) == 8:
-        trek_time = datetime.strptime(trek_time_str, "%H:%M:%S").time()
-    else:
-        return (
-            jsonify({"Error": "Invalid trek_time format. Use HH:MM or HH:MM:SS"}),
-            400,
-        )
+    trek_time = datetime.strptime(data.get("trek_time"), "%H:%M").time()
 
     try:
         hiker_req = HikerRequest(
