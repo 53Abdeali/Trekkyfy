@@ -60,14 +60,17 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
     try {
       const res = await axiosInstance.post("/avl-price-req", {
         params: {
-          hikerId,
-          profile,
-          trekPlace,
-          onDate,
-          onTime,
-          allMembers,
+          hiker_id: hikerId,
+          hiker_username: profile?.username,
+          trek_place: trekPlace,
+          hiking_members: allMembers,
+          trek_date: onDate,
+          trek_time: onTime,
         },
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       if (res.status === 200) {
         toast.success(
@@ -101,6 +104,8 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
                   onChange={(e) => {
                     setHikerId(e.target.value);
                   }}
+                  style={{ backgroundColor: "#ccc", cursor: "not-allowed" }}
+                  contentEditable={false}
                 />
               </div>
               <div className="pr-av-ip">
@@ -112,6 +117,8 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
                   onChange={(e) => {
                     setHikerId(e.target.value);
                   }}
+                  style={{ backgroundColor: "#ccc", cursor: "not-allowed" }}
+                  contentEditable={false}
                 />
               </div>
             </div>
