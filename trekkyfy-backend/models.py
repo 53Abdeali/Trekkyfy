@@ -130,3 +130,21 @@ class GuideDetails(db.Model):
 
     def __repr__(self):
         return f"<Guide_Details {self.guide_id}, City {self.guide_city}>"
+    
+class HikerRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    hiker_id = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(100), nullable=False)
+    trek_place = db.Column(db.String(255), nullable=False)
+    on_date = db.Column(db.Date, nullable=False)
+    on_time = db.Column(db.Time, nullable=False)
+    all_members = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __init__(self, hiker_id, username, trek_place, on_date, on_time, all_members):
+        self.hiker_id = hiker_id
+        self.username = username
+        self.trek_place = trek_place
+        self.on_date = on_date
+        self.on_time = on_time
+        self.all_members = all_members

@@ -14,6 +14,7 @@ from routes.guide_complete import guide_bp
 from routes.image_upload import image_upload_bp
 from routes.pending_requests import pending_req_bp
 from routes.pending_responses import chat_resp_bp
+from routes.hiker_info import hiker_info_bp
 
 def register_blueprints(app: Flask):
     # API Call for Register
@@ -60,5 +61,8 @@ def register_blueprints(app: Flask):
     
     #API for Pending Responses
     app.register_blueprint(chat_resp_bp, url_prefix="/api")
+    
+    #API for Pricing and Availabilty by Hiker
+    app.register_blueprint(hiker_info_bp, url_prefix="/api")
     
     

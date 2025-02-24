@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { Socket } from "socket.io-client";
 import axiosInstance from "@/utils/axiosConfig";
 import Cookies from "js-cookie";
+import HikerInfo from "./PriceAvail";
 
 interface ChatRequestResponse {
   status: "success" | "error";
@@ -50,6 +51,18 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   const userType = hiker ? "hiker" : "guide";
   const userId = hiker ? hiker.hiker_id : guide.guide_id;
   const token = Cookies.get("access_token");
+  const [showHikerInfo, setShowHikerInfo] = useState(false)
+
+  useEffect(() => {
+    if (showHikerInfo) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showHikerInfo]);
 
   useEffect(() => {
     socketRef.current = initializeSocket(userId, guide.guide_id, userType);
@@ -75,8 +88,8 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
     if (!hiker) return;
     try {
       const res = await axiosInstance.get("/pending-requests", {
-        params: { guide_id: guide.guide_id},
-        headers: {Authorization:`Bearer ${token}`}
+        params: { guide_id: guide.guide_id },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const pending = res.data.some(
         (req: { hiker_id: string; status: string }) =>
@@ -95,7 +108,6 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       return () => clearInterval(intervalId);
     }
   }, [guide.guide_id, hiker]);
-
 
   const handleRequestChat = () => {
     if (!hiker) {
@@ -140,78 +152,81 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-close-btn">
-          <button className="modal-close" onClick={onClose}>
-            <FontAwesomeIcon icon={faClose} />
-          </button>
-        </div>
-        <div className="modal-body">
-          <div className="modal-container modal-left">
-            <h2>{guide.username}</h2>
-            <p className="modal-add">
-              {guide.guide_district}, {guide.guide_city}, {guide.guide_state}
-            </p>
-            <div className="modal-img-st">
-              <Image
-                src={guide.guide_photo || "/placeholder.jpg"}
-                alt={`${guide.username}'s profile`}
-                width={200}
-                height={200}
-                className="modal-guide-img"
-              />
-              <p>
-                <strong>Status:</strong>{" "}
-                {guide.last_seen
-                  ? new Date(guide.last_seen).toLocaleString() + " UTC"
-                  : "N/A"}
-              </p>
-            </div>
-            <div className="modal-heads">
-              <p className="modal-contact">
-                <strong>Phone:</strong> {guide.guide_phone}
-              </p>
-              <p className="modal-contact">
-                <strong>Whatsapp:</strong> {guide.guide_whatsapp}
-              </p>
-              <p className="modal-contact">
-                <strong>Email:</strong> {guide.email}
-              </p>
-            </div>
-            <div className="request-buttons">
-              <span className="request-button">
-                Request Pricing & Availability
-              </span>
-              <span
-                className="request-button"
-                onClick={handleRequestChat}
-                style={{
-                  pointerEvents: requestPending ? "none" : "auto",
-                  opacity: requestPending ? 0.5 : 1,
-                }}
-              >
-                {requestPending ? "Request Pending" : "Request Chat"}
-              </span>
-            </div>
+    <>
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <div className="modal-close-btn">
+            <button className="modal-close" onClick={onClose}>
+              <FontAwesomeIcon icon={faClose} />
+            </button>
           </div>
+          <div className="modal-body">
+            <div className="modal-container modal-left">
+              <h2>{guide.username}</h2>
+              <p className="modal-add">
+                {guide.guide_district}, {guide.guide_city}, {guide.guide_state}
+              </p>
+              <div className="modal-img-st">
+                <Image
+                  src={guide.guide_photo || "/placeholder.jpg"}
+                  alt={`${guide.username}'s profile`}
+                  width={200}
+                  height={200}
+                  className="modal-guide-img"
+                />
+                <p>
+                  <strong>Status:</strong>{" "}
+                  {guide.last_seen
+                    ? new Date(guide.last_seen).toLocaleString() + " UTC"
+                    : "N/A"}
+                </p>
+              </div>
+              <div className="modal-heads">
+                <p className="modal-contact">
+                  <strong>Phone:</strong> {guide.guide_phone}
+                </p>
+                <p className="modal-contact">
+                  <strong>Whatsapp:</strong> {guide.guide_whatsapp}
+                </p>
+                <p className="modal-contact">
+                  <strong>Email:</strong> {guide.email}
+                </p>
+              </div>
+              <div className="request-buttons">
+                <span onClick={() => setShowHikerInfo(true)} className="request-button">
+                  Request Pricing & Availability
+                </span>
+                <span
+                  className="request-button"
+                  onClick={handleRequestChat}
+                  style={{
+                    pointerEvents: requestPending ? "none" : "auto",
+                    opacity: requestPending ? 0.5 : 1,
+                  }}
+                >
+                  {requestPending ? "Request Pending" : "Request Chat"}
+                </span>
+              </div>
+            </div>
 
-          <div className="vertical-divider" />
-          <div className="modal-container modal-right">
-            <p>
-              <strong>Experience:</strong>{" "}
-              <span> {guide.guide_experience}</span>
-            </p>
-            <p>
-              <strong>Languages:</strong> {guide.guide_languages}
-            </p>
-            <p>
-              <strong>Speciality:</strong> {guide.guide_speciality}
-            </p>
+            <div className="vertical-divider" />
+            <div className="modal-container modal-right">
+              <p>
+                <strong>Experience:</strong>{" "}
+                <span> {guide.guide_experience}</span>
+              </p>
+              <p>
+                <strong>Languages:</strong> {guide.guide_languages}
+              </p>
+              <p>
+                <strong>Speciality:</strong> {guide.guide_speciality}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      {showHikerInfo && <HikerInfo onCloseHikerInfo={() => setShowHikerInfo(false)} />}
+    </>
   );
 };
 
