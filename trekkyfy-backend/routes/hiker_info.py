@@ -25,8 +25,8 @@ def price_avl_req():
     hiker_username = data.get("hiker_username")
     trek_place = data.get("trek_place")
     hiking_members = data.get("hiking_members")
-    trek_date = data.get("trek_date")
-    trek_time = data.get("trek_time")
+    trek_date = datetime.strptime(data.get("trek_date"), "%Y-%m-%d").date()
+    trek_time = datetime.strptime(data.get("trek_time"), "%H:%M:%S").time()
 
     try:
         hiker_req = HikerRequest(
