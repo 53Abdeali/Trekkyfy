@@ -146,10 +146,11 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
                 <input
                   type="number"
                   name="hiking_members"
-                  value={allMembers || 0}
+                  value={allMembers === null ? "" : allMembers}
                   onChange={(e) => {
-                    e.preventDefault();
-                    setAllmembers(Number(e.target.value) || 0);
+                    setAllmembers(
+                      e.target.value === "" ? null : Number(e.target.value)
+                    );
                   }}
                 />
               </div>
