@@ -25,7 +25,7 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
   const [trekPlace, setTrekPlace] = useState("");
   const [onDate, setOnDate] = useState("");
   const [onTime, setOnTime] = useState("");
-  const [allMembers, setAllmembers] = useState(0);
+  const [allMembers, setAllmembers] = useState<number | null>(null);
   const token = Cookies.get("access_token");
 
   async function fetchProfile() {
@@ -57,20 +57,25 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (
+      !hikerId ||
+      !profile?.username ||
+      !trekPlace ||
+      !onDate ||
+      !onTime ||
+      allMembers === null
+    ) {
+      toast.error("All fields are required.");
+      return;
+    }
     try {
       const res = await axiosInstance.post("/avl-price-req", {
-        params: {
-          hiker_id: hikerId,
-          hiker_username: profile?.username,
-          trek_place: trekPlace,
-          hiking_members: allMembers,
-          trek_date: onDate,
-          trek_time: onTime,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        hiker_id: hikerId,
+        hiker_username: profile?.username,
+        trek_place: trekPlace,
+        hiking_members: allMembers,
+        trek_date: onDate,
+        trek_time: onTime,
       });
       if (res.status === 200) {
         toast.success(
@@ -141,7 +146,7 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
                 <input
                   type="number"
                   name="hiking_members"
-                  value={allMembers}
+                  value={allMembers || 0}
                   onChange={(e) => {
                     e.preventDefault();
                     setAllmembers(Number(e.target.value) || 0);

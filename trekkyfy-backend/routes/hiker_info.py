@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from models import HikerRequest
 from extensions import db
@@ -34,6 +35,7 @@ def price_avl_req():
         hiking_members=hiking_members,
         trek_date=trek_date,
         trek_time=trek_time,
+        created_at = datetime.utcnow()
     )
     
     try:
