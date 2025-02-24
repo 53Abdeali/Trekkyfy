@@ -12,7 +12,7 @@ import cloudinary  # type: ignore
 import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
 from flask_socketio import SocketIO, emit, join_room
-from models import GuideDetails, db, User, ChatRequests, ChatResponses
+from models import GuideDetails, HikerRequest, db, User, ChatRequests, ChatResponses
 
 
 # Cloudinary Configuration
@@ -113,7 +113,7 @@ def handle_chat_request(data):
     hiker_id = data.get("hiker_id")
     guide_id = data.get("guide_id")
     user_type = data.get("user_type")
-    
+
     hiker = User.query.filter_by(hiker_id=hiker_id).first()
     hiker_username = hiker.username if hiker else "Unknown"
 
@@ -161,7 +161,9 @@ def process_chat_request(hiker_id, guide_id, hiker_username):
                         },
                         room=guide_id,
                     )
-                    print(f"📩 Hiker {hiker_id} - ({hiker_username}) sent chat request to Guide {guide_id}")
+                    print(
+                        f"📩 Hiker {hiker_id} - ({hiker_username}) sent chat request to Guide {guide_id}"
+                    )
                     socketio.emit("chat_request", {"status": "success"}, room=hiker_id)
                     return {"status": "success"}
 
@@ -189,7 +191,7 @@ def handle_chat_response(data):
 
     accepted = True if str(accepted).strip().lower() in ["true", "1", "yes"] else False
     print(f"🔍 DEBUG: accepted={accepted}, type={type(accepted)}")
-    
+
     eventlet.spawn_n(
         process_chat_response, guide_id, hiker_id, accepted, guide_whatsapp
     )
@@ -268,6 +270,70 @@ def handle_heartbeat(data):
         print(f"Heartbeat received for {user_id}, updated last_seen to {current_time}")
     else:
         print("Heartbeat received with no user_id.")
+
+
+@socketio.on("price_availability_req")
+def handle_price_availability(data):
+    hiker_id = data.get("hiker_id")
+    guide_id = data.get("guide_id")
+    user_type = data.get("user_type")
+
+    if not hiker_id or not guide_id or user_type != "hiker":
+        print("🚨 Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
+        socketio.emit(
+            "price_availability_req",
+            {"status": "error", "error": "Invalid request"},
+            room=hiker_id,
+        )
+        return
+
+    try:
+        eventlet.spawn_n(process_price_availability, hiker_id, guide_id)
+        return {"status": "success"}
+    except Exception as e:
+        print(f"🚨 Error handling chat_request: {e}")
+        socketio.emit(
+            "price_availability_req",
+            {"status": "error", "error": str(e)},
+            room=hiker_id,
+        )
+
+
+def process_price_availability(hiker_id, guide_id):
+    with app.app_context():
+        with app.test_request_context():
+            try:
+                new_pri_avl = HikerRequest(
+                    hiker_id=hiker_id, guide_id=guide_id, status="pending"
+                )
+                db.session.add(new_pri_avl)
+                db.session.commit()
+
+                hiker = User.query.filter_by(id=hiker_id).first()
+                hiker_username = hiker.username if hiker else "Unknown"
+
+                if guide_id in online_users:
+                    socketio.emit(
+                        "price_availability_req",
+                        {
+                            "hiker_id": hiker_id,
+                            "guide_id": guide_id,
+                            "hiker_username": hiker_username,
+                        },
+                        room=guide_id,
+                    )
+                    print(
+                        f"📩 Hiker {hiker_id} - ({hiker_username}) sent price & availabilty request to Guide {guide_id}"
+                    )
+                    socketio.emit(
+                        "price_availability_req", {"status": "success"}, room=hiker_id
+                    )
+            except Exception as e:
+                db.session.rollback()
+                print(f"🚨 Error processing chat request: {e}")
+                socketio.emit(
+                    "price_availability_req", {"status": "error", "error": str(e)}, room=hiker_id
+                )
 
 
 def update_last_seen(user_id, status):

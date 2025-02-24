@@ -160,6 +160,40 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
     }
     setSelectedGuideId(guide_id);
     setShowHikerInfo(true);
+
+    if (!hiker) {
+      toast.error("You must be logged in as a hiker to send a chat request.");
+      return;
+    }
+
+    console.log("📡 Emitting Price and Availability Request:", {
+      guide_id: guide.guide_id,
+      hiker_id: hiker.hiker_id,
+      hiker_username: hiker.hiker_username,
+      user_type: "hiker",
+    });
+
+    socketRef.current?.emit(
+      "price_availability_req",
+      {
+        guide_id: guide.guide_id,
+        hiker_id: hiker.hiker_id,
+        hiker_username: hiker.hiker_username,
+        user_type: "hiker",
+      },
+      (response: ChatRequestResponse) => {
+        if (!response) {
+          console.error("No response received from server");
+          return;
+        }
+        if (response.status === "success") {
+          toast.success("Chat Request Sent!");
+          console.log("Chat request sent successfully!");
+        } else {
+          console.error("Failed to send chat request:", response.error);
+        }
+      }
+    );
   };
 
   return (

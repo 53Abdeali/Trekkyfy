@@ -18,6 +18,7 @@ import { jwtDecode } from "jwt-decode";
 import { getSocket, initializeSocket } from "@/app/socket";
 import { ChatRequest } from "./notificationpopup";
 import { ChatResponse } from "./hikernotificationpopup";
+import { PriavlRequest } from "./PriceAvailabilityPopup";
 
 interface DecodedToken {
   guide_id?: string;
@@ -32,6 +33,7 @@ export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<"guide" | "hiker" | null>(null);
   const [chatRequests, setChatRequests] = useState<ChatRequest[]>([]);
+  const [priavlRequests, setPriavlRequests] = useState<PriavlRequest[]>([]);
   const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
   const [guideId, setGuideId] = useState<string | null>(null);
   const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
@@ -104,6 +106,18 @@ export default function Navbar() {
   }, [userRole, socket]);
 
   useEffect(() => {
+    if (userRole === "guide" && socket) {
+      socket.on("price_availability_req", (request: PriavlRequest) => {
+        console.log("Received chat request:", request);
+        setPriavlRequests((prev) => [...prev, request]);
+      });
+    }
+    return () => {
+      socket?.off("price_availability_req");
+    };
+  }, [userRole, socket]);
+
+  useEffect(() => {
     if (userRole === "hiker" && socket) {
       socket.on(
         "chat_response",
@@ -152,6 +166,29 @@ export default function Navbar() {
         });
     }
   }, [userRole, guideId, currentHikerId]);
+
+  useEffect(() => {
+    if (userRole === "guide" && guideId) {
+      axiosInstance
+        .get("/pri-avl", {
+          params: { guide_id: guideId },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          console.log(
+            "Fetching pending price and availability request",
+            res.data
+          );
+          setPriavlRequests(res.data);
+        })
+        .catch((err) => {
+          console.log(
+            "Error fetching pending price and availability request",
+            err
+          );
+        });
+    }
+  });
 
   const logout = async () => {
     try {

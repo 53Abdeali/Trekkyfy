@@ -21,6 +21,7 @@ import {
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PriceAvailabilityPopup, {PriavlRequest} from "../hike-components/PriceAvailabilityPopup";
 
 interface DecodedToken {
   guide_id?: string;
@@ -30,6 +31,7 @@ interface DecodedToken {
 export default function Notification() {
   const [userRole, setUserRole] = useState<"guide" | "hiker" | null>(null);
   const [chatRequests, setChatRequests] = useState<ChatRequest[]>([]);
+  const [priavlRequests, setPriavlRequests] = useState<PriavlRequest[]>([]);
   const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
   const [guideId, setGuideId] = useState<string | null>(null);
   const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
@@ -143,8 +145,48 @@ export default function Notification() {
   };
 
   const handleDismissResponse = (guide_id?: string) => {
-    setChatResponses((prev) =>
-      prev.filter((r) => r.guide_id !== guide_id)
+    setChatResponses((prev) => prev.filter((r) => r.guide_id !== guide_id));
+  };
+
+  const handlePriavlAccept = async (request: PriavlRequest) => {
+    try {
+      const response = await axios.get("/pri-avl", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { guide_id: guideId },
+      });
+      if (response.status === 200) {
+        const guideWhatsAppNumber = response.data.guide_whatsapp;
+        const payload = {
+          guide_id: guideId,
+          hiker_id: request.hiker_id,
+          accepted: true,
+          guide_whatsapp: guideWhatsAppNumber,
+        };
+        console.log("Emitting chat_response with payload:", payload);
+        socket?.emit("chat_response", payload);
+
+        setPriavlRequests((prev) =>
+          prev.filter((r) => r.hiker_id !== request.hiker_id)
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch guide WhatsApp number:", error);
+      toast.error("Error fetching WhatsApp number.");
+    }
+  };
+
+  const handlePriavlReject = (request: ChatRequest) => {
+    const payload = {
+      guide_id: guideId,
+      hiker_id: request.hiker_id,
+      accepted: false,
+    };
+    console.log("Emitting chat_response with payload:", payload);
+    socket?.emit("chat_response", payload);
+    setChatRequests((prev) =>
+      prev.filter((r) => r.hiker_id !== request.hiker_id)
     );
   };
 
@@ -212,11 +254,22 @@ export default function Notification() {
           </header>
           <main>
             {userRole === "guide" ? (
-              <NotificationPopup
-                requests={chatRequests}
-                onAccept={handleAccept}
-                onReject={handleReject}
-              />
+              <>
+                <div>
+                  <NotificationPopup
+                    requests={chatRequests}
+                    onAccept={handleAccept}
+                    onReject={handleReject}
+                  />
+                </div>
+                <div style={{ marginTop: "2rem" }}>
+                  <PriceAvailabilityPopup
+                    requests={priavlRequests}
+                    onPriavlAccept={handlePriavlAccept}
+                    onPriavlReject={handlePriavlReject}
+                  />
+                </div>
+              </>
             ) : (
               <HikerNotificationPopup
                 notifications={chatResponses}

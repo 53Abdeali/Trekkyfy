@@ -28,6 +28,7 @@ class ChatRequests(db.Model):
             "created_at": self.created_at.isoformat(),
         }
 
+
 class ChatResponses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     hiker_id = db.Column(db.String(50), db.ForeignKey("user.hiker_id"), nullable=False)
@@ -38,7 +39,7 @@ class ChatResponses(db.Model):
     notified = db.Column(db.Boolean, default=False)
     hiker = db.relationship("User", foreign_keys=[hiker_id], backref="hiker_responses")
     guide = db.relationship("User", foreign_keys=[guide_id], backref="guide_responses")
-    
+
     def __repr__(self, hiker_id, guide_id, status):
         self.hiker_id = hiker_id
         self.guide_id = guide_id
@@ -52,6 +53,7 @@ class ChatResponses(db.Model):
             "status": self.status,
             "created_at": self.created_at.isoformat(),
         }
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -130,7 +132,8 @@ class GuideDetails(db.Model):
 
     def __repr__(self):
         return f"<Guide_Details {self.guide_id}, City {self.guide_city}>"
-    
+
+
 class HikerRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     hiker_id = db.Column(db.String(50), nullable=False)
@@ -140,16 +143,11 @@ class HikerRequest(db.Model):
     trek_date = db.Column(db.Date, nullable=False)
     trek_time = db.Column(db.Time, nullable=False)
     hiking_members = db.Column(db.Integer, nullable=False)
+    status = db.Column(
+        db.Enum("pending", "accepted", "rejected", name="chat_status"),
+        default="pending",
+    )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # def __init__(self, hiker_id, hiker_username, trek_place, trek_date, trek_time, hiking_members, created_at):
-    #     self.hiker_id = hiker_id
-    #     self.hiker_username = hiker_username
-    #     self.trek_place = trek_place
-    #     self.trek_date = trek_date
-    #     self.trek_time = trek_time
-    #     self.hiking_members = hiking_members
-    #     self.created_at = created_at
-    
+
     def __repr__(self):
         return f"<Hiker_Details {self.hiker_id}, Username {self.hiker_username}>"
