@@ -134,6 +134,7 @@ class GuideDetails(db.Model):
 class HikerRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     hiker_id = db.Column(db.String(50), nullable=False)
+    guide_id = db.Column(db.String(50), nullable=False)
     hiker_username = db.Column(db.String(100), nullable=False)
     trek_place = db.Column(db.String(255), nullable=False)
     trek_date = db.Column(db.Date, nullable=False)

@@ -16,11 +16,15 @@ interface DecodedToken {
 }
 
 interface HikerInfoProps {
+  guide_id?: string;
   onCloseHikerInfo: () => void;
 }
 
-const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
-  const [hikerId, setHikerId] = useState<string | null>(null);
+const HikerInfo: React.FC<HikerInfoProps> = ({
+  guide_id,
+  onCloseHikerInfo,
+}) => {
+  const [hikerId, setHikerId] = useState<string | "">("");
   const [profile, setProfile] = useState<DecodedToken | null>(null);
   const [trekPlace, setTrekPlace] = useState("");
   const [onDate, setOnDate] = useState("");
@@ -71,6 +75,7 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
     try {
       const res = await axiosInstance.post("/avl-price-req", {
         hiker_id: hikerId,
+        guide_id: guide_id,
         hiker_username: profile?.username,
         trek_place: trekPlace,
         hiking_members: allMembers,
@@ -100,17 +105,23 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
         <div className="pr-av-main">
           <form onSubmit={handleSubmit}>
             <div className="pr-av-ip-main">
+              <div className="pr-av-ip" style={{ display: "none" }}>
+                <input
+                  type="text"
+                  name="guide_id"
+                  value={guide_id || ""}
+                  readOnly
+                  hidden
+                />
+              </div>
               <div className="pr-av-ip">
                 <label htmlFor="Hiker Id">Your ID</label>
                 <input
                   type="text"
                   name="hiker_id"
                   value={hikerId || ""}
-                  onChange={(e) => {
-                    setHikerId(e.target.value);
-                  }}
                   style={{ backgroundColor: "#ccc", cursor: "not-allowed" }}
-                  contentEditable={false}
+                  readOnly
                 />
               </div>
               <div className="pr-av-ip">
@@ -119,11 +130,8 @@ const HikerInfo: React.FC<HikerInfoProps> = ({ onCloseHikerInfo }) => {
                   type="text"
                   name="hiker_username"
                   value={profile ? profile.username : ""}
-                  onChange={(e) => {
-                    setHikerId(e.target.value);
-                  }}
                   style={{ backgroundColor: "#ccc", cursor: "not-allowed" }}
-                  contentEditable={false}
+                  readOnly
                 />
               </div>
             </div>

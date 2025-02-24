@@ -51,7 +51,8 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
   const userType = hiker ? "hiker" : "guide";
   const userId = hiker ? hiker.hiker_id : guide.guide_id;
   const token = Cookies.get("access_token");
-  const [showHikerInfo, setShowHikerInfo] = useState(false)
+  const [showHikerInfo, setShowHikerInfo] = useState(false);
+  const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null);
 
   useEffect(() => {
     if (showHikerInfo) {
@@ -151,6 +152,16 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
     );
   };
 
+  const handleShowHikerInfo = (guide_id?: string) => {
+    console.log("Guide ID received:", guide_id);
+    if (!guide_id) {
+      console.error("Guide ID is missing!");
+      return;
+    }
+    setSelectedGuideId(guide_id);
+    setShowHikerInfo(true);
+  };
+
   return (
     <>
       <div className="modal-overlay">
@@ -193,7 +204,13 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
                 </p>
               </div>
               <div className="request-buttons">
-                <span onClick={() => setShowHikerInfo(true)} className="request-button">
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleShowHikerInfo(guide.guide_id);
+                  }}
+                  className="request-button"
+                >
                   Request Pricing & Availability
                 </span>
                 <span
@@ -225,7 +242,12 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
           </div>
         </div>
       </div>
-      {showHikerInfo && <HikerInfo onCloseHikerInfo={() => setShowHikerInfo(false)} />}
+      {showHikerInfo && selectedGuideId && (
+        <HikerInfo
+          guide_id={selectedGuideId}
+          onCloseHikerInfo={() => setShowHikerInfo(false)}
+        />
+      )}
     </>
   );
 };

@@ -12,7 +12,7 @@ def price_avl_req():
     if not data:
         return jsonify({"error": "Invalid request body"}), 400
 
-    required_fields = ["hiker_id", "hiker_username", "trek_place", "hiking_members", "trek_date", "trek_time"]
+    required_fields = ["hiker_id", "guide_id","hiker_username", "trek_place", "hiking_members", "trek_date", "trek_time"]
     if any(field not in data for field in required_fields):
         return jsonify({"Error": "All fields are required."}), 400
 
@@ -22,7 +22,6 @@ def price_avl_req():
         trek_time_str = data["trek_time"]
         trek_time = None
 
-        # Try parsing HH:MM format
         try:
             trek_time = datetime.strptime(trek_time_str, "%H:%M").time()
         except ValueError:
@@ -33,6 +32,7 @@ def price_avl_req():
 
         hiker_req = HikerRequest(
             hiker_id=data["hiker_id"],
+            guide_id=data["guide_id"],
             hiker_username=data["hiker_username"],
             trek_place=data["trek_place"],
             hiking_members=data["hiking_members"],
@@ -47,5 +47,5 @@ def price_avl_req():
 
     except Exception as e:
         print("🚨 ERROR OCCURRED:", str(e))
-        traceback.print_exc()  # Logs full stack trace
+        traceback.print_exc()
         return jsonify({"Error": str(e)}), 500
