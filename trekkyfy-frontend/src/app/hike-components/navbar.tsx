@@ -188,7 +188,7 @@ export default function Navbar() {
           );
         });
     }
-  },  [userRole, guideId]);
+  }, [userRole, guideId]);
 
   const logout = async () => {
     try {
@@ -332,11 +332,12 @@ export default function Navbar() {
                 <Link href="/notifications">
                   <span className="notification-icon">
                     <FontAwesomeIcon icon={faBell} size="lg" />
-                    {userRole === "guide" && chatRequests.length > 0 && (
-                      <span className="badge">
-                        {chatRequests.length + priavlRequests.length}
-                      </span>
-                    )}
+                    {userRole === "guide" &&
+                      chatRequests.length + priavlRequests.length > 0 && (
+                        <span className="badge">
+                          {chatRequests.length + priavlRequests.length}
+                        </span>
+                      )}
                     {userRole === "hiker" && chatResponses.length > 0 && (
                       <span className="badge">{chatResponses.length}</span>
                     )}

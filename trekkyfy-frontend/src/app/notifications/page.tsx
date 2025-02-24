@@ -21,7 +21,9 @@ import {
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PriceAvailabilityPopup, {PriavlRequest} from "../hike-components/PriceAvailabilityPopup";
+import PriceAvailabilityPopup, {
+  PriavlRequest,
+} from "../hike-components/PriceAvailabilityPopup";
 
 interface DecodedToken {
   guide_id?: string;
@@ -148,6 +150,29 @@ export default function Notification() {
     setChatResponses((prev) => prev.filter((r) => r.guide_id !== guide_id));
   };
 
+  useEffect(() => {
+    if (userRole === "guide" && guideId) {
+      axiosInstance
+        .get("/pri-avl", {
+          params: { guide_id: guideId },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          console.log(
+            "Fetching pending price and availability request",
+            res.data
+          );
+          setPriavlRequests(res.data);
+        })
+        .catch((err) => {
+          console.log(
+            "Error fetching pending price and availability request",
+            err
+          );
+        });
+    }
+  }, [userRole, guideId]);
+
   const handlePriavlAccept = async (request: PriavlRequest) => {
     try {
       const response = await axios.get("/pri-avl", {
@@ -215,8 +240,8 @@ export default function Notification() {
             <h1>
               Notifications{" "}
               <span>
-                {userRole === "guide" && chatRequests.length > 0 && (
-                  <span className="badge">{chatRequests.length}</span>
+                {userRole === "guide" && (chatRequests.length + priavlRequests.length) > 0 && (
+                  <span className="badge">{chatRequests.length + + priavlRequests.length}</span>
                 )}
                 {userRole === "hiker" && chatResponses.length > 0 && (
                   <span className="badge">{chatResponses.length}</span>
