@@ -14,7 +14,7 @@ def price_avl_req():
 
     required_fields = ["hiker_id", "hiker_username", "trek_place", "hiking_members", "trek_date", "trek_time"]
     if any(field not in data for field in required_fields):
-        return jsonify({"Error": "All fields are required!"}), 400
+        return jsonify({"Error": "All fields are required."}), 400
 
     try:
         trek_date = datetime.strptime(data["trek_date"], "%Y-%m-%d").date()
