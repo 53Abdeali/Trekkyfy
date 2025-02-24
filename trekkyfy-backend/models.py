@@ -141,10 +141,11 @@ class HikerRequest(db.Model):
     hiking_members = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    def __init__(self, hiker_id, hiker_username, trek_place, trek_date, trek_time, hiking_members):
+    def __init__(self, hiker_id, hiker_username, trek_place, trek_date, trek_time, hiking_members, created_at):
         self.hiker_id = hiker_id
         self.hiker_username = hiker_username
         self.trek_place = trek_place
         self.trek_date = trek_date
         self.trek_time = trek_time
         self.hiking_members = hiking_members
+        self.created_at = created_at
