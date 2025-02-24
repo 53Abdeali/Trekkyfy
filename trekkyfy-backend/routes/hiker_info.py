@@ -19,7 +19,7 @@ def price_avl_req():
         or not data.get("trek_date")
         or not data.get("trek_time")
     ):
-       return jsonify({"Error": "All fields are required!"}),400
+        return jsonify({"Error": "All fields are required!"}), 400
 
     hiker_id = data.get("hiker_id")
     hiker_username = data.get("hiker_username")
@@ -28,19 +28,19 @@ def price_avl_req():
     trek_date = data.get("trek_date")
     trek_time = data.get("trek_time")
 
-    hiker_req = HikerRequest(
-        hiker_id=hiker_id,
-        hiker_username=hiker_username,
-        trek_place=trek_place,
-        hiking_members=hiking_members,
-        trek_date=trek_date,
-        trek_time=trek_time,
-        created_at = datetime.utcnow()
-    )
-    
     try:
+        hiker_req = HikerRequest(
+            hiker_id=hiker_id,
+            hiker_username=hiker_username,
+            trek_place=trek_place,
+            hiking_members=hiking_members,
+            trek_date=trek_date,
+            trek_time=trek_time,
+            created_at=datetime.utcnow(),
+        )
+
         db.session.add(hiker_req)
         db.session.commit()
-        return jsonify({"Success": "Request has been stored in the database!"}),200
+        return jsonify({"Success": "Request has been stored in the database!"}), 200
     except Exception as e:
-        return jsonify({"Error": str(e)}),500
+        return jsonify({"Error": str(e)}), 500
