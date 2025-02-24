@@ -90,7 +90,7 @@ export default function Notification() {
           toast.error("Error fetching notifications.");
         });
     }
-  }, [userRole, guideId, currentHikerId]);
+  }, [userRole, guideId, currentHikerId, token]);
 
   const handleAccept = async (request: ChatRequest) => {
     try {

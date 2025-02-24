@@ -108,7 +108,7 @@ const GuideModal: React.FC<GuideModalProps> = ({ guide, hiker, onClose }) => {
       const intervalId = setInterval(checkChatRequestStatus, 5000);
       return () => clearInterval(intervalId);
     }
-  }, [guide.guide_id, hiker]);
+  }, [guide.guide_id, hiker, checkChatRequestStatus]);
 
   const handleRequestChat = () => {
     if (!hiker) {

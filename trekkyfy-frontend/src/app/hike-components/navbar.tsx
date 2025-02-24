@@ -333,7 +333,7 @@ export default function Navbar() {
                   <span className="notification-icon">
                     <FontAwesomeIcon icon={faBell} size="lg" />
                     {userRole === "guide" && chatRequests.length > 0 && (
-                      <span className="badge">{chatRequests.length}</span>
+                      <span className="badge">{chatRequests.length + priavlRequests.length}</span>
                     )}
                     {userRole === "hiker" && chatResponses.length > 0 && (
                       <span className="badge">{chatResponses.length}</span>
