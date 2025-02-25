@@ -159,8 +159,8 @@ export default function Notification() {
     setChatResponses((prev) => prev.filter((r) => r.guide_id !== guide_id));
   };
 
-  const handleDismissPriavlResponse = (guide_id?: string) => {
-    setPriavlResponses((prev) => prev.filter((r) => r.guide_id !== guide_id));
+  const handleDismissPriavlResponse = (id?: string) => {
+    setPriavlResponses((prev) => prev.filter((r) => r.id !== id));
   };
 
   useEffect(() => {
@@ -226,7 +226,7 @@ export default function Notification() {
     console.log("Emitting chat_response with payload:", payload);
     socket?.emit("price_availability_response", payload);
     toast.error("Request Rejected!");
-    setPriavlRequests((prev) => prev.filter((r) => r.id !== request.hiker_id));
+    setPriavlRequests((prev) => prev.filter((r) => r.id !== request.id));
   };
 
   const logout = async () => {
