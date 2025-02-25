@@ -215,6 +215,8 @@ export default function Notification() {
       const res = await axiosInstance.post("/priavl-guide-res", {
         guide_id: guideId,
         hiker_id: currentHikerId,
+        price : 0,
+        availability: "Unavailable",
         accepted: false,
       });
       if (res.status === 200) {
