@@ -159,6 +159,10 @@ export default function Notification() {
     setChatResponses((prev) => prev.filter((r) => r.guide_id !== guide_id));
   };
 
+  const handleDismissPriavlResponse = (guide_id?: string) => {
+    setPriavlResponses((prev) => prev.filter((r) => r.guide_id !== guide_id));
+  };
+
   useEffect(() => {
     if (userRole === "guide" && guideId) {
       axiosInstance
@@ -198,6 +202,13 @@ export default function Notification() {
   const handlePriavlAccept = async (request: PriavlRequest) => {
     setSelectedRequest(request);
     setShowFormPopup(true);
+    const payload = {
+      guide_id: guideId,
+      hiker_id: request.hiker_id,
+      accepted: true,
+    };
+    console.log("Emitting chat_response with payload:", payload);
+    socket?.emit("price_availability_response", payload);
     setPriavlRequests((prev) => prev.filter((r) => r.id !== request.hiker_id));
   };
 
@@ -249,9 +260,12 @@ export default function Notification() {
                       {chatRequests.length + priavlRequests.length}
                     </span>
                   )}
-                {userRole === "hiker" && chatResponses.length > 0 && (
-                  <span className="badge">{chatResponses.length}</span>
-                )}
+                {userRole === "hiker" &&
+                  chatResponses.length + priavlResponses.length > 0 && (
+                    <span className="badge">
+                      {chatResponses.length + priavlResponses.length}
+                    </span>
+                  )}
               </span>
             </h1>
             <div ref={profileRef} className="profile-container">
@@ -319,7 +333,7 @@ export default function Notification() {
                 <div style={{ marginTop: "2rem" }}>
                   <PriceAvailabilityResponse
                     notifications={priavlResponses}
-                    onDismiss={handleDismissResponse}
+                    onDismiss={handleDismissPriavlResponse}
                   />
                 </div>
               </>
