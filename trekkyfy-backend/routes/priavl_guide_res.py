@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import User, db, PriavlGuideResponse
+from models import HikerRequest, User, db, PriavlGuideResponse
 from flask_jwt_extended import jwt_required, get_jwt  # type: ignore
 
 priavl_guide_res_bp = Blueprint("priavl_guide_res", __name__)
@@ -30,7 +30,7 @@ def create_priavl_response():
     partialTime = data.get("partialTime")
     unavailableOption = data.get("unavailableOption")
     unavailabilityReason = data.get("unavailabilityReason")
-    accepted = data.get("accepted") 
+    accepted = data.get("accepted")
 
     new_response = PriavlGuideResponse(
         guide_id=guide_id,
@@ -78,13 +78,28 @@ def get_priavl_res():
         return jsonify({"error": "Hiker ID not found"}), 400
 
     try:
-        responses = db.session.query(PriavlGuideResponse, User.username).join(
-            User, PriavlGuideResponse.guide_id == User.guide_id
+        responses = (
+            db.session.query(
+                PriavlGuideResponse,
+                User.username,
+                HikerRequest.trek_place,
+                HikerRequest.trek_date,
+                HikerRequest.trek_time,
+            )
+            .join(User, PriavlGuideResponse.guide_id == User.guide_id)
+            .join(
+                HikerRequest,
+                db.and_(
+                    HikerRequest.hiker_id == PriavlGuideResponse.hiker_id,
+                    HikerRequest.guide_id == PriavlGuideResponse.guide_id,
+                ),
+            )
+            .filter(HikerRequest.hiker_id == hiker_id)
+            .all()
         )
 
         result = []
-
-        for resp, guide_username in responses:
+        for resp, guide_username, trek_place, trek_date, trek_time in responses:
             result.append(
                 {
                     "guide_id": resp.guide_id,
@@ -96,9 +111,13 @@ def get_priavl_res():
                     "unavailabilityReason": resp.unavailabilityReason,
                     "guide_username": guide_username,
                     "accepted": resp.accepted,
+                    "trek_place": trek_place,
+                    "trek_date": trek_date.isoformat() if trek_date else None,
+                    "trek_time": trek_time.strftime("%H:%M:%S") if trek_time else None,
                 }
             )
             resp.notified = True
+
         db.session.commit()
         return jsonify(result), 200
     except Exception as e:

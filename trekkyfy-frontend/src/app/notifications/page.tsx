@@ -350,7 +350,7 @@ export default function Notification() {
                 </div>
                 <div style={{ marginTop: "2rem" }}>
                   <PriceAvailabilityResponse
-                    guide_id={guideId || ""}
+                    notifications={priavlResponses}
                     onDismiss={handleDismissPriavlResponse}
                     hiker_username={hikerUsername}
                   />

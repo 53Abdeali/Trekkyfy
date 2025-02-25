@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import axiosInstance from "@/utils/axiosConfig";
 import "@/app/stylesheet/notification.css";
-import "@/app/stylesheet/PriceAvailabilityResponse.css";
+import '@/app/stylesheet/PriceAvailabilityResponse.css'
 
 export interface PriavlResponse {
   id: string;
@@ -14,7 +13,7 @@ export interface PriavlResponse {
   guide_id?: string;
   price: string;
   hiker_id?: string;
-  availability: string; 
+  availability: string;
   partialTime: string;
   unavailableOption: string;
   unavailabilityReason: string;
@@ -25,9 +24,9 @@ export interface PriavlResponse {
 }
 
 interface HikerNotificationPopupProps {
-  guide_id?: string;
-  hiker_username: string;
+  notifications: PriavlResponse[];
   onDismiss: (id?: string) => void;
+  hiker_username: string;
 }
 
 interface ResponseModalProps {
@@ -43,9 +42,11 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 }) => {
   let message = "";
 
+  // Case 1: Partially available
   if (notification.availability === "Unavailable") {
     message = `Hey, ${hiker_username}, I ${notification.guide_username} - ${notification.guide_id} saw that you have requested the pricing and availability for ${notification.trek_place} on ${notification.trek_date} from ${notification.trek_time} to whole day. However, I will only be available for ${notification.partialTime}. Therefore, my charge for that period will be ${notification.price}.`;
   }
+  // Case 2: Unavailable
   else if (
     notification.availability === "Unavailable" &&
     (notification.unavailableOption === "Time" ||
@@ -54,6 +55,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
   ) {
     message = `Hey, ${hiker_username}, I ${notification.guide_username} - ${notification.guide_id} saw that you have requested the pricing and availability for ${notification.trek_place} on ${notification.trek_date} from ${notification.trek_time} to whole day. Unfortunately, I am unavailable because ${notification.unavailabilityReason}. ${notification.unavailableOption}.`;
   }
+  // Default: Fully available
   else {
     message = `Hey, ${hiker_username}, I ${notification.guide_username} - ${notification.guide_id} saw that you have requested the pricing and availability for ${notification.trek_place} on ${notification.trek_date} from ${notification.trek_time} to whole day. So, for one day my charge will be Rs.${notification.price} and I am available for the whole day.`;
   }
@@ -73,28 +75,12 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 };
 
 const PriavlNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
-  guide_id,
-  hiker_username,
+  notifications,
   onDismiss,
+  hiker_username,
 }) => {
-  const [notifications, setNotifications] = useState<PriavlResponse[]>([]);
   const [selectedNotification, setSelectedNotification] =
     useState<PriavlResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (guide_id) {
-      axiosInstance
-        .get("/pri-avl", { params: { guide_id } })
-        .then((response) => {
-          setNotifications(response.data);
-        })
-        .catch((err) => {
-          console.error("Error fetching notifications:", err);
-          setError("Error fetching notifications");
-        });
-    }
-  }, [guide_id]);
 
   return (
     <div className="notification-popup-overlay">
@@ -102,7 +88,6 @@ const PriavlNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
         <div className="popup-header">
           <h3>Price and Availability Responses</h3>
         </div>
-        {error && <p className="error">{error}</p>}
         <ul className="request-list">
           {notifications.length === 0 ? (
             <li>No new notifications</li>
@@ -123,12 +108,7 @@ const PriavlNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                       View Response
                     </button>
                     <button
-                      onClick={() => {
-                        onDismiss(notif.id);
-                        setNotifications(
-                          notifications.filter((n) => n.id !== notif.id)
-                        );
-                      }}
+                      onClick={() => onDismiss(notif.id)}
                       className="dismiss-btn"
                     >
                       Dismiss
@@ -143,12 +123,7 @@ const PriavlNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                     </span>
                     <button
                       className="chat-btn"
-                      onClick={() => {
-                        onDismiss(notif.id);
-                        setNotifications(
-                          notifications.filter((n) => n.id !== notif.id)
-                        );
-                      }}
+                      onClick={() => onDismiss(notif.id)}
                     >
                       <FontAwesomeIcon icon={faTimes} />
                     </button>
