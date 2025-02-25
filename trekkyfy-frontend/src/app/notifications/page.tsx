@@ -164,32 +164,6 @@ export default function Notification() {
   };
 
   useEffect(() => {
-    if (userRole === "hiker" && priavlRequests.length > 0) {
-      const timer = setTimeout(() => {
-        setPriavlRequests((prev) =>
-          prev.filter(
-            (req) => req.accepted === null || req.accepted === undefined
-          )
-        );
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [priavlResponses, userRole]);
-
-  useEffect(() => {
-    if (userRole === "hiker" && priavlResponses.length > 0) {
-      const timer = setTimeout(() => {
-        setPriavlResponses((prev) =>
-          prev.filter(
-            (notif) => notif.accepted === null || notif.accepted === undefined
-          )
-        );
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [priavlResponses, userRole]);
-
-  useEffect(() => {
     if (userRole === "guide" && guideId) {
       axiosInstance
         .get("/pri-avl", {
