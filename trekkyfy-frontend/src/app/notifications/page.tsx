@@ -25,6 +25,7 @@ import PriceAvailabilityPopup, {
   PriavlRequest,
 } from "../hike-components/PriceAvailabilityPopup";
 import GuidePriceAvailabilityForm from "./GuidePriceAvailabilityForm";
+import { PriavlResponse } from "../hike-components/PriceAvailabilityResponse";
 
 interface DecodedToken {
   guide_id?: string;
@@ -36,6 +37,7 @@ export default function Notification() {
   const [chatRequests, setChatRequests] = useState<ChatRequest[]>([]);
   const [priavlRequests, setPriavlRequests] = useState<PriavlRequest[]>([]);
   const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
+  const [priavlResponses, setPriavlResponses] = useState<PriavlResponse[]>([]);
   const [guideId, setGuideId] = useState<string | null>(null);
   const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
   const [showProfileDown, setShowProfileDown] = useState(false);
@@ -175,15 +177,26 @@ export default function Notification() {
             err
           );
         });
+    } else if (userRole === "hiker" && currentHikerId) {
+      axiosInstance
+        .get("/guide-priavl-res", {
+          params: { hiker_id: currentHikerId },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setChatResponses(res.data);
+        })
+        .catch((err) => {
+          console.error("Error fetching pending responses:", err);
+          toast.error("Error fetching notifications.");
+        });
     }
-  }, [userRole, guideId, token]);
+  }, [userRole, guideId, token, currentHikerId]);
 
   const handlePriavlAccept = async (request: PriavlRequest) => {
     setSelectedRequest(request);
     setShowFormPopup(true);
-    setPriavlRequests((prev) =>
-      prev.filter((r) => r.id !== request.hiker_id)
-    );
+    setPriavlRequests((prev) => prev.filter((r) => r.id !== request.hiker_id));
   };
 
   const handleFormClose = () => {
@@ -192,9 +205,15 @@ export default function Notification() {
   };
 
   const handlePriavlReject = (request: PriavlRequest) => {
-    setPriavlRequests((prev) =>
-      prev.filter((r) => r.id !== request.hiker_id)
-    );
+    const payload = {
+      guide_id: guideId,
+      hiker_id: request.hiker_id,
+      accepted: false,
+    };
+    console.log("Emitting chat_response with payload:", payload);
+    socket?.emit("price_availability_response", payload);
+    toast.error("Request Rejected!")
+    setPriavlRequests((prev) => prev.filter((r) => r.id !== request.hiker_id));
   };
 
   const logout = async () => {
@@ -225,7 +244,7 @@ export default function Notification() {
                 {userRole === "guide" &&
                   chatRequests.length + priavlRequests.length > 0 && (
                     <span className="badge">
-                      {chatRequests.length + +priavlRequests.length}
+                      {chatRequests.length + priavlRequests.length}
                     </span>
                   )}
                 {userRole === "hiker" && chatResponses.length > 0 && (

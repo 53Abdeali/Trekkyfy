@@ -19,6 +19,7 @@ import { getSocket, initializeSocket } from "@/app/socket";
 import { ChatRequest } from "./notificationpopup";
 import { ChatResponse } from "./hikernotificationpopup";
 import { PriavlRequest } from "./PriceAvailabilityPopup";
+import { PriavlResponse } from "./PriceAvailabilityResponse";
 
 interface DecodedToken {
   guide_id?: string;
@@ -35,6 +36,7 @@ export default function Navbar() {
   const [chatRequests, setChatRequests] = useState<ChatRequest[]>([]);
   const [priavlRequests, setPriavlRequests] = useState<PriavlRequest[]>([]);
   const [chatResponses, setChatResponses] = useState<ChatResponse[]>([]);
+  const [priavlResponses, setPriavlResponses] = useState<PriavlResponse[]>([]);
   const [guideId, setGuideId] = useState<string | null>(null);
   const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
 
@@ -138,6 +140,32 @@ export default function Navbar() {
   }, [userRole, currentHikerId, socket]);
 
   useEffect(() => {
+    if (userRole === "hiker" && socket) {
+      socket.on(
+        "price_availability_response",
+        (data: {
+          id: string;
+          accepted: boolean;
+          guide_username?: string;
+          guide_id?: string;
+          price: string;
+          hiker_id?: string;
+          availability: string;
+          partialTime: string;
+          unavailableOption: string;
+          unavailabilityReason: string;
+        }) => {
+          if (data.hiker_id && data.hiker_id !== currentHikerId) return;
+          setPriavlResponses((prev) => [...prev, data]);
+        }
+      );
+    }
+    return () => {
+      socket?.off("price_availability_response");
+    };
+  }, [userRole, currentHikerId, socket]);
+
+  useEffect(() => {
     if (userRole === "guide" && guideId) {
       axiosInstance
         .get("/pending-requests", {
@@ -187,8 +215,21 @@ export default function Navbar() {
             err
           );
         });
+    } else if (userRole === "hiker" && currentHikerId) {
+      axiosInstance
+        .get("/guide-priavl-res", {
+          params: { hiker_id: currentHikerId },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setChatResponses(res.data);
+        })
+        .catch((err) => {
+          console.error("Error fetching pending responses:", err);
+          toast.error("Error fetching notifications.");
+        });
     }
-  }, [userRole, guideId, token]);
+  }, [userRole, guideId, token, currentHikerId]);
 
   const logout = async () => {
     try {
@@ -338,9 +379,12 @@ export default function Navbar() {
                           {chatRequests.length + priavlRequests.length}
                         </span>
                       )}
-                    {userRole === "hiker" && chatResponses.length > 0 && (
-                      <span className="badge">{chatResponses.length}</span>
-                    )}
+                    {userRole === "hiker" &&
+                      chatResponses.length + priavlResponses.length > 0 && (
+                        <span className="badge">
+                          {chatResponses.length + priavlResponses.length}
+                        </span>
+                      )}
                   </span>
                 </Link>
               </li>

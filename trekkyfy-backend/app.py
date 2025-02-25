@@ -12,7 +12,7 @@ import cloudinary  # type: ignore
 import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
 from flask_socketio import SocketIO, emit, join_room
-from models import GuideDetails, HikerRequest, db, User, ChatRequests, ChatResponses
+from models import GuideDetails, HikerRequest, PriavlGuideResponse, db, User, ChatRequests, ChatResponses
 
 
 # Cloudinary Configuration
@@ -332,8 +332,76 @@ def process_price_availability(hiker_id, guide_id):
                 db.session.rollback()
                 print(f"🚨 Error processing chat request: {e}")
                 socketio.emit(
-                    "price_availability_req", {"status": "error", "error": str(e)}, room=hiker_id
+                    "price_availability_req",
+                    {"status": "error", "error": str(e)},
+                    room=hiker_id,
                 )
+
+
+@socketio.on("price_availability_response")
+def handle_price_availability_response(data):
+    guide_id = data.get("guide_id")
+    hiker_id = data.get("hiker_id")
+    accepted = data.get("accepted")
+
+    if not guide_id or not hiker_id:
+        print("🚨 Missing guide_id or hiker_id in chat_response")
+        return
+
+    accepted = True if str(accepted).strip().lower() in ["true", "1", "yes"] else False
+    print(f"🔍 DEBUG: accepted={accepted}, type={type(accepted)}")
+
+    eventlet.spawn_n(
+        process_price_availability_response,
+        guide_id,
+        hiker_id,
+        accepted,
+    )
+
+
+def process_price_availability_response(guide_id, hiker_id, accepted):
+    with app.app_context():
+        with app.test_request_context():
+            try:
+                request = HikerRequest.query.filter_by(
+                    hiker_id=hiker_id, guide_id=guide_id, status="pending"
+                ).first()
+
+                if request:
+                    request.status = "accepted" if accepted else "rejected"
+                    db.session.commit()
+
+                    new_response = PriavlGuideResponse(
+                        hiker_id=hiker_id,
+                        guide_id=guide_id,
+                        accepted=accepted,
+                    )
+                    db.session.add(new_response)
+                    db.session.commit()
+
+                    socketio.emit(
+                        "price_availability_response",
+                        {
+                            "guide_id": guide_id,
+                            "accepted": accepted,
+                            "hiker_id": hiker_id,
+                        },
+                        room=hiker_id,
+                    )
+
+                    if accepted:
+                        print(f"✅ Accepted condition triggered for guide {guide_id}")
+
+                    else:
+                        print(
+                            f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}"
+                        )
+
+                else:
+                    print("❌ Chat request not found or already processed!")
+
+            except Exception as e:
+                print(f"🚨 Error in handling chat response: {e}")
 
 
 def update_last_seen(user_id, status):

@@ -162,6 +162,8 @@ class PriavlGuideResponse(db.Model):
     partialTime = db.Column(db.String(50), nullable=True)
     unavailableOption = db.Column(db.String(50), nullable=True)
     unavailabilityReason = db.Column(db.String(200), nullable=True)
+    accepted = db.Column(db.Boolean, nullable=False)
+    notified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
