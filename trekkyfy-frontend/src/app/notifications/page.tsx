@@ -211,6 +211,7 @@ export default function Notification() {
   };
 
   const handlePriavlReject = async (request: PriavlRequest) => {
+    console.log("guideId:", guideId, "currentHikerId:", currentHikerId);
     try {
       const res = await axiosInstance.post("/priavl-guide-res", {
         guide_id: guideId,
@@ -219,7 +220,7 @@ export default function Notification() {
         availability: "Unavailable",
         accepted: false,
       });
-      console.log("guideId:", guideId, "currentHikerId:", currentHikerId);
+
       if (res.status === 200) {
         const payload = {
           guide_id: guideId,
