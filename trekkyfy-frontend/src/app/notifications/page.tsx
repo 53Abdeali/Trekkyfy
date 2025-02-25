@@ -215,7 +215,7 @@ export default function Notification() {
     try {
       const res = await axiosInstance.post("/priavl-guide-res", {
         guide_id: guideId,
-        hiker_id: currentHikerId,
+        hiker_id: request.hiker_id,
         price: 0,
         availability: "Unavailable",
         accepted: false,
