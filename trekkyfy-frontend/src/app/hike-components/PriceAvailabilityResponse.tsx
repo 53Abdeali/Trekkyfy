@@ -37,8 +37,8 @@ const PriavlNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
           {notifications.length === 0 ? (
             <li>No new notifications</li>
           ) : (
-            notifications.map((notif, index) => (
-              <li key={index} className="request-item">
+            notifications.map((notif) => (
+              <li key={notif.id} className="request-item">
                 {notif.accepted ? (
                   <>
                     <span>
@@ -63,7 +63,7 @@ const PriavlNotificationPopup: React.FC<HikerNotificationPopupProps> = ({
                       <strong>{notif.guide_username}</strong> (Guide ID:{" "}
                       <strong>{notif.guide_id}</strong>)
                     </span>
-                    <button onClick={() => onDismiss(notif.id)}>
+                    <button className="chat-btn" onClick={() => onDismiss(notif.id)}>
                       <FontAwesomeIcon icon={faTimes} />
                     </button>
                   </>
