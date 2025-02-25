@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import "@/app/stylesheet/notification.css";
+import '@/app/stylesheet/PriceAvailabilityResponse.css'
 
 export interface PriavlResponse {
   id: string;
@@ -16,7 +17,7 @@ export interface PriavlResponse {
   partialTime: string;
   unavailableOption: string;
   unavailabilityReason: string;
-  hiker_username:string;
+  hiker_username: string;
   trek_place: string;
   trek_date: string;
   trek_time: string;
@@ -62,9 +63,11 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="modal-close-btn" onClick={onClose}>
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
+        <div className="modal-close-btn">
+          <button className="modal-close" onClick={onClose}>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
         <p>{message}</p>
       </div>
     </div>
