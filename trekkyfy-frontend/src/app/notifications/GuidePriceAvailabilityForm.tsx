@@ -103,7 +103,7 @@ const GuidePriceAvailabilityForm: React.FC<GuidePriceAvailabilityFormProps> = ({
         </div>
         <div className="modal-content">
           <p>
-            {`Hey, I ${hiker_username} - ${hiker_id} with my ${hiking_members} wants to know about the pricing and availability for the ${trek_place} on ${trek_date} from ${trek_time} to whole day (12 hours).`}
+            {`Hey, I ${hiker_username} - ${hiker_id} with my ${hiking_members} members wants to know about the pricing and availability for the ${trek_place} on ${trek_date} from ${trek_time} to whole day (12 hours).`}
           </p>
           <form onSubmit={handleSubmit}>
             <div className="form-main-guide">
