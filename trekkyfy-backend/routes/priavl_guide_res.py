@@ -30,7 +30,7 @@ def create_priavl_response():
     partialTime = data.get("partialTime")
     unavailableOption = data.get("unavailableOption")
     unavailabilityReason = data.get("unavailabilityReason")
-    accepted = data.get("accepted", False) 
+    accepted = data.get("accepted") 
 
     new_response = PriavlGuideResponse(
         guide_id=guide_id,
