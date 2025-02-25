@@ -215,12 +215,12 @@ export default function Notification() {
       const res = await axiosInstance.post("/priavl-guide-res", {
         guide_id: guideId,
         hiker_id: currentHikerId,
-        price : 0,
+        price: 0,
         availability: "Unavailable",
         accepted: false,
       });
+      console.log("guideId:", guideId, "currentHikerId:", currentHikerId);
       if (res.status === 200) {
-        toast.success("Response has been generated successfully!");
         const payload = {
           guide_id: guideId,
           hiker_id: currentHikerId,
