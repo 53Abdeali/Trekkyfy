@@ -118,7 +118,7 @@ def handle_chat_request(data):
     hiker_username = hiker.username if hiker else "Unknown"
 
     if not hiker_id or not guide_id or user_type != "hiker":
-        print("🚨 Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
+        print("Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
         socketio.emit(
             "chat_request",
             {"status": "error", "error": "Invalid request"},
@@ -132,7 +132,7 @@ def handle_chat_request(data):
         eventlet.spawn_n(process_chat_request, hiker_id, guide_id, hiker_username)
         return {"status": "success"}
     except Exception as e:
-        print(f"🚨 Error handling chat_request: {e}")
+        print(f"Error handling chat_request: {e}")
         socketio.emit(
             "chat_request", {"status": "error", "error": str(e)}, room=hiker_id
         )
@@ -162,17 +162,17 @@ def process_chat_request(hiker_id, guide_id, hiker_username):
                         room=guide_id,
                     )
                     print(
-                        f"📩 Hiker {hiker_id} - ({hiker_username}) sent chat request to Guide {guide_id}"
+                        f"Hiker {hiker_id} - ({hiker_username}) sent chat request to Guide {guide_id}"
                     )
                     socketio.emit("chat_request", {"status": "success"}, room=hiker_id)
                     return {"status": "success"}
 
                 except Exception as e:
-                    print(f"❌ Guide {guide_id} is not online, request pending.", e)
+                    print(f"Guide {guide_id} is not online, request pending.", e)
 
             except Exception as e:
                 db.session.rollback()
-                print(f"🚨 Error processing chat request: {e}")
+                print(f"Error processing chat request: {e}")
                 socketio.emit(
                     "chat_request", {"status": "error", "error": str(e)}, room=hiker_id
                 )
@@ -186,7 +186,7 @@ def handle_chat_response(data):
     guide_whatsapp = data.get("guide_whatsapp")
 
     if not guide_id or not hiker_id:
-        print("🚨 Missing guide_id or hiker_id in chat_response")
+        print("Missing guide_id or hiker_id in chat_response")
         return
 
     accepted = True if str(accepted).strip().lower() in ["true", "1", "yes"] else False
@@ -230,7 +230,7 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                     )
 
                     if accepted:
-                        print(f"✅ Accepted condition triggered for guide {guide_id}")
+                        print(f"Accepted condition triggered for guide {guide_id}")
                         guide = GuideDetails.query.filter_by(guide_id=guide_id).first()
                         if guide and guide.guide_whatsapp:
                             whatsapp_url = f"https://wa.me/{guide.guide_whatsapp}"
@@ -241,23 +241,23 @@ def process_chat_response(guide_id, hiker_id, accepted, guide_whatsapp):
                                 room=hiker_id,
                             )
                             print(
-                                f"✅ Guide {guide_id} accepted chat request, WhatsApp link has been sent to Hiker {hiker_id}"
+                                f"Guide {guide_id} accepted chat request, WhatsApp link has been sent to Hiker {hiker_id}"
                             )
                         else:
                             print(
-                                f"⚠️ Guide {guide_id} accepted chat request but has no WhatsApp number."
+                                f"Guide {guide_id} accepted chat request but has no WhatsApp number."
                             )
 
                     else:
                         print(
-                            f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}"
+                            f"Guide {guide_id} rejected chat request from Hiker {hiker_id}"
                         )
 
                 else:
-                    print("❌ Chat request not found or already processed!")
+                    print("Chat request not found or already processed!")
 
             except Exception as e:
-                print(f"🚨 Error in handling chat response: {e}")
+                print(f"Error in handling chat response: {e}")
 
 
 @socketio.on("heartbeat")
@@ -279,7 +279,7 @@ def handle_price_availability(data):
     user_type = data.get("user_type")
 
     if not hiker_id or not guide_id or user_type != "hiker":
-        print("🚨 Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
+        print("Invalid chat request: Missing guide_id, hiker_id, or wrong user_type")
         socketio.emit(
             "price_availability_req",
             {"status": "error", "error": "Invalid request"},
@@ -291,7 +291,7 @@ def handle_price_availability(data):
         eventlet.spawn_n(process_price_availability, hiker_id, guide_id)
         return {"status": "success"}
     except Exception as e:
-        print(f"🚨 Error handling chat_request: {e}")
+        print(f"Error handling chat_request: {e}")
         socketio.emit(
             "price_availability_req",
             {"status": "error", "error": str(e)},
@@ -323,14 +323,14 @@ def process_price_availability(hiker_id, guide_id):
                         room=guide_id,
                     )
                     print(
-                        f"📩 Hiker {hiker_id} - ({hiker_username}) sent price & availabilty request to Guide {guide_id}"
+                        f"Hiker {hiker_id} - ({hiker_username}) sent price & availabilty request to Guide {guide_id}"
                     )
                     socketio.emit(
                         "price_availability_req", {"status": "success"}, room=hiker_id
                     )
             except Exception as e:
                 db.session.rollback()
-                print(f"🚨 Error processing chat request: {e}")
+                print(f"Error processing chat request: {e}")
                 socketio.emit(
                     "price_availability_req",
                     {"status": "error", "error": str(e)},
@@ -399,18 +399,18 @@ def process_price_availability_response(guide_id, hiker_id, accepted):
                     )
 
                     if accepted:
-                        print(f"✅ Accepted condition triggered for guide {guide_id}")
+                        print(f"Accepted condition triggered for guide {guide_id}")
 
                     else:
                         print(
-                            f"❌ Guide {guide_id} rejected chat request from Hiker {hiker_id}"
+                            f"Guide {guide_id} rejected chat request from Hiker {hiker_id}"
                         )
 
                 else:
-                    print("❌ Chat request not found or already processed!")
+                    print("Chat request not found or already processed!")
 
             except Exception as e:
-                print(f"🚨 Error in handling chat response: {e}")
+                print(f"Error in handling chat response: {e}")
 
 
 def update_last_seen(user_id, status):
