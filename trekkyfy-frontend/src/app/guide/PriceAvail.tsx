@@ -104,16 +104,16 @@ const HikerInfo: React.FC<HikerInfoProps> = ({
         </div>
         <div className="pr-av-main">
           <form onSubmit={handleSubmit}>
+            <div className="pr-av-ip" style={{ display: "none" }}>
+              <input
+                type="text"
+                name="guide_id"
+                value={guide_id || ""}
+                readOnly
+                hidden
+              />
+            </div>
             <div className="pr-av-ip-main">
-              <div className="pr-av-ip" style={{ display: "none" }}>
-                <input
-                  type="text"
-                  name="guide_id"
-                  value={guide_id || ""}
-                  readOnly
-                  hidden
-                />
-              </div>
               <div className="pr-av-ip">
                 <label htmlFor="Hiker Id">Your ID</label>
                 <input

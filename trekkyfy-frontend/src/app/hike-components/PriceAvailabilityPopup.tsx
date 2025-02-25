@@ -7,6 +7,10 @@ export interface PriavlRequest {
   hiker_username: string;
   hiker_id: string;
   guideId: string;
+  trek_place: string;
+  trek_date: string;
+  trek_time: string;
+  hiking_members:number;
 }
 
 interface NotificationPopupProps {
@@ -32,7 +36,10 @@ const PriceAvailabilityPopup: React.FC<NotificationPopupProps> = ({
           ) : (
             requests.map((req) => (
               <li key={req.hiker_id} className="request-item">
-                <span>{req.hiker_username} - {req.hiker_id} is requesting for pricing and availability.</span>
+                <span>
+                  {req.hiker_username} - {req.hiker_id} is requesting for
+                  pricing and availability.
+                </span>
                 <div className="action-icons">
                   <FontAwesomeIcon
                     icon={faCheck}

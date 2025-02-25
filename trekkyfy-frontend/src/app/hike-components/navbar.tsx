@@ -165,7 +165,7 @@ export default function Navbar() {
           toast.error("Error fetching notifications.");
         });
     }
-  }, [userRole, guideId, currentHikerId]);
+  }, [userRole, guideId, currentHikerId, token]);
 
   useEffect(() => {
     if (userRole === "guide" && guideId) {
@@ -188,7 +188,7 @@ export default function Navbar() {
           );
         });
     }
-  }, [userRole, guideId]);
+  }, [userRole, guideId, token]);
 
   const logout = async () => {
     try {

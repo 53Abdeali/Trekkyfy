@@ -151,3 +151,19 @@ class HikerRequest(db.Model):
 
     def __repr__(self):
         return f"<Hiker_Details {self.hiker_id}, Username {self.hiker_username}>"
+
+
+class PriavlGuideResponse(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    hiker_id = db.Column(db.String(50), nullable=False)
+    guide_id = db.Column(db.String(50), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    availability = db.Column(db.String(20), nullable=False)
+    partialTime = db.Column(db.String(50), nullable=True)
+    unavailableOption = db.Column(db.String(50), nullable=True)
+    unavailabilityReason = db.Column(db.String(200), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"<Guide_Response {self.price}, Username {self.availability}>"

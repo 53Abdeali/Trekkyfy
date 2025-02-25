@@ -24,6 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PriceAvailabilityPopup, {
   PriavlRequest,
 } from "../hike-components/PriceAvailabilityPopup";
+import GuidePriceAvailabilityForm from "./GuidePriceAvailabilityForm";
 
 interface DecodedToken {
   guide_id?: string;
@@ -39,6 +40,10 @@ export default function Notification() {
   const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
   const [showProfileDown, setShowProfileDown] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<PriavlRequest | null>(
+    null
+  );
+  const [showFormPopup, setShowFormPopup] = useState(false);
 
   const socket = getSocket();
   const token = Cookies.get("access_token");
@@ -171,35 +176,16 @@ export default function Notification() {
           );
         });
     }
-  }, [userRole, guideId]);
+  }, [userRole, guideId, token]);
 
   const handlePriavlAccept = async (request: PriavlRequest) => {
-    try {
-      const response = await axios.get("/pri-avl", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: { guide_id: guideId },
-      });
-      if (response.status === 200) {
-        const guideWhatsAppNumber = response.data.guide_whatsapp;
-        const payload = {
-          guide_id: guideId,
-          hiker_id: request.hiker_id,
-          accepted: true,
-          guide_whatsapp: guideWhatsAppNumber,
-        };
-        console.log("Emitting chat_response with payload:", payload);
-        socket?.emit("chat_response", payload);
+    setSelectedRequest(request);
+    setShowFormPopup(true);
+  };
 
-        setPriavlRequests((prev) =>
-          prev.filter((r) => r.hiker_id !== request.hiker_id)
-        );
-      }
-    } catch (error) {
-      console.error("Failed to fetch guide WhatsApp number:", error);
-      toast.error("Error fetching WhatsApp number.");
-    }
+  const handleFormClose = () => {
+    setShowFormPopup(false);
+    setSelectedRequest(null);
   };
 
   const handlePriavlReject = (request: ChatRequest) => {
@@ -240,9 +226,12 @@ export default function Notification() {
             <h1>
               Notifications{" "}
               <span>
-                {userRole === "guide" && (chatRequests.length + priavlRequests.length) > 0 && (
-                  <span className="badge">{chatRequests.length + + priavlRequests.length}</span>
-                )}
+                {userRole === "guide" &&
+                  chatRequests.length + priavlRequests.length > 0 && (
+                    <span className="badge">
+                      {chatRequests.length + +priavlRequests.length}
+                    </span>
+                  )}
                 {userRole === "hiker" && chatResponses.length > 0 && (
                   <span className="badge">{chatResponses.length}</span>
                 )}
@@ -293,6 +282,12 @@ export default function Notification() {
                     onPriavlAccept={handlePriavlAccept}
                     onPriavlReject={handlePriavlReject}
                   />
+                  {showFormPopup && selectedRequest && (
+                    <GuidePriceAvailabilityForm
+                      request={selectedRequest}
+                      onClose={handleFormClose}
+                    />
+                  )}
                 </div>
               </>
             ) : (

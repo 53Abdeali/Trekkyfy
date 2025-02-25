@@ -84,6 +84,7 @@ def get_pri_avl_req():
                     "hiker_username": req.hiker_username,
                     "status": req.status,
                     "trek_place": req.trek_place,
+                    "hiking_members":req.hiking_members,
                     "trek_date": req.trek_date.isoformat() if req.trek_date else None,
                     "trek_time": req.trek_time.strftime("%H:%M:%S") if isinstance(req.trek_time, time) else None,
                 }
