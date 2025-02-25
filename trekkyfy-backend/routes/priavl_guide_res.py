@@ -92,6 +92,7 @@ def get_priavl_res():
                     "unavailableOption": resp.unavailableOption,
                     "unavailabilityReason": resp.unavailabilityReason,
                     "guide_username": guide_username,
+                    "accepted" : resp.accepted,
                 }
             )
             resp.notified = True
