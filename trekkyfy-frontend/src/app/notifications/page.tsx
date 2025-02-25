@@ -210,16 +210,33 @@ export default function Notification() {
     setSelectedRequest(null);
   };
 
-  const handlePriavlReject = (request: PriavlRequest) => {
-    const payload = {
-      guide_id: guideId,
-      hiker_id: request.hiker_id,
-      accepted: false,
-    };
-    console.log("Emitting chat_response with payload:", payload);
-    socket?.emit("price_availability_response", payload);
-    toast.error("Request Rejected!");
-    setPriavlRequests((prev) => prev.filter((r) => r.id !== request.id));
+  const handlePriavlReject = async (request: PriavlRequest) => {
+    try {
+      const res = await axiosInstance.post("/priavl-guide-res", {
+        guide_id: guideId,
+        hiker_id: currentHikerId,
+        accepted: false,
+      });
+      if (res.status === 200) {
+        toast.success("Response has been generated successfully!");
+        const payload = {
+          guide_id: guideId,
+          hiker_id: currentHikerId,
+          accepted: false,
+        };
+        console.log(
+          "Emitting price_availability_response with payload:",
+          payload
+        );
+        socket?.emit("price_availability_response", payload);
+        toast.error("Request Rejected!");
+        setPriavlRequests((prev) => prev.filter((r) => r.id !== request.id));
+      } else {
+        toast.error("Unable to proceed the request.");
+      }
+    } catch (err) {
+      console.log("Some Error Occured!", err);
+    }
   };
 
   const logout = async () => {

@@ -4,14 +4,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export interface PriavlRequest {
-  id:string;
+  id: string;
   hiker_username: string;
   hiker_id: string;
   guideId: string;
   trek_place: string;
   trek_date: string;
   trek_time: string;
-  hiking_members:number;
+  hiking_members: number;
 }
 
 interface NotificationPopupProps {
@@ -50,7 +50,10 @@ const PriceAvailabilityPopup: React.FC<NotificationPopupProps> = ({
                   <FontAwesomeIcon
                     icon={faTimes}
                     className="reject-icon"
-                    onClick={() => onPriavlReject(req)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onPriavlReject(req);
+                    }}
                   />
                 </div>
               </li>
