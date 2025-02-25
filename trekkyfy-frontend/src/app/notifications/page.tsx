@@ -25,7 +25,9 @@ import PriceAvailabilityPopup, {
   PriavlRequest,
 } from "../hike-components/PriceAvailabilityPopup";
 import GuidePriceAvailabilityForm from "./GuidePriceAvailabilityForm";
-import { PriavlResponse } from "../hike-components/PriceAvailabilityResponse";
+import PriceAvailabilityResponse, {
+  PriavlResponse,
+} from "../hike-components/PriceAvailabilityResponse";
 
 interface DecodedToken {
   guide_id?: string;
@@ -184,7 +186,7 @@ export default function Notification() {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
-          setChatResponses(res.data);
+          setPriavlResponses(res.data);
         })
         .catch((err) => {
           console.error("Error fetching pending responses:", err);
@@ -212,7 +214,7 @@ export default function Notification() {
     };
     console.log("Emitting chat_response with payload:", payload);
     socket?.emit("price_availability_response", payload);
-    toast.error("Request Rejected!")
+    toast.error("Request Rejected!");
     setPriavlRequests((prev) => prev.filter((r) => r.id !== request.hiker_id));
   };
 
@@ -306,11 +308,21 @@ export default function Notification() {
                 </div>
               </>
             ) : (
-              <HikerNotificationPopup
-                notifications={chatResponses}
-                onOpenChat={handleOpenChat}
-                onDismiss={handleDismissResponse}
-              />
+              <>
+                <div>
+                  <HikerNotificationPopup
+                    notifications={chatResponses}
+                    onOpenChat={handleOpenChat}
+                    onDismiss={handleDismissResponse}
+                  />
+                </div>
+                <div style={{ marginTop: "2rem" }}>
+                  <PriceAvailabilityResponse
+                    notifications={priavlResponses}
+                    onDismiss={handleDismissResponse}
+                  />
+                </div>
+              </>
             )}
           </main>
         </div>
