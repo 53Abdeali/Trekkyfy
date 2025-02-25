@@ -84,6 +84,8 @@ const GuidePriceAvailabilityForm: React.FC<GuidePriceAvailabilityFormProps> = ({
       console.log("Some Error Occured!", err);
     }
     console.log({
+      guideId,
+      hiker_id,
       price,
       availability,
       partialTime,
