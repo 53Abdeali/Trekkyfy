@@ -154,6 +154,9 @@ export default function Navbar() {
           partialTime: string;
           unavailableOption: string;
           unavailabilityReason: string;
+          trek_place: string;
+          trek_date: string;
+          trek_time: string;
         }) => {
           if (data.hiker_id && data.hiker_id !== currentHikerId) return;
           setPriavlResponses((prev) => [...prev, data]);
