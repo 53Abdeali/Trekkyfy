@@ -177,6 +177,19 @@ export default function Notification() {
   }, [priavlResponses, userRole]);
 
   useEffect(() => {
+    if (userRole === "hiker" && priavlResponses.length > 0) {
+      const timer = setTimeout(() => {
+        setPriavlResponses((prev) =>
+          prev.filter(
+            (notif) => notif.accepted === null || notif.accepted === undefined
+          )
+        );
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [priavlResponses, userRole]);
+
+  useEffect(() => {
     if (userRole === "guide" && guideId) {
       axiosInstance
         .get("/pri-avl", {
