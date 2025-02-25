@@ -182,7 +182,7 @@ export default function Notification() {
     setSelectedRequest(request);
     setShowFormPopup(true);
     setPriavlRequests((prev) =>
-      prev.filter((r) => r.hiker_id !== request.hiker_id)
+      prev.filter((r) => r.id !== request.hiker_id)
     );
   };
 
@@ -193,7 +193,7 @@ export default function Notification() {
 
   const handlePriavlReject = (request: PriavlRequest) => {
     setPriavlRequests((prev) =>
-      prev.filter((r) => r.hiker_id !== request.hiker_id)
+      prev.filter((r) => r.id !== request.hiker_id)
     );
   };
 
