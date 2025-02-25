@@ -30,6 +30,7 @@ def create_priavl_response():
     partialTime = data.get("partialTime")
     unavailableOption = data.get("unavailableOption")
     unavailabilityReason = data.get("unavailabilityReason")
+    accepted = data.get("accepted", False) 
 
     new_response = PriavlGuideResponse(
         guide_id=guide_id,
@@ -39,6 +40,7 @@ def create_priavl_response():
         partialTime=partialTime,
         unavailableOption=unavailableOption,
         unavailabilityReason=unavailabilityReason,
+        accepted=accepted,
     )
 
     db.session.add(new_response)
@@ -57,6 +59,7 @@ def create_priavl_response():
                     "partialTime": new_response.partialTime,
                     "unavailableOption": new_response.unavailableOption,
                     "unavailabilityReason": new_response.unavailabilityReason,
+                    "accepted": new_response.accepted,
                     "created_at": new_response.created_at.isoformat(),
                     "updated_at": new_response.updated_at.isoformat(),
                 },
