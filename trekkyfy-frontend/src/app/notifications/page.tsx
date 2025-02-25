@@ -181,6 +181,9 @@ export default function Notification() {
   const handlePriavlAccept = async (request: PriavlRequest) => {
     setSelectedRequest(request);
     setShowFormPopup(true);
+    setPriavlRequests((prev) =>
+      prev.filter((r) => r.hiker_id !== request.hiker_id)
+    );
   };
 
   const handleFormClose = () => {
