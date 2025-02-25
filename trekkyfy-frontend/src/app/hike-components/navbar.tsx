@@ -157,6 +157,7 @@ export default function Navbar() {
           trek_place: string;
           trek_date: string;
           trek_time: string;
+          hiker_username:string;
         }) => {
           if (data.hiker_id && data.hiker_id !== currentHikerId) return;
           setPriavlResponses((prev) => [...prev, data]);

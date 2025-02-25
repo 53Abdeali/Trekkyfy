@@ -32,6 +32,7 @@ import PriceAvailabilityResponse, {
 interface DecodedToken {
   guide_id?: string;
   hiker_id?: string;
+  username: string;
 }
 
 export default function Notification() {
@@ -42,6 +43,7 @@ export default function Notification() {
   const [priavlResponses, setPriavlResponses] = useState<PriavlResponse[]>([]);
   const [guideId, setGuideId] = useState<string | null>(null);
   const [currentHikerId, setCurrentHikerId] = useState<string | null>(null);
+  const [hikerUsername, setHikerUsername] = useState("");
   const [showProfileDown, setShowProfileDown] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<PriavlRequest | null>(
@@ -67,6 +69,9 @@ export default function Notification() {
       } else if (decoded.hiker_id) {
         setUserRole("hiker");
         setCurrentHikerId(decoded.hiker_id);
+        if (decoded.username) {
+          setHikerUsername(decoded.username);
+        }
       }
     } catch (error) {
       console.error("Error decoding token:", error);
@@ -347,6 +352,7 @@ export default function Notification() {
                   <PriceAvailabilityResponse
                     notifications={priavlResponses}
                     onDismiss={handleDismissPriavlResponse}
+                    hiker_username={hikerUsername}
                   />
                 </div>
               </>

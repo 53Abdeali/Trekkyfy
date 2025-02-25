@@ -12,11 +12,11 @@ export interface PriavlResponse {
   guide_id?: string;
   price: string;
   hiker_id?: string;
-  availability: string; // e.g., "full", "partial", or "unavailable"
+  availability: string;
   partialTime: string;
   unavailableOption: string;
   unavailabilityReason: string;
-  // Additional fields used in the popup paragraph:
+  hiker_username:string;
   trek_place: string;
   trek_date: string;
   trek_time: string;
@@ -25,7 +25,7 @@ export interface PriavlResponse {
 interface HikerNotificationPopupProps {
   notifications: PriavlResponse[];
   onDismiss: (id?: string) => void;
-  hiker_username: string; // current hiker's username
+  hiker_username: string;
 }
 
 interface ResponseModalProps {
