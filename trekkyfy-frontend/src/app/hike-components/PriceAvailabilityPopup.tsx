@@ -36,7 +36,7 @@ const PriceAvailabilityPopup: React.FC<NotificationPopupProps> = ({
             <li>No new requests</li>
           ) : (
             requests.map((req) => (
-              <li key={req.hiker_id} className="request-item">
+              <li key={req.id} className="request-item">
                 <span>
                   {req.hiker_username} - {req.hiker_id} is requesting for
                   pricing and availability.
