@@ -12,6 +12,7 @@ export interface PriavlRequest {
   trek_date: string;
   trek_time: string;
   hiking_members: number;
+  accepted: boolean;
 }
 
 interface NotificationPopupProps {

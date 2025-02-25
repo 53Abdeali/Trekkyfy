@@ -164,11 +164,11 @@ export default function Notification() {
   };
 
   useEffect(() => {
-    if (userRole === "hiker" && priavlResponses.length > 0) {
+    if (userRole === "hiker" && priavlRequests.length > 0) {
       const timer = setTimeout(() => {
-        setPriavlResponses((prev) =>
+        setPriavlRequests((prev) =>
           prev.filter(
-            (notif) => notif.accepted === null || notif.accepted === undefined
+            (req) => req.accepted === null || req.accepted === undefined
           )
         );
       }, 5000);
