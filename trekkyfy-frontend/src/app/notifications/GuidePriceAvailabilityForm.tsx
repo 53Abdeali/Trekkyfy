@@ -12,6 +12,7 @@ import axiosInstance from "@/utils/axiosConfig";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { getSocket } from "../socket";
 
 interface GuidePriceAvailabilityFormProps {
   request: PriavlRequest & {
@@ -25,8 +26,8 @@ interface GuidePriceAvailabilityFormProps {
   onClose: () => void;
 }
 
-interface DecodedToken{
-  guide_id?:string;
+interface DecodedToken {
+  guide_id?: string;
 }
 
 const GuidePriceAvailabilityForm: React.FC<GuidePriceAvailabilityFormProps> = ({
@@ -50,6 +51,7 @@ const GuidePriceAvailabilityForm: React.FC<GuidePriceAvailabilityFormProps> = ({
   const [unavailabilityReason, setUnavailabilityReason] = useState("");
   const [guideId, setGuideID] = useState<string | null>(null);
   const token = Cookies.get("access_token");
+  const socket = getSocket();
 
   useEffect(() => {
     if (!token) return;
@@ -74,9 +76,20 @@ const GuidePriceAvailabilityForm: React.FC<GuidePriceAvailabilityFormProps> = ({
         partialTime: partialTime,
         unavailableOption: unavailableOption,
         unavailabilityReason: unavailabilityReason,
+        accepted: true,
       });
       if (res.status === 200) {
         toast.success("Response has been generated successfully!");
+        const payload = {
+          guide_id: guideId,
+          hiker_id: hiker_id,
+          accepted: true,
+        };
+        console.log(
+          "Emitting price_availability_response with payload:",
+          payload
+        );
+        socket?.emit("price_availability_response", payload);
       } else {
         toast.error("Unable to proceed the request.");
       }

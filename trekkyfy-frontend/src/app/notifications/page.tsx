@@ -202,13 +202,6 @@ export default function Notification() {
   const handlePriavlAccept = async (request: PriavlRequest) => {
     setSelectedRequest(request);
     setShowFormPopup(true);
-    const payload = {
-      guide_id: guideId,
-      hiker_id: request.hiker_id,
-      accepted: true,
-    };
-    console.log("Emitting chat_response with payload:", payload);
-    socket?.emit("price_availability_response", payload);
     setPriavlRequests((prev) => prev.filter((r) => r.id !== request.hiker_id));
   };
 
