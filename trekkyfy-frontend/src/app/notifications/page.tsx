@@ -191,15 +191,8 @@ export default function Notification() {
     setSelectedRequest(null);
   };
 
-  const handlePriavlReject = (request: ChatRequest) => {
-    const payload = {
-      guide_id: guideId,
-      hiker_id: request.hiker_id,
-      accepted: false,
-    };
-    console.log("Emitting chat_response with payload:", payload);
-    socket?.emit("chat_response", payload);
-    setChatRequests((prev) =>
+  const handlePriavlReject = (request: PriavlRequest) => {
+    setPriavlRequests((prev) =>
       prev.filter((r) => r.hiker_id !== request.hiker_id)
     );
   };
