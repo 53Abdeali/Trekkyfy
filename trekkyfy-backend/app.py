@@ -370,14 +370,23 @@ def process_price_availability_response(guide_id, hiker_id, accepted):
                 if request:
                     request.status = "accepted" if accepted else "rejected"
                     db.session.commit()
+                    
+                    response_obj = PriavlGuideResponse.query.filter_by(
+                        hiker_id=hiker_id, guide_id=guide_id
+                    ).first()
 
-                    new_response = PriavlGuideResponse(
-                        hiker_id=hiker_id,
-                        guide_id=guide_id,
-                        accepted=accepted,
-                    )
-                    db.session.add(new_response)
-                    db.session.commit()
+                    if response_obj:
+                        response_obj.accepted = accepted
+                        db.session.commit()
+                    
+                    else:
+                        new_response = PriavlGuideResponse(
+                            hiker_id=hiker_id,
+                            guide_id=guide_id,
+                            accepted=accepted,
+                        )
+                        db.session.add(new_response)
+                        db.session.commit()
 
                     socketio.emit(
                         "price_availability_response",
