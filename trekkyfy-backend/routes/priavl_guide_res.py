@@ -39,6 +39,7 @@ def create_priavl_response():
         partialTime=partialTime,
         unavailableOption=unavailableOption,
         unavailabilityReason=unavailabilityReason,
+        accepted=False
     )
 
     db.session.add(new_response)
