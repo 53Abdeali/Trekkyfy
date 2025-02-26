@@ -78,6 +78,7 @@ def add_to_wishlist():
         response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE")
         return response, 201
     except Exception as e:
+        logging.error(f"Error in add_to_wishlist: {str(e)}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
