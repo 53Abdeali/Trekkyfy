@@ -58,7 +58,7 @@ const WishlistPage = () => {
   const removeFromWishlist = async (trailId: number) => {
     try {
       const response = await fetch(
-        "https://trekkyfy.onrender.com/api/wishlist",
+        "https://trekkyfy.onrender.com/api/wishlist/remove",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
