@@ -152,6 +152,7 @@ export default function Trails_Trek() {
     fetch("https://rekkyfy.onrender.com/api/wishlist/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ hiker_id: hikerId, trail_id: trailId }),
     }).then(() => setWishlist([...wishlist, trailId]));
   };
