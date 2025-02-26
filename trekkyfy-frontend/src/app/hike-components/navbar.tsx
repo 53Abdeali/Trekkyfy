@@ -417,6 +417,9 @@ export default function Navbar() {
                     >
                       Logout
                     </span>
+                    <Link href="/wishlist" className="dropdown-item">
+                      My Wishlist
+                    </Link>
                   </div>
                 )}
               </li>

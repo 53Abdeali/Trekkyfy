@@ -16,6 +16,7 @@ from routes.pending_requests import pending_req_bp
 from routes.pending_responses import chat_resp_bp
 from routes.hiker_info import hiker_info_bp
 from routes.priavl_guide_res import priavl_guide_res_bp
+from routes.wishlist import wishlist_bp
 
 def register_blueprints(app: Flask):
     # API Call for Register
@@ -68,5 +69,8 @@ def register_blueprints(app: Flask):
     
     #API Response from Guide for Pricing and Availabilty by Hiker
     app.register_blueprint(priavl_guide_res_bp, url_prefix="/api")
+    
+    #API for Wishlist GET, ADD, REMOVE by Hiker
+    app.register_blueprint(wishlist_bp, url_prefix="/api")
     
     
