@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 import pymysql.cursors  # type: ignore
 import pymysql  # type: ignore
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 
 wishlist_bp = Blueprint("wishlist", __name__)
@@ -41,6 +41,7 @@ def get_wishlist(hiker_id):
 
 
 @wishlist_bp.route("/wishlist/add", methods=["POST"])
+@cross_origin()
 def add_to_wishlist():
     data = request.json
     hiker_id = data.get("hiker_id")
