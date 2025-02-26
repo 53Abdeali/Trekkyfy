@@ -31,7 +31,7 @@ const WishlistPage = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        setWishlist(data);
+        setWishlist(data.map((trail: Trail) => trail.id));
       } else {
         toast.error("Failed to fetch wishlist.");
       }
@@ -60,7 +60,7 @@ const WishlistPage = () => {
       const response = await fetch(
         "https://trekkyfy.onrender.com/api/wishlist",
         {
-          method: "DELETE",
+          method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: hikerId, trail_id: trailId }),
         }

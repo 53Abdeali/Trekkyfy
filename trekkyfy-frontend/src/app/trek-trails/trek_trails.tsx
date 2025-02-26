@@ -19,6 +19,7 @@ import Footer from "@/app/hike-components/footer";
 import Image from "next/image";
 import explore from "@/app/Images/exp-flower.png";
 import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
 
 export interface Trail {
   id: number;
@@ -57,13 +58,13 @@ export default function Trails_Trek() {
   };
 
   const token = Cookies.get("access_token");
-    useEffect(() => {
-      if (!token) {
-        router.push("/login");
-      } else {
-        setIsAuthenticated(true);
-      }
-    }, [router, token]);
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [router, token]);
 
   useEffect(() => {
     if (!token) return;
@@ -104,11 +105,11 @@ export default function Trails_Trek() {
     [filters, page]
   );
 
-    useEffect(() => {
-      if (isAuthenticated) {
-        fetchTrails(true);
-      }
-    }, [filters, isAuthenticated, fetchTrails]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchTrails(true);
+    }
+  }, [filters, isAuthenticated, fetchTrails]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -154,7 +155,19 @@ export default function Trails_Trek() {
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({ hiker_id: hikerId, trail_id: trailId }),
-    }).then(() => setWishlist([...wishlist, trailId]));
+    })
+      .then((response) => {
+        if (response.ok) {
+          setWishlist([...wishlist, trailId]);
+          toast.success("Added to wishlist!");
+        } else {
+          toast.error("Failed to add to wishlist.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding to wishlist:", error);
+        toast.error("Something went wrong!");
+      });
   };
 
   const removeFromWishlist = (trailId: number) => {
@@ -162,7 +175,19 @@ export default function Trails_Trek() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ hiker_id: hikerId, trail_id: trailId }),
-    }).then(() => setWishlist(wishlist.filter((id) => id !== trailId)));
+    })
+      .then((response) => {
+        if (response.ok) {
+          setWishlist(wishlist.filter((id) => id !== trailId));
+          toast.success("Removed from wishlist!");
+        } else {
+          toast.error("Failed to remove from wishlist.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error removing from wishlist:", error);
+        toast.error("Something went wrong!");
+      });
   };
 
   const isAddedToWishlist = (trailId: number) => wishlist.includes(trailId);
@@ -170,144 +195,148 @@ export default function Trails_Trek() {
   return (
     <>
       {isAuthenticated && (
-      <div className="explore">
-        <Navbar />
-        <div className="explore-cont">
-          <div className="explore-image">
-            <Image className="explore-img" src={explore} alt="Explore" />
-          </div>
-          <div className="exp-heads">
-            <h1 className="explore-head">Book and Enjoy the Trails & Treks</h1>
-            <p className="exp-para">
-              Explore treks and click on the play button to see how your
-              adventure would be! Afterwards click on the Book Now Button!
-            </p>
-          </div>
+        <div className="explore">
+          <Navbar />
+          <div className="explore-cont">
+            <div className="explore-image">
+              <Image className="explore-img" src={explore} alt="Explore" />
+            </div>
+            <div className="exp-heads">
+              <h1 className="explore-head">
+                Book and Enjoy the Trails & Treks
+              </h1>
+              <p className="exp-para">
+                Explore treks and click on the play button to see how your
+                adventure would be! Afterwards click on the Book Now Button!
+              </p>
+            </div>
 
-          <div className="explore-inputs">
-            <div className="exp-inp-main">
-              <input
-                type="text"
-                name="state"
-                placeholder="State"
-                value={filters.state}
-                onChange={handleInputChange}
-                className="exp-inp"
-              />
-              <select
-                name="difficulty"
-                value={filters.difficulty}
-                onChange={handleInputChange}
-                className="explore-select"
-              >
-                <option value="">Difficulty Level</option>
-                <option value="Easy">Easy</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Challenging">Challenging</option>
-                <option value="Difficult">Difficult</option>
-              </select>
-              <input
-                type="number"
-                name="max_duration"
-                placeholder="Max Duration (days)"
-                value={filters.max_duration}
-                onChange={handleInputChange}
-                className="exp-inp"
-              />
+            <div className="explore-inputs">
+              <div className="exp-inp-main">
+                <input
+                  type="text"
+                  name="state"
+                  placeholder="State"
+                  value={filters.state}
+                  onChange={handleInputChange}
+                  className="exp-inp"
+                />
+                <select
+                  name="difficulty"
+                  value={filters.difficulty}
+                  onChange={handleInputChange}
+                  className="explore-select"
+                >
+                  <option value="">Difficulty Level</option>
+                  <option value="Easy">Easy</option>
+                  <option value="Moderate">Moderate</option>
+                  <option value="Challenging">Challenging</option>
+                  <option value="Difficult">Difficult</option>
+                </select>
+                <input
+                  type="number"
+                  name="max_duration"
+                  placeholder="Max Duration (days)"
+                  value={filters.max_duration}
+                  onChange={handleInputChange}
+                  className="exp-inp"
+                />
+              </div>
+            </div>
+
+            <div className="exp-cards-main">
+              {trails.length > 0 &&
+                trails.map((trail, index) => (
+                  <div key={`${trail.id}-${index}`} className="exp-cards">
+                    <div className="ellipsis">
+                      <div className="book-btn">
+                        <span className="book-button">
+                          Book Now <FontAwesomeIcon icon={faPlus} />
+                        </span>
+                      </div>
+                      <FontAwesomeIcon
+                        onClick={() => showToggleTools(index)}
+                        className="ellipsis-v"
+                        icon={faEllipsisV}
+                      />
+                    </div>
+                    {showTools === index && (
+                      <div className="tools">
+                        <div
+                          className="share-add"
+                          onClick={() => shareTrek(trail)}
+                        >
+                          <span>
+                            <FontAwesomeIcon
+                              className="share-add-icon"
+                              icon={faShareAlt}
+                            />
+                          </span>
+                          <span>Share</span>
+                        </div>
+                        <div
+                          className="share-add"
+                          onClick={() =>
+                            isAddedToWishlist(trail.id)
+                              ? removeFromWishlist(trail.id)
+                              : addToWishlist(trail.id)
+                          }
+                        >
+                          <span>
+                            <FontAwesomeIcon
+                              className="share-add-icon"
+                              icon={
+                                isAddedToWishlist(trail.id)
+                                  ? faTimes
+                                  : faBookmark
+                              }
+                            />
+                          </span>
+                          <span>
+                            {isAddedToWishlist(trail.id)
+                              ? "Remove"
+                              : "Add to Wishlist"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    <h2 className="exp-cards-head">{trail.name}</h2>
+                    <p className="exp-cards-para">State: {trail.state}</p>
+                    <p className="exp-cards-para">
+                      Nearest City: {trail.nearest_city}
+                    </p>
+                    <p className="exp-cards-para">
+                      Difficulty: {trail.difficulty_level}
+                    </p>
+                    <p className="exp-cards-para">
+                      Duration: {trail.duration_days} days
+                    </p>
+                    <p className="exp-cards-para">
+                      Best Time to Visit: {trail.best_time_to_visit}
+                    </p>
+                    <p className="exp-cards-para">
+                      Guide Available: {trail.guide_availability ? "Yes" : "No"}
+                    </p>
+                    {trail.Links ? (
+                      <Link
+                        href={trail.Links}
+                        target="_blank"
+                        className="exp-cards-link"
+                      >
+                        <FontAwesomeIcon icon={faPlay} className="text-xl" />
+                      </Link>
+                    ) : (
+                      <span className="exp-cards-span">N/A</span>
+                    )}
+                  </div>
+                ))}
+            </div>
+            <div className="explore-circ">
+              {isLoading && <div className="explore-load"></div>}
             </div>
           </div>
-
-          <div className="exp-cards-main">
-            {trails.length > 0 &&
-              trails.map((trail, index) => (
-                <div key={`${trail.id}-${index}`} className="exp-cards">
-                  <div className="ellipsis">
-                    <div className="book-btn">
-                      <span className="book-button">
-                        Book Now <FontAwesomeIcon icon={faPlus} />
-                      </span>
-                    </div>
-                    <FontAwesomeIcon
-                      onClick={() => showToggleTools(index)}
-                      className="ellipsis-v"
-                      icon={faEllipsisV}
-                    />
-                  </div>
-                  {showTools === index && (
-                    <div className="tools">
-                      <div
-                        className="share-add"
-                        onClick={() => shareTrek(trail)}
-                      >
-                        <span>
-                          <FontAwesomeIcon
-                            className="share-add-icon"
-                            icon={faShareAlt}
-                          />
-                        </span>
-                        <span>Share</span>
-                      </div>
-                      <div
-                        className="share-add"
-                        onClick={() =>
-                          isAddedToWishlist(trail.id)
-                            ? removeFromWishlist(trail.id)
-                            : addToWishlist(trail.id)
-                        }
-                      >
-                        <span>
-                          <FontAwesomeIcon
-                            className="share-add-icon"
-                            icon={
-                              isAddedToWishlist(trail.id) ? faTimes : faBookmark
-                            }
-                          />
-                        </span>
-                        <span>
-                          {isAddedToWishlist(trail.id)
-                            ? "Remove"
-                            : "Add to Wishlist"}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  <h2 className="exp-cards-head">{trail.name}</h2>
-                  <p className="exp-cards-para">State: {trail.state}</p>
-                  <p className="exp-cards-para">
-                    Nearest City: {trail.nearest_city}
-                  </p>
-                  <p className="exp-cards-para">
-                    Difficulty: {trail.difficulty_level}
-                  </p>
-                  <p className="exp-cards-para">
-                    Duration: {trail.duration_days} days
-                  </p>
-                  <p className="exp-cards-para">
-                    Best Time to Visit: {trail.best_time_to_visit}
-                  </p>
-                  <p className="exp-cards-para">
-                    Guide Available: {trail.guide_availability ? "Yes" : "No"}
-                  </p>
-                  {trail.Links ? (
-                    <Link
-                      href={trail.Links}
-                      target="_blank"
-                      className="exp-cards-link"
-                    >
-                      <FontAwesomeIcon icon={faPlay} className="text-xl" />
-                    </Link>
-                  ) : (
-                    <span className="exp-cards-span">N/A</span>
-                  )}
-                </div>
-              ))}
-          </div>
-          <div className="explore-circ">
-            {isLoading && <div className="explore-load"></div>}
-          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
       )}
     </>
   );
