@@ -31,7 +31,7 @@ const WishlistPage = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        setWishlist(data.map((trail: Trail) => trail.id));
+        setWishlist(data);
       } else {
         toast.error("Failed to fetch wishlist.");
       }
