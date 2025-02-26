@@ -341,6 +341,6 @@
     font-size: 0.8rem;
   }
   .exp-cards {
-    height: 170px;
+    height: auto;
   }
 }
