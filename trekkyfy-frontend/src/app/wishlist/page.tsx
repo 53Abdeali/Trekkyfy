@@ -27,7 +27,7 @@ const WishlistPage = () => {
   const fetchWishlist = async () => {
     try {
       const response = await fetch(
-        `https://rekkyfy.onrender.com/api/wishlist/${hikerId}`
+        `https://trekkyfy.onrender.com/api/wishlist/${hikerId}`
       );
       const data = await response.json();
       if (response.ok) {
@@ -58,7 +58,7 @@ const WishlistPage = () => {
   const removeFromWishlist = async (trailId: number) => {
     try {
       const response = await fetch(
-        "https://rekkyfy.onrender.com/api/wishlist",
+        "https://trekkyfy.onrender.com/api/wishlist",
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

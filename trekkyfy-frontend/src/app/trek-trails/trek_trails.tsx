@@ -149,7 +149,7 @@ export default function Trails_Trek() {
   };
 
   const addToWishlist = (trailId: number) => {
-    fetch("https://rekkyfy.onrender.com/api/wishlist/add", {
+    fetch("https://trekkyfy.onrender.com/api/wishlist/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -158,7 +158,7 @@ export default function Trails_Trek() {
   };
 
   const removeFromWishlist = (trailId: number) => {
-    fetch("https://rekkyfy.onrender.com/api/wishlist/remove", {
+    fetch("https://trekkyfy.onrender.com/api/wishlist/remove", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ hiker_id: hikerId, trail_id: trailId }),
