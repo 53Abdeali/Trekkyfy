@@ -27,7 +27,7 @@ const WishlistPage = () => {
   const fetchWishlist = async () => {
     try {
       const response = await fetch(
-        `https://trekkyfy.onrender.com/api/wishlist/${hikerId}`
+        "https://trekkyfy.onrender.com/api/wishlist"
       );
       const data = await response.json();
       if (response.ok) {
