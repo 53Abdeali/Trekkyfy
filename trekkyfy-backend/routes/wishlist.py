@@ -27,7 +27,8 @@ def get_wishlist(hiker_id):
         with conn.cursor() as cursor:
             cursor.execute(
                 """
-                SELECT t.id, t.name 
+                SELECT t.id, t.name, t.state, t.nearest_city, t.difficulty_level, 
+                    t.duration_days, t.best_time_to_visit, t.guide_availability, t.Links
                 FROM wishlist w
                 JOIN trails_and_treks t ON w.trail_id = t.id
                 WHERE w.hiker_id = %s
