@@ -20,7 +20,7 @@ def get_db_connection():
     )
 
 
-@wishlist_bp.route("/wishlist", methods=["GET"])
+@wishlist_bp.route("/wishlist/<string:hiker_id>", methods=["GET"])
 def get_wishlist(hiker_id):
     try:
         conn = get_db_connection()
