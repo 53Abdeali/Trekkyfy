@@ -41,7 +41,7 @@ def get_wishlist(hiker_id):
 
 
 @wishlist_bp.route("/wishlist/add", methods=["POST"])
-@cross_origin()
+@cross_origin(origin="https://trekkyfy.vercel.app", supports_credentials=True)
 def add_to_wishlist():
     data = request.json
     hiker_id = data.get("hiker_id")
