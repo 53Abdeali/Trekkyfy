@@ -63,7 +63,11 @@ def add_to_wishlist():
             )
             conn.commit()
         conn.close()
-        return jsonify({"message": "Added to wishlist"}), 201
+        response = jsonify({"message": "Added to wishlist"})
+        response.headers.add("Access-Control-Allow-Origin", "*") 
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE")
+        return response, 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
