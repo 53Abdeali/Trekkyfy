@@ -1,8 +1,11 @@
 from flask import Blueprint, request, jsonify
 import pymysql.cursors  # type: ignore
 import pymysql  # type: ignore
+from flask_cors import CORS
+
 
 wishlist_bp = Blueprint("wishlist", __name__)
+CORS(wishlist_bp)
 
 
 def get_db_connection():
