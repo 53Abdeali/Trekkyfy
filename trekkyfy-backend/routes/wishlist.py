@@ -88,6 +88,12 @@ def remove_from_wishlist():
     hiker_id = data.get("hiker_id")
     trail_id = data.get("trail_id")
 
+    logging.debug(f"Received request: hiker_id={hiker_id}, trail_id={trail_id}")
+
+    if not hiker_id or not trail_id:
+        logging.error("Missing required fields")
+        return jsonify({"error": "Missing hiker_id or trail_id"}), 400
+
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
