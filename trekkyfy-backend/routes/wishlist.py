@@ -6,7 +6,11 @@ from flask_cors import CORS, cross_origin
 
 
 wishlist_bp = Blueprint("wishlist", __name__)
-CORS(wishlist_bp)
+CORS(
+    wishlist_bp,
+    resources={r"/*": {"origins": "https://trekkyfy.vercel.app"}},
+    supports_credentials=True,
+)
 
 
 def get_db_connection():
@@ -72,11 +76,6 @@ def add_to_wishlist():
             conn.commit()
         conn.close()
         response = jsonify({"message": "Added to wishlist"})
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add(
-            "Access-Control-Allow-Headers", "Content-Type,Authorization"
-        )
-        response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE")
         return response, 201
     except Exception as e:
         logging.error(f"Error in add_to_wishlist: {str(e)}", exc_info=True)
