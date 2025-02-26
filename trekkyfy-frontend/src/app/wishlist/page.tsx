@@ -62,7 +62,7 @@ const WishlistPage = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: hikerId, trail_id: trailId }),
+          body: JSON.stringify({ hiker_id: hikerId, trail_id: trailId }),
         }
       );
 
