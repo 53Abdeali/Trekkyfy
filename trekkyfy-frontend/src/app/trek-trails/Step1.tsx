@@ -75,7 +75,7 @@ const HikerInfoForm: React.FC<HikerInfoProps> = ({ hiker_id, onNext }) => {
     setFormData((prev) => ({
       ...prev,
       hiker_id: hikerId || "",
-      username: hikerUsername || "",
+      hiker_username: hikerUsername || "",
     }));
   }, [hikerId, hikerUsername]);
 
