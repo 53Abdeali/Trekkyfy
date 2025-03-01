@@ -242,7 +242,7 @@ class HikerMember(db.Model):
     email = db.Column(db.String(100), nullable=False)
     whatsapp = db.Column(db.String(15), nullable=False)
 
-    hikers = db.relationship("Hikers", backref="hikers", uselist=False)
+    hikers = db.relationship("Hiker", backref="hikers", uselist=False)
 
     def __init__(self, hiker_id, email, whatsapp):
         self.hiker_id = hiker_id
