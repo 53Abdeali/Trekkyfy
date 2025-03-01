@@ -177,7 +177,7 @@ class Hiker(db.Model):
     __tablename__ = "hikers"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    hiker_id = db.Column(db.String(15), nullable=False)
+    hiker_id = db.Column(db.String(15), nullable=False, index=True)
     username = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(15), nullable=False)
     whatsapp = db.Column(db.String(15), nullable=False)
@@ -241,7 +241,7 @@ class HikerMember(db.Model):
     )
     email = db.Column(db.String(100), nullable=False)
     whatsapp = db.Column(db.String(15), nullable=False)
-    
+
     hikers = db.relationship("Hikers", backref="hikers", uselist=False)
 
     def __init__(self, hiker_id, email, whatsapp):
