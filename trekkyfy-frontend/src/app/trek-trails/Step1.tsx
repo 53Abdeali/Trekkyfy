@@ -57,10 +57,10 @@ const HikerInfoForm: React.FC<HikerInfoProps> = ({ hiker_id, onNext }) => {
       const decoded: DecodedToken = jwtDecode(token);
       if (decoded.hiker_id) {
         setHikerId(decoded.hiker_id);
-        if (decoded.username) {
-          console.log("Setting Username:", decoded.username);
-          setHikerUsername(decoded.username);
-        }
+      }
+      if (decoded.username) {
+        console.log("Setting Username:", decoded.username);
+        setHikerUsername(decoded.username);
       }
     } catch (error) {
       console.error("Error decoding token:", error);
