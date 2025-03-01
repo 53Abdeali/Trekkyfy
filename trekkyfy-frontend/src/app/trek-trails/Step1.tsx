@@ -58,6 +58,7 @@ const HikerInfoForm: React.FC<HikerInfoProps> = ({ hiker_id, onNext }) => {
       if (decoded.hiker_id) {
         setHikerId(decoded.hiker_id);
         if (decoded.username) {
+          console.log("Setting Username:", decoded.username);
           setHikerUsername(decoded.username);
         }
       }
