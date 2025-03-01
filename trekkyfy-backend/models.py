@@ -178,7 +178,7 @@ class Hiker(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     hiker_id = db.Column(db.String(15), nullable=False, index=True)
-    username = db.Column(db.String(100), nullable=False)
+    hiker_username = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(15), nullable=False)
     whatsapp = db.Column(db.String(15), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
