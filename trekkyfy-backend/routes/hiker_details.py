@@ -10,7 +10,7 @@ hiker_details_bp = Blueprint("Hiker_Details", __name__)
 @hiker_details_bp.route("/saveHikerDetails", methods=["POST"])
 def save_hiker_info():
     try:
-        data = request.json
+        data = request.get_json()
         hiker = Hiker(
             hiker_id=data["hiker_id"],
             hiker_username=data["hiker_username"],
