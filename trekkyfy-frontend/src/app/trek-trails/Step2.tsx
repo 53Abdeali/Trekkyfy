@@ -42,9 +42,7 @@ const Step2: React.FC<Step2Props> = ({ trail, handleNext, handleBack }) => {
   useEffect(() => {
     const fetchTrekDetails = async () => {
       try {
-        const response = await axiosInstance.get("/explore", {
-          params: { limit: 1 },
-        });
+        const response = await axiosInstance.get("/explore");
         if (response.data.length > 0) {
           const trail: TrekDetails = response.data[0];
           setTrekDetails(trail);
