@@ -192,7 +192,8 @@ class Hiker(db.Model):
 
     def __init__(
         self,
-        hikername,
+        hiker_id,
+        hiker_username,
         phone,
         whatsapp,
         email,
@@ -203,7 +204,8 @@ class Hiker(db.Model):
         trek_time,
         members,
     ):
-        self.hikername = hikername
+        self.hiker_id = hiker_id
+        self.hiker_username = hiker_username
         self.phone = phone
         self.whatsapp = whatsapp
         self.email = email
