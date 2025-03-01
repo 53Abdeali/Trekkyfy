@@ -1,3 +1,4 @@
+import traceback
 from flask import request, jsonify, Blueprint
 from models import Hiker, HikerMember
 from datetime import datetime
@@ -44,6 +45,7 @@ def save_hiker_info():
             201,
         )
     except Exception as e:
+        traceback.print_exc()
         print(e)
         return jsonify({"error": str(e)}), 500
 
