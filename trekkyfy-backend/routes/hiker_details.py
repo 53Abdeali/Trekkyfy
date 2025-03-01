@@ -11,7 +11,7 @@ def save_hiker_info():
     try:
         data = request.json
         hiker = Hiker(
-            username=data["username"],
+            hiker_username=data["hiker_username"],
             phone=data["phone"],
             whatsapp=data["whatsapp"],
             email=data["email"],

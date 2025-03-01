@@ -219,7 +219,7 @@ const HikerInfoForm: React.FC<HikerInfoProps> = ({ hiker_id, onNext }) => {
                 <label htmlFor="hiker_username">Your Hiker Username</label>
                 <input
                   type="text"
-                  name="username"
+                  name="hiker_username"
                   value={hikerUsername || ""}
                   readOnly
                 />
