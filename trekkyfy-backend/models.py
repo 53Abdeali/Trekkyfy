@@ -215,7 +215,6 @@ class Hiker(db.Model):
         self.members = members
 
     def to_dict(self):
-        """Convert the model object to a dictionary (for API responses)."""
         return {
             "hiker_id": self.hiker_id,
             "hikername": self.hikername,
