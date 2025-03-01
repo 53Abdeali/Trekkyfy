@@ -52,9 +52,11 @@ const HikerInfoForm: React.FC<HikerInfoProps> = ({ hiker_id, onNext }) => {
 
   useEffect(() => {
     const token = Cookies.get("access_token");
+    console.log("Token from cookies:", token);
     if (!token) return;
     try {
       const decoded: DecodedToken = jwtDecode(token);
+      console.log("Decoded Token:", decoded);
       if (decoded.hiker_id) {
         setHikerId(decoded.hiker_id);
       }
