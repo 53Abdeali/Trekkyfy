@@ -47,7 +47,7 @@ def save_hiker_info():
         )
     except Exception as e:
         traceback.print_exc()
-        print(e)
+        print("Error",e)
         return jsonify({"error": str(e)}), 500
 
 
