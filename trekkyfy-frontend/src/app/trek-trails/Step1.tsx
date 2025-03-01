@@ -61,6 +61,8 @@ const HikerInfoForm: React.FC<HikerInfoProps> = ({ hiker_id, onNext }) => {
       if (decoded.username) {
         console.log("Setting Username:", decoded.username);
         setHikerUsername(decoded.username);
+      } else {
+        console.warn("Username not found in decoded token.");
       }
     } catch (error) {
       console.error("Error decoding token:", error);
