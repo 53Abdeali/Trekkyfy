@@ -1,11 +1,10 @@
-// frontend/components/steps/Step2.tsx
+"use client";
 import React, { useState, useEffect } from "react";
-import axiosInstance from "@/utils/axiosConfig";
 import axios from "axios";
 import { Box, Button, Typography } from "@mui/material";
 import "@/app/trek-trails/styles/Step1.css";
 
-interface TrekDetails {
+export interface TrekDetails {
   id: number;
   name: string;
   state: string;
@@ -25,62 +24,53 @@ interface Step2Props {
 }
 
 interface WeatherData {
-  weather: {
-    description: string;
-  }[];
-  main: {
-    temp: number;
-    humidity: number;
-  };
+  weather: { description: string }[];
+  main: { temp: number; humidity: number };
 }
 
 const Step2: React.FC<Step2Props> = ({ trail, handleNext, handleBack }) => {
-  const [trekDetails, setTrekDetails] = useState<TrekDetails | null>(null);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTrekDetails = async () => {
+    const fetchWeather = async () => {
       try {
-        const response = await axiosInstance.get("/explore");
-        if (response.data.length > 0) {
-          const trail: TrekDetails = response.data[0];
-          setTrekDetails(trail);
-          const city = trail.nearest_city;
-          const API_KEY = "21218d6a5c444d6f238c4a3258f63305";
-          const weatherResponse = await axios.get(
-            `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`
-          );
-          setWeather(weatherResponse.data);
-        }
+        const city = trail.nearest_city;
+        const API_KEY = "21218d6a5c444d6f238c4a3258f63305";
+        const weatherResponse = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`
+        );
+        setWeather(weatherResponse.data);
       } catch (error) {
-        console.error("Error fetching trek details or weather data:", error);
+        console.error("Error fetching weather data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTrekDetails();
-  }, []);
+    fetchWeather();
+  }, [trail]);
 
   if (loading)
     return <Typography variant="body1">Loading trek details...</Typography>;
 
-  const trekData: TrekDetails = trekDetails || trail;
+  const trekData: TrekDetails = trail;
 
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>
-        {trail?.name}
+    <Box sx={{ p: 2 }}>
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        {trekData.name}
       </Typography>
-      <Typography variant="body1" gutterBottom>
-        {trail?.description}
+      <Typography variant="body1" sx={{ mb: 3 }}>
+        {trekData.description}
       </Typography>
-
+      <Typography variant="body2" sx={{ mt: 2 }}>
+        Guide Availability: {trekData.guide_availability ? "Yes" : "No"}
+      </Typography>
       {weather && (
         <Box mt={2}>
           <Typography variant="subtitle1">
-            Weather in {trail?.nearest_city}: {weather.weather[0].description}
+            Weather in {trekData.nearest_city}: {weather.weather[0].description}
           </Typography>
           <Typography variant="body2">
             Temperature: {weather.main.temp}°C, Humidity:{" "}
@@ -88,7 +78,6 @@ const Step2: React.FC<Step2Props> = ({ trail, handleNext, handleBack }) => {
           </Typography>
         </Box>
       )}
-
       <Box mt={3} display="flex" justifyContent="space-evenly">
         <Button variant="contained" onClick={handleBack}>
           Back
