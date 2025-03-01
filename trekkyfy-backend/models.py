@@ -165,7 +165,101 @@ class PriavlGuideResponse(db.Model):
     accepted = db.Column(db.Boolean, nullable=True)
     notified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
     def __repr__(self):
         return f"<Guide_Response {self.price}, Username {self.availability}>"
+
+
+class Hiker(db.Model):
+    __tablename__ = "hikers"
+
+    hiker_id = db.Column(db.String(15), primary_key=True, autoincrement=True)
+    username = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(15), nullable=False)
+    whatsapp = db.Column(db.String(15), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    current_location = db.Column(db.String(255), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    state = db.Column(db.String(100), nullable=False)
+    trek_date = db.Column(db.Date, nullable=False)
+    trek_time = db.Column(db.Time, nullable=False)
+    members = db.Column(db.Integer, nullable=False, default=1)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(
+        self,
+        hikername,
+        phone,
+        whatsapp,
+        email,
+        current_location,
+        city,
+        state,
+        trek_date,
+        trek_time,
+        members,
+    ):
+        self.hikername = hikername
+        self.phone = phone
+        self.whatsapp = whatsapp
+        self.email = email
+        self.current_location = current_location
+        self.city = city
+        self.state = state
+        self.trek_date = trek_date
+        self.trek_time = trek_time
+        self.members = members
+
+    def to_dict(self):
+        """Convert the model object to a dictionary (for API responses)."""
+        return {
+            "hiker_id": self.hiker_id,
+            "hikername": self.hikername,
+            "phone": self.phone,
+            "whatsapp": self.whatsapp,
+            "email": self.email,
+            "current_location": self.current_location,
+            "city": self.city,
+            "state": self.state,
+            "trek_date": self.trek_date.strftime("%Y-%m-%d"),
+            "trek_time": self.trek_time.strftime("%H:%M"),
+            "members": self.members,
+            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+
+
+class HikerMember(db.Model):
+    __tablename__ = "hiker_members"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    hiker_id = db.Column(
+        db.String(15), db.ForeignKey("hikers.hiker_id"), nullable=False
+    )
+    email = db.Column(db.String(100), nullable=False)
+    whatsapp = db.Column(db.String(15), nullable=False)
+
+    def __init__(self, hiker_id, email, whatsapp):
+        self.hiker_id = hiker_id
+        self.email = email
+        self.whatsapp = whatsapp
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "hiker_id": self.hiker_id,
+            "email": self.email,
+            "whatsapp": self.whatsapp,
+        }
+
+
+class Booking(db.Model):
+    __tablename__ = "bookings"
+    id = db.Column(db.Integer, primary_key=True)
+    hiker_id = db.Column(db.String(50), nullable=False)
+    trek_id = db.Column(db.Integer, nullable=False)
+    guide_id = db.Column(db.String(50), nullable=False)
+    details = db.Column(db.JSON)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

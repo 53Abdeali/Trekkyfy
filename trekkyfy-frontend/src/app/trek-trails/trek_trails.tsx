@@ -20,17 +20,19 @@ import Image from "next/image";
 import explore from "@/app/Images/exp-flower.png";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
+import BookingStepper from "./BookingStepper";
 
 export interface Trail {
   id: number;
   name: string;
   state: string;
   nearest_city: string;
-  difficulty_level: string;
+  difficulty_level: "Easy" | "Moderate" | "Challenging" | "Difficult";
   duration_days: number;
   best_time_to_visit: string;
   guide_availability: boolean;
   Links: string;
+  description: string;
 }
 
 export interface DecodedToken {
@@ -52,6 +54,8 @@ export default function Trails_Trek() {
   const [showTools, setShowTools] = useState<number | null>(null);
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [hikerId, setHikerId] = useState<string | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [selectedTrail, setSelectedTrail] = useState<Trail | null>(null);
 
   const showToggleTools = (index: number) => {
     setShowTools(showTools === index ? null : index);
@@ -249,18 +253,24 @@ export default function Trails_Trek() {
                 trails.map((trail, index) => (
                   <div key={`${trail.id}-${index}`} className="exp-cards">
                     <div className="ellipsis">
-                      <div className="book-btn">
+                      <div
+                        className="book-btn"
+                        onClick={() => {
+                          setSelectedTrail(trail);
+                          setOpen(true);
+                        }}
+                      >
                         <span className="book-button">
                           Book Now <FontAwesomeIcon icon={faPlus} />
                         </span>
                       </div>
-                      <FontAwesomeIcon
-                        onClick={() => showToggleTools(index)}
-                        className="ellipsis-v"
-                        icon={faEllipsisV}
-                      />
-                    </div>
-                    {showTools === index && (
+                      <div className="tools">
+                        <FontAwesomeIcon
+                          onClick={() => showToggleTools(index)}
+                          className="ellipsis-v"
+                          icon={faEllipsisV}
+                        />
+                      </div>
                       <div className="tools">
                         <div
                           className="share-add"
@@ -299,7 +309,7 @@ export default function Trails_Trek() {
                           </span>
                         </div>
                       </div>
-                    )}
+                    </div>
                     <h2 className="exp-cards-head">{trail.name}</h2>
                     <p className="exp-cards-para">State: {trail.state}</p>
                     <p className="exp-cards-para">
@@ -337,6 +347,16 @@ export default function Trails_Trek() {
           </div>
           <Footer />
         </div>
+      )}
+
+      {/* Render the BookingStepper modal once, for the selected trail */}
+      {selectedTrail && (
+        <BookingStepper
+          hiker_id={hikerId || ""}
+          trail={selectedTrail}
+          open={open}
+          handleClose={() => setOpen(false)}
+        />
       )}
     </>
   );
