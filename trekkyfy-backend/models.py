@@ -176,7 +176,8 @@ class PriavlGuideResponse(db.Model):
 class Hiker(db.Model):
     __tablename__ = "hikers"
 
-    hiker_id = db.Column(db.String(15), primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    hiker_id = db.Column(db.String(15), nullable=False)
     username = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(15), nullable=False)
     whatsapp = db.Column(db.String(15), nullable=False)
