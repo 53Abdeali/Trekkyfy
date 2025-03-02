@@ -10,7 +10,10 @@ guide_bp = Blueprint("Guide_Details", __name__)
 @jwt_required()
 def update_guide_profile():
     data = request.get_json()
-    print("Received data:", data) 
+    if data is None:
+        print("No JSON received")
+        return jsonify({"message": "Invalid JSON"}), 400
+    print("Received data:", data)
 
     claims = get_jwt()
     guide_id = claims.get("guide_id")
