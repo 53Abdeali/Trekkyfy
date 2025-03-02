@@ -10,6 +10,8 @@ guide_bp = Blueprint("Guide_Details", __name__)
 @jwt_required()
 def update_guide_profile():
     data = request.get_json()
+    print("Received data:", data) 
+
     claims = get_jwt()
     guide_id = claims.get("guide_id")
     if not guide_id:
@@ -20,6 +22,25 @@ def update_guide_profile():
         print("Guide record not found for guide_id:", guide_id)
         guide = GuideDetails(guide_id=guide_id)
         db.session.add(guide)
+
+    required_fields = [
+        "guide_city",
+        "guide_district",
+        "guide_state",
+        "guide_phone",
+        "guide_whatsapp",
+        "guide_experience",
+        "guide_languages",
+        "guide_speciality",
+        "guide_photo",
+    ]
+
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return (
+            jsonify({"message": "Missing required fields", "missing": missing_fields}),
+            422,
+        )
 
     guide.guide_city = data.get("guide_city")
     guide.guide_district = data.get("guide_district")
