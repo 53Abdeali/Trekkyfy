@@ -1,4 +1,3 @@
-// frontend/components/steps/Step4.tsx
 "use client";
 import React, { useState } from "react";
 import {
@@ -70,12 +69,13 @@ const Step4: React.FC<Step4Props> = ({
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error(
-          "Axios error fetching trek details or weather data:",
+          "Axios error confirming booking:",
           err.response?.data || err.message
         );
         setError(err.response?.data?.message || "Error confirming booking");
       } else {
         console.error("Unexpected error:", err);
+        setError("Unexpected error occurred");
       }
     } finally {
       setBookingLoading(false);
@@ -86,19 +86,21 @@ const Step4: React.FC<Step4Props> = ({
     <Paper
       elevation={3}
       sx={{
-        padding: "2rem",
+        p: "2rem",
         borderRadius: "8px",
-        maxWidth: "600px",
-        margin: "0 auto",
+        width: { xs: "95%", sm: 600 },
+        mx: "auto",
+        fontFamily: "Montserrat, sans-serif",
+        backgroundColor: "#fff",
       }}
     >
       <Typography
         variant="h4"
         sx={{
           textAlign: "center",
-          fontFamily: "Montserrat, sans-serif",
-          marginBottom: "1rem",
+          mb: "1rem",
           color: "#212b43",
+          fontSize: { xs: "1.8rem", sm: "2rem" },
         }}
       >
         Confirm & Book
@@ -106,35 +108,29 @@ const Step4: React.FC<Step4Props> = ({
       <Typography
         variant="body1"
         sx={{
-          marginBottom: "1rem",
-          fontFamily: "Montserrat, sans-serif",
+          mb: "1rem",
           color: "#212b43",
+          fontSize: { xs: "0.9rem", sm: "1rem" },
         }}
       >
         Please review your booking details below:
       </Typography>
+
       <Box
         sx={{
           border: "1px solid #ccc",
           borderRadius: "4px",
-          padding: "1rem",
-          marginBottom: "1rem",
+          p: "1rem",
+          mb: "1rem",
         }}
       >
         <Typography
           variant="subtitle1"
-          sx={{
-            fontFamily: "Montserrat, sans-serif",
-            marginBottom: "0.5rem",
-            color: "#212b43",
-          }}
+          sx={{ mb: "0.5rem", color: "#212b43", fontWeight: 600 }}
         >
           Hiker Details:
         </Typography>
-        <Typography
-          variant="body2"
-          sx={{ fontFamily: "Montserrat, sans-serif", color: "#212b43" }}
-        >
+        <Typography variant="body2" sx={{ color: "#212b43" }}>
           Name: {hikerDetails.hiker_username}
           <br />
           Phone: {hikerDetails.phone}
@@ -144,19 +140,11 @@ const Step4: React.FC<Step4Props> = ({
 
         <Typography
           variant="subtitle1"
-          sx={{
-            fontFamily: "Montserrat, sans-serif",
-            marginTop: "1rem",
-            marginBottom: "0.5rem",
-            color: "#212b43",
-          }}
+          sx={{ mt: "1rem", mb: "0.5rem", color: "#212b43", fontWeight: 600 }}
         >
           Trek Details:
         </Typography>
-        <Typography
-          variant="body2"
-          sx={{ fontFamily: "Montserrat, sans-serif", color: "#212b43" }}
-        >
+        <Typography variant="body2" sx={{ color: "#212b43" }}>
           Trek Name: {trekDetails.name}
           <br />
           State: {trekDetails.state}
@@ -166,19 +154,11 @@ const Step4: React.FC<Step4Props> = ({
 
         <Typography
           variant="subtitle1"
-          sx={{
-            fontFamily: "Montserrat, sans-serif",
-            marginTop: "1rem",
-            marginBottom: "0.5rem",
-            color: "#212b43",
-          }}
+          sx={{ mt: "1rem", mb: "0.5rem", color: "#212b43", fontWeight: 600 }}
         >
           Guide Details:
         </Typography>
-        <Typography
-          variant="body2"
-          sx={{ fontFamily: "Montserrat, sans-serif", color: "#212b43" }}
-        >
+        <Typography variant="body2" sx={{ color: "#212b43" }}>
           Guide: {guideDetails.username || "N/A"}
           <br />
           Contact: {guideDetails.guide_phone}
@@ -189,7 +169,7 @@ const Step4: React.FC<Step4Props> = ({
         <Typography
           variant="body1"
           color="error"
-          sx={{ marginBottom: "1rem", fontFamily: "Montserrat, sans-serif" }}
+          sx={{ mb: "1rem", textAlign: "center" }}
         >
           {error}
         </Typography>
@@ -204,20 +184,28 @@ const Step4: React.FC<Step4Props> = ({
           />
         }
         label="I have read and agree to the Terms & Conditions"
-        sx={{ fontFamily: "Montserrat, sans-serif", color: "#212b43" }}
+        sx={{
+          color: "#212b43",
+          fontSize: { xs: "0.8rem", sm: "1rem" },
+          mb: "1rem",
+        }}
       />
 
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-evenly",
-          marginTop: "1rem",
+          gap: { xs: 2, sm: 0 },
         }}
       >
         <Button
           variant="contained"
           onClick={handleBack}
-          sx={{ fontFamily: "Montserrat, sans-serif" }}
+          sx={{
+            fontFamily: "Montserrat, sans-serif",
+            width: { xs: "100%", sm: "auto" },
+          }}
         >
           Back
         </Button>
@@ -226,7 +214,10 @@ const Step4: React.FC<Step4Props> = ({
           color="primary"
           disabled={!termsAccepted || bookingLoading}
           onClick={handleConfirmBooking}
-          sx={{ fontFamily: "Montserrat, sans-serif" }}
+          sx={{
+            fontFamily: "Montserrat, sans-serif",
+            width: { xs: "100%", sm: "auto" },
+          }}
         >
           {bookingLoading ? "Confirming..." : "Confirm & Book"}
         </Button>

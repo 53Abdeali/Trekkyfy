@@ -18,6 +18,7 @@ from routes.hiker_info import hiker_info_bp
 from routes.priavl_guide_res import priavl_guide_res_bp
 from routes.wishlist import wishlist_bp
 from routes.hiker_details import hiker_details_bp
+from routes.booking import booking_bp
 
 def register_blueprints(app: Flask):
     # API Call for Register
@@ -76,5 +77,8 @@ def register_blueprints(app: Flask):
     
     #API for hiker Details 
     app.register_blueprint(hiker_details_bp, url_prefix="/api")
+    
+    #API for Booking Confirm
+    app.register_blueprint(booking_bp, url_prefix="/api")
     
     
