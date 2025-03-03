@@ -155,7 +155,7 @@ def confirm_booking():
             mail.send(msg_guide)
 
         return (
-            jsonify({"message": "Booking confirmed", "booking_id": new_booking.id}),
+            jsonify({"message": "Booking confirmed!", "booking_id": new_booking.id}),
             201,
         )
 
