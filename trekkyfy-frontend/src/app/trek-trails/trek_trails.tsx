@@ -271,44 +271,46 @@ export default function Trails_Trek() {
                           icon={faEllipsisV}
                         />
                       </div>
-                      <div className="tools">
-                        <div
-                          className="share-add"
-                          onClick={() => shareTrek(trail)}
-                        >
-                          <span>
-                            <FontAwesomeIcon
-                              className="share-add-icon"
-                              icon={faShareAlt}
-                            />
-                          </span>
-                          <span>Share</span>
+                      {showTools === index && (
+                        <div className="tools">
+                          <div
+                            className="share-add"
+                            onClick={() => shareTrek(trail)}
+                          >
+                            <span>
+                              <FontAwesomeIcon
+                                className="share-add-icon"
+                                icon={faShareAlt}
+                              />
+                            </span>
+                            <span>Share</span>
+                          </div>
+                          <div
+                            className="share-add"
+                            onClick={() =>
+                              isAddedToWishlist(trail.id)
+                                ? removeFromWishlist(trail.id)
+                                : addToWishlist(trail.id)
+                            }
+                          >
+                            <span>
+                              <FontAwesomeIcon
+                                className="share-add-icon"
+                                icon={
+                                  isAddedToWishlist(trail.id)
+                                    ? faTimes
+                                    : faBookmark
+                                }
+                              />
+                            </span>
+                            <span>
+                              {isAddedToWishlist(trail.id)
+                                ? "Remove"
+                                : "Add to Wishlist"}
+                            </span>
+                          </div>
                         </div>
-                        <div
-                          className="share-add"
-                          onClick={() =>
-                            isAddedToWishlist(trail.id)
-                              ? removeFromWishlist(trail.id)
-                              : addToWishlist(trail.id)
-                          }
-                        >
-                          <span>
-                            <FontAwesomeIcon
-                              className="share-add-icon"
-                              icon={
-                                isAddedToWishlist(trail.id)
-                                  ? faTimes
-                                  : faBookmark
-                              }
-                            />
-                          </span>
-                          <span>
-                            {isAddedToWishlist(trail.id)
-                              ? "Remove"
-                              : "Add to Wishlist"}
-                          </span>
-                        </div>
-                      </div>
+                      )}
                     </div>
                     <h2 className="exp-cards-head">{trail.name}</h2>
                     <p className="exp-cards-para">State: {trail.state}</p>
@@ -349,7 +351,6 @@ export default function Trails_Trek() {
         </div>
       )}
 
-      {/* Render the BookingStepper modal once, for the selected trail */}
       {selectedTrail && (
         <BookingStepper
           hiker_id={hikerId || ""}
