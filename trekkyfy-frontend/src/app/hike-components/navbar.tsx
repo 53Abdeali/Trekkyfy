@@ -157,7 +157,7 @@ export default function Navbar() {
           trek_place: string;
           trek_date: string;
           trek_time: string;
-          hiker_username:string;
+          hiker_username: string;
         }) => {
           if (data.hiker_id && data.hiker_id !== currentHikerId) return;
           setPriavlResponses((prev) => [...prev, data]);
@@ -408,6 +408,9 @@ export default function Navbar() {
                     <Link href="/profile" className="dropdown-item">
                       Profile
                     </Link>
+                    <Link href="/wishlist" className="dropdown-item">
+                      My Wishlist
+                    </Link>
                     <span
                       onClick={() => {
                         logout();
@@ -417,9 +420,6 @@ export default function Navbar() {
                     >
                       Logout
                     </span>
-                    <Link href="/wishlist" className="dropdown-item">
-                      My Wishlist
-                    </Link>
                   </div>
                 )}
               </li>
