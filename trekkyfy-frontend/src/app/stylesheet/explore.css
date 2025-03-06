@@ -214,23 +214,7 @@
   background: #f5f5f5;
 }
 
-.wishlist-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  color: #212b43;
-}
-
-.wishlist-container h1 {
-  color: #212b43;
-  margin: 1rem;
-  display: inline-block;
-  border-bottom: 2px solid #212b43;
-  font-family: "Montserrat",serif;
-}
-
-.book-btn{
+.book-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -243,7 +227,7 @@
   margin-bottom: 0.5rem;
 }
 
-.book-btn:hover{
+.book-btn:hover {
   background-color: #212b43;
   color: #fff;
   transition: all 0.5s ease-in-out;
@@ -317,7 +301,7 @@
     bottom: 0px;
     padding: 0;
   }
-  .book-btn{
+  .book-btn {
     font-size: 0.7rem;
     padding: 0.3rem 1rem;
   }
@@ -328,7 +312,7 @@
     width: 45%;
     height: auto;
   }
-  .exp-cards-link{
+  .exp-cards-link {
     margin: 0;
   }
 }
