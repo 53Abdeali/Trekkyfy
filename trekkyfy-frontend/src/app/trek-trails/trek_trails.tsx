@@ -264,7 +264,7 @@ export default function Trails_Trek() {
                           Book Now <FontAwesomeIcon icon={faPlus} />
                         </span>
                       </div>
-                      <div className="tools">
+                      <div className="show-tools">
                         <FontAwesomeIcon
                           onClick={() => showToggleTools(index)}
                           className="ellipsis-v"
