@@ -302,6 +302,9 @@ export default function Notification() {
                   <Link href="/profile" className="dropdown-item">
                     Profile
                   </Link>
+                  <Link href="/wishlist" className="dropdown-item">
+                    My Wishlist
+                  </Link>
                   <span
                     onClick={() => {
                       logout();

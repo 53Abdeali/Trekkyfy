@@ -140,6 +140,9 @@ const WishlistPage = () => {
                   <Link href="/profile" className="dropdown-item">
                     Profile
                   </Link>
+                  <Link href="/notifications" className="dropdown-item">
+                    Notifications
+                  </Link>
                   <span
                     onClick={() => {
                       logout();
