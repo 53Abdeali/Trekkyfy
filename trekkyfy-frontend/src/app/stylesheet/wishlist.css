@@ -1,0 +1,95 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.wishlist-container header {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.wishlist-container header h1 {
+  text-align: center;
+  color: #212b43;
+  margin: 2rem 0;
+  text-decoration: underline;
+  text-shadow: 0px 2px 10px #ccc;
+  position: relative;
+}
+
+.wishlist-container header .not-link {
+  text-decoration: none;
+  padding-right: 2rem;
+}
+
+.wishlist-container header .not-link .not-icon {
+  font-size: 2rem;
+  color: #212b43;
+}
+
+.profile-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 120px;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 99;
+}
+
+.profile-dropdown .dropdown-item {
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.3s ease;
+}
+
+.profile-dropdown .dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.profile-dropdown .logout-btn {
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  text-align: left;
+  width: 100%;
+  color: red;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.profile-dropdown .logout-btn:hover {
+  background: #ffefef;
+}
+
+.nav-prof-icon {
+  color: #212b43;
+  font-size: 2rem;
+}
+
+@media (max-width: 600px) {
+  .not-link {
+    padding: 0;
+  }
+  .wishlist-container header h1 {
+    font-size: 1.2rem;
+  }
+  .nav-prof-icon {
+    font-size: 1.5rem;
+  }
+}

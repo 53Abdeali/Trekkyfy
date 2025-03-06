@@ -16,6 +16,7 @@ import { Trail, DecodedToken } from "@/app/trek-trails/trek_trails";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import "@/app/stylesheet/explore.css";
+import "@/app/stylesheet/wishlist.css";
 import axiosInstance from "@/utils/axiosConfig";
 
 const WishlistPage = () => {
@@ -118,38 +119,40 @@ const WishlistPage = () => {
     <>
       {!isAuthenticated && (
         <div className="wishlist-container">
-          <Link className="not-link" href="/">
-            <FontAwesomeIcon className="not-icon" icon={faArrowCircleLeft} />
-          </Link>
-          <h1>My Wishlist</h1>
-          <div ref={profileRef} className="profile-container">
-            <span
-              onClick={() => setShowProfileDown(!showProfileDown)}
-              className="profile-icon"
-            >
-              <FontAwesomeIcon
-                className="nav-prof-icon"
-                icon={faUserCircle}
-                size="lg"
-              />
-            </span>
-            {showProfileDown && (
-              <div className="profile-dropdown">
-                <Link href="/profile" className="dropdown-item">
-                  Profile
-                </Link>
-                <span
-                  onClick={() => {
-                    logout();
-                    setIsAuthenticated(false);
-                  }}
-                  className="dropdown-item"
-                >
-                  Logout
-                </span>
-              </div>
-            )}
-          </div>
+          <header>
+            <Link className="not-link" href="/">
+              <FontAwesomeIcon className="not-icon" icon={faArrowCircleLeft} />
+            </Link>
+            <h1>My Wishlist</h1>
+            <div ref={profileRef} className="profile-container">
+              <span
+                onClick={() => setShowProfileDown(!showProfileDown)}
+                className="profile-icon"
+              >
+                <FontAwesomeIcon
+                  className="nav-prof-icon"
+                  icon={faUserCircle}
+                  size="lg"
+                />
+              </span>
+              {showProfileDown && (
+                <div className="profile-dropdown">
+                  <Link href="/profile" className="dropdown-item">
+                    Profile
+                  </Link>
+                  <span
+                    onClick={() => {
+                      logout();
+                      setIsAuthenticated(false);
+                    }}
+                    className="dropdown-item"
+                  >
+                    Logout
+                  </span>
+                </div>
+              )}
+            </div>
+          </header>
           {wishlist.length === 0 ? (
             <p>No items in your wishlist.</p>
           ) : (
