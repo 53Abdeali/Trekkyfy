@@ -232,7 +232,7 @@ export default function Trails_Trek() {
               <div className="recommended-section">
                 <h2>Recommended Treks For You</h2>
                 <div className="recommended-cards">
-                  {recommendedTrails.map((trail, idx) => (
+                  {recommendedTrails.map((trail) => (
                     <div key={`${trail.id}-rec`} className="rec-card">
                       <h3>{trail.name}</h3>
                       <p>State: {trail.state}</p>
