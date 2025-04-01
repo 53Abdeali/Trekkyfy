@@ -43,7 +43,7 @@ def submit_feedback():
             <p>
                 A big thank you for joining Trekkyfy! We're thrilled to have you as part of our adventure-loving community. Your feedback means the world to us, and we truly appreciate you taking the time to share your thoughts. Your insights help us improve and create the best trekking experience for everyone!
             </p>
-            <p>At Trekkyfy, we believe that every trail tells a story, and we're here to make yours unforgettable. Here's what you can look forward to:</p>    
+            <p>At Trekkyfy, we believe that every trek and trail tells a story, and we're here to make yours unforgettable. Here's what you can look forward to:</p>    
             <ul style="padding-left: 20px;">
                 <li>🌍 Handpicked trails, from hidden gems to iconic routes.</li>
                 <li>🗺️ Expert-curated itineraries for the ultimate trekking experience.</li>
