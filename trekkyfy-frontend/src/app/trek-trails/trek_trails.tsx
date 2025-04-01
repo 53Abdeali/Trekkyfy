@@ -43,6 +43,7 @@ export default function Trails_Trek() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [trails, setTrails] = useState<Trail[]>([]);
+  const [recommendedTrails, setRecommendedTrails] = useState<Trail[]>([]);
   const [filters, setFilters] = useState({
     state: "",
     difficulty: "",
@@ -93,7 +94,6 @@ export default function Trails_Trek() {
             limit: 10,
           },
         });
-
         const newTrails = response.data;
         setTrails((prevTrails) =>
           isNewFilter ? newTrails : [...prevTrails, ...newTrails]
@@ -109,11 +109,24 @@ export default function Trails_Trek() {
     [filters, page]
   );
 
+  const fetchRecommendedTrails = useCallback(async () => {
+    if (!hikerId) return;
+    try {
+      const response = await axiosInstance.get(
+        `/recommend_treks?hiker_id=${hikerId}`
+      );
+      setRecommendedTrails(response.data.recommended_treks || []);
+    } catch (error) {
+      console.error("Error fetching ML recommendations:", error);
+    }
+  }, [hikerId]);
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchTrails(true);
+      fetchRecommendedTrails();
     }
-  }, [filters, isAuthenticated, fetchTrails]);
+  }, [filters, isAuthenticated, fetchTrails, fetchRecommendedTrails]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -126,7 +139,6 @@ export default function Trails_Trek() {
         }
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isLoading, hasMore, fetchTrails]);
@@ -215,6 +227,32 @@ export default function Trails_Trek() {
               </p>
             </div>
 
+            {/* Recommended Treks Section */}
+            {recommendedTrails.length > 0 && (
+              <div className="recommended-section">
+                <h2>Recommended Treks For You</h2>
+                <div className="recommended-cards">
+                  {recommendedTrails.map((trail, idx) => (
+                    <div key={`${trail.id}-rec`} className="rec-card">
+                      <h3>{trail.name}</h3>
+                      <p>State: {trail.state}</p>
+                      <p>Difficulty: {trail.difficulty_level}</p>
+                      <button onClick={() => {
+                        setSelectedTrail(trail);
+                        setOpen(true);
+                      }}>
+                        Book Now <FontAwesomeIcon icon={faPlus} />
+                      </button>
+                    </div>
+                  ))}
+                  <button onClick={fetchRecommendedTrails}>
+                    Refresh Recommendations
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Filters Section */}
             <div className="explore-inputs">
               <div className="exp-inp-main">
                 <input
@@ -248,6 +286,7 @@ export default function Trails_Trek() {
               </div>
             </div>
 
+            {/* All Trails Section */}
             <div className="exp-cards-main">
               {trails.length > 0 &&
                 trails.map((trail, index) => (

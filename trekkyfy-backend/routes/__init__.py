@@ -19,6 +19,7 @@ from routes.priavl_guide_res import priavl_guide_res_bp
 from routes.wishlist import wishlist_bp
 from routes.hiker_details import hiker_details_bp
 from routes.booking import booking_bp
+from machine_learning import trek_rec_bp
 
 def register_blueprints(app: Flask):
     # API Call for Register
@@ -80,5 +81,8 @@ def register_blueprints(app: Flask):
     
     #API for Booking Confirm
     app.register_blueprint(booking_bp, url_prefix="/api")
+    
+    #API for Trek Recommendations
+    app.register_blueprint(trek_rec_bp, url_prefix="/api")
     
     
