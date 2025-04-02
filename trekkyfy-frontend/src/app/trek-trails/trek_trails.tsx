@@ -242,12 +242,12 @@ export default function Trails_Trek() {
             {recommendedTrails.length > 0 && (
               <div className="recommended-section">
                 <h2>Recommended Treks For You</h2>
-                <div className="recommended-cards">
+                <div className="exp-cards-main">
                   {recommendedTrails.map((trail) => (
                     <div key={`${trail.id}-rec`} className="rec-card">
-                      <h3>{trail.name}</h3>
-                      <p>State: {trail.state}</p>
-                      <p>Difficulty: {trail.difficulty_level}</p>
+                      <h3 className="exp-cards-head">{trail.name}</h3>
+                      <p className="exp-cards-para">State: {trail.state}</p>
+                      <p className="exp-cards-para">Difficulty: {trail.difficulty_level}</p>
                       <button
                         onClick={() => {
                           setSelectedTrail(trail);
