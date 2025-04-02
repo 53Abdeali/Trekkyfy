@@ -18,7 +18,7 @@ import axiosInstance from "@/utils/axiosConfig";
 import Footer from "@/app/hike-components/footer";
 import Image from "next/image";
 import explore from "@/app/Images/exp-flower.png";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import toast from "react-hot-toast";
 import BookingStepper from "./BookingStepper";
 
@@ -83,6 +83,7 @@ export default function Trails_Trek() {
     }
   }, [token]);
 
+  // Fetch general trails (explore)
   const fetchTrails = useCallback(
     async (isNewFilter: boolean) => {
       setIsLoading(true);
@@ -109,17 +110,27 @@ export default function Trails_Trek() {
     [filters, page]
   );
 
+  // Fetch ML-based trek recommendations from the Flask API
   const fetchRecommendedTrails = useCallback(async () => {
     if (!hikerId) return;
     try {
       const response = await axiosInstance.get(
         `/recommend_treks?hiker_id=${hikerId}`
       );
-      setRecommendedTrails(response.data.recommended_treks || []);
+      // If ML API returns empty recommendations for a new hiker,
+      // fallback to a random selection from the general trails.
+      const recs = response.data.recommended_treks || [];
+      if (recs.length === 0 && trails.length > 0) {
+        const randomTrails = [...trails];
+        randomTrails.sort(() => Math.random() - 0.5);
+        setRecommendedTrails(randomTrails.slice(0, 3));
+      } else {
+        setRecommendedTrails(recs);
+      }
     } catch (error) {
       console.error("Error fetching ML recommendations:", error);
     }
-  }, [hikerId]);
+  }, [hikerId, trails]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -237,10 +248,12 @@ export default function Trails_Trek() {
                       <h3>{trail.name}</h3>
                       <p>State: {trail.state}</p>
                       <p>Difficulty: {trail.difficulty_level}</p>
-                      <button onClick={() => {
-                        setSelectedTrail(trail);
-                        setOpen(true);
-                      }}>
+                      <button
+                        onClick={() => {
+                          setSelectedTrail(trail);
+                          setOpen(true);
+                        }}
+                      >
                         Book Now <FontAwesomeIcon icon={faPlus} />
                       </button>
                     </div>
