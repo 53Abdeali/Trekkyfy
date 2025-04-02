@@ -18,7 +18,7 @@ import axiosInstance from "@/utils/axiosConfig";
 import Footer from "@/app/hike-components/footer";
 import Image from "next/image";
 import explore from "@/app/Images/exp-flower.png";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 import BookingStepper from "./BookingStepper";
 
@@ -247,7 +247,9 @@ export default function Trails_Trek() {
                     <div key={`${trail.id}-rec`} className="rec-card">
                       <h3 className="exp-cards-head">{trail.name}</h3>
                       <p className="exp-cards-para">State: {trail.state}</p>
-                      <p className="exp-cards-para">Difficulty: {trail.difficulty_level}</p>
+                      <p className="exp-cards-para">
+                        Difficulty: {trail.difficulty_level}
+                      </p>
                       <button
                         onClick={() => {
                           setSelectedTrail(trail);
@@ -258,9 +260,6 @@ export default function Trails_Trek() {
                       </button>
                     </div>
                   ))}
-                  <button onClick={fetchRecommendedTrails}>
-                    Refresh Recommendations
-                  </button>
                 </div>
               </div>
             )}
