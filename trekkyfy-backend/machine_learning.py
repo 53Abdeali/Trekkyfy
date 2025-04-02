@@ -65,7 +65,7 @@ def recommend_treks_api():
     random.shuffle(top_trek_ids)
     recommended_trek_ids = top_trek_ids[:3]
 
-    trek_query = text("SELECT * FROM treks WHERE id IN :ids")
+    trek_query = text("SELECT * FROM trails_and_treks WHERE id IN :ids")
     with engine.connect() as conn:
         recommended_trails = pd.read_sql(
             trek_query, conn, params={"ids": tuple(recommended_trek_ids)}
