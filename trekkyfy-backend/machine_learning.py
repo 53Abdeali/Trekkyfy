@@ -46,7 +46,7 @@ def recommend_treks_api():
         return jsonify({"error": "Missing hiker_id"}), 400
 
     if hiker_id not in pivot_table.index:
-        random_query = text("SELECT * FROM treks ORDER BY RAND() LIMIT 3")
+        random_query = text("SELECT * FROM trails_and_treks ORDER BY RAND() LIMIT 3")
         with engine.connect() as conn:
             random_trails = pd.read_sql(random_query, conn)
         recommended = random_trails.to_dict(orient="records")
