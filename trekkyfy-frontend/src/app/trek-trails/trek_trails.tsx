@@ -21,7 +21,6 @@ import explore from "@/app/Images/exp-flower.png";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 import BookingStepper from "./BookingStepper";
-import { Center } from "@chakra-ui/react";
 
 export interface Trail {
   id: number;
