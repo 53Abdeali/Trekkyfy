@@ -21,6 +21,7 @@ import explore from "@/app/Images/exp-flower.png";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 import BookingStepper from "./BookingStepper";
+import { Center } from "@chakra-ui/react";
 
 export interface Trail {
   id: number;
@@ -241,7 +242,7 @@ export default function Trails_Trek() {
             {/* Recommended Treks Section */}
             {recommendedTrails.length > 0 && (
               <div className="recommended-section">
-                <h2>Recommended Treks For You</h2>
+                <h2 style={{textAlign:"center", marginTop:"2rem", color:"#212b43" }}>Recommended Treks For You</h2>
                 <div className="exp-cards-main">
                   {recommendedTrails.map((trail) => (
                     <div key={`${trail.id}-rec`} className="exp-cards">
@@ -255,6 +256,7 @@ export default function Trails_Trek() {
                           setSelectedTrail(trail);
                           setOpen(true);
                         }}
+                        className="book-button"
                       >
                         Book Now <FontAwesomeIcon icon={faPlus} />
                       </button>
