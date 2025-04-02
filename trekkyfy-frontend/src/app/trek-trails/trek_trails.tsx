@@ -244,7 +244,7 @@ export default function Trails_Trek() {
                 <h2>Recommended Treks For You</h2>
                 <div className="exp-cards-main">
                   {recommendedTrails.map((trail) => (
-                    <div key={`${trail.id}-rec`} className="rec-card">
+                    <div key={`${trail.id}-rec`} className="exp-cards">
                       <h3 className="exp-cards-head">{trail.name}</h3>
                       <p className="exp-cards-para">State: {trail.state}</p>
                       <p className="exp-cards-para">
