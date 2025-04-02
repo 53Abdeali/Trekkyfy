@@ -60,7 +60,7 @@ def recommend_treks(hiker_id, n_recommendations=3):
 
 trek_rec_bp = Blueprint("Trek Recommendation", __name__)
 
-@trek_rec_bp.route("trek_recommendations", methods=["GET"])
+@trek_rec_bp.route("/recommend_treks", methods=["GET"])
 def recommend_treks_api():
     hiker_id = request.args.get('hiker_id')
     if not hiker_id:
