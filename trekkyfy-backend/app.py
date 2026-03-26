@@ -13,52 +13,61 @@ import cloudinary.api  # type: ignore
 import cloudinary.uploader  # type: ignore
 from flask_socketio import SocketIO, emit, join_room
 from models import GuideDetails, HikerRequest, PriavlGuideResponse, db, User, ChatRequests, ChatResponses
+from config import (
+    SECRET_KEY,
+    JWT_SECRET_KEY,
+    JWT_ACCESS_TOKEN_EXPIRES_HOURS,
+    SQLALCHEMY_DATABASE_URI,
+    SQLALCHEMY_TRACK_MODIFICATIONS,
+    MAIL_SERVER,
+    MAIL_PORT,
+    MAIL_USE_TLS,
+    MAIL_USERNAME,
+    MAIL_PASSWORD,
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
+    FRONTEND_ORIGINS,
+    SOCKET_CORS_ALLOWED_ORIGINS,
+)
 
 
 # Cloudinary Configuration
-cloudinary.config(
-    cloud_name="dy7g05pop",
-    api_key="354388933296936",
-    api_secret="IHZnuyiZxbh7l_eR_5Opo6BbDMY",
-)
+if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    cloudinary.config(
+        cloud_name=CLOUDINARY_CLOUD_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+    )
+else:
+    print("Cloudinary credentials are not fully configured. Upload features may fail.")
 
 # App configuration
 app = Flask(__name__)
 CORS(
     app,
-    resources={
-        r"/*": {"origins": ["https://trekkyfy.vercel.app", "http://localhost:3000"]}
-    },
+    resources={r"/*": {"origins": FRONTEND_ORIGINS}},
     supports_credentials=True,
 )
 
-secret_key = os.getenv(
-    "SECRET_KEY", "66da30be6ce1360c4614b51ed81f8b313847a1920d814d6ef2c07bf2abb28e06"
-)
-jwt_secret_key = os.getenv(
-    "JWT_SECRET_KEY", "bde21c69993e8a62ff9e9cd1d19d8b7bbefda66cc24c2ff29f4bdb25d92592bf"
-)
-
-app.config["SECRET_KEY"] = secret_key
-app.config["JWT_SECRET_KEY"] = jwt_secret_key
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=10)
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "mysql+pymysql://avnadmin:AVNS_P-7RDq_tkUVMeTbEKnV@mysql-21f3bc70-aliabdealifakhri53-78d7.i.aivencloud.com:14791/trekkyfy"
-)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SECRET_KEY"] = SECRET_KEY
+app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=JWT_ACCESS_TOKEN_EXPIRES_HOURS)
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
 
 # for forgot password
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = "aliabdealifakhri53@gmail.com"
-app.config["MAIL_PASSWORD"] = "qenu jgor alhv zoui"
+app.config["MAIL_SERVER"] = MAIL_SERVER
+app.config["MAIL_PORT"] = MAIL_PORT
+app.config["MAIL_USE_TLS"] = MAIL_USE_TLS
+app.config["MAIL_USERNAME"] = MAIL_USERNAME
+app.config["MAIL_PASSWORD"] = MAIL_PASSWORD
 
 # Enabling web socket using SocketIO
 socketio = SocketIO(
     app,
     async_mode="eventlet",
-    cors_allowed_origins=["https://trekkyfy.vercel.app", "http://localhost:3000", "*"],
+    cors_allowed_origins=SOCKET_CORS_ALLOWED_ORIGINS,
 )
 
 online_users = {}

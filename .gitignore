@@ -1,0 +1,48 @@
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.python-version
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Node/Next
+node_modules/
+.npm/
+.next/
+out/
+
+# Logs and runtime artifacts
+*.log
+*.pid
+*.out
+
+# Build artifacts
+dist/
+build/
+
+# Local temp files
+tmp/
+*.tmp
+gh
