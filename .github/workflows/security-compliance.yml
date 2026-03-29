@@ -114,11 +114,17 @@ jobs:
       # Python Security Analysis
       - name: Python Security Scan (Bandit)
         run: |
+          uv pip install --system bandit
+
           # Non-blocking for current migration phase: publish findings, don't fail pipeline.
           uv run --project trekkyfy-backend bandit -r trekkyfy-backend/ -f json -o bandit-report.json -ll || STATUS=$?
           if [ "${STATUS:-0}" -ne 0 ]; then
             echo "⚠️ Bandit findings detected (non-blocking in current phase)."
-            cat bandit-report.json
+            if [ -f "bandit-report.json" ]; then
+              cat bandit-report.json
+            else
+              echo "bandit-report.json not generated."
+            fi
           else
             echo "✅ No security issues found"
           fi
