@@ -159,12 +159,10 @@ jobs:
       # Infrastructure as Code Security
       - name: Infrastructure Security Scan (Checkov)
         run: |
-          uv pip install checkov
-
           # Scan infrastructure files
-          uv run checkov -f docker-compose.yml --framework docker_compose --output json --output-file checkov-docker-compose.json || true
-          uv run checkov -d . --framework dockerfile --output json --output-file checkov-dockerfile.json || true
-          uv run checkov -d .github/workflows --framework github_actions --output json --output-file checkov-github-actions.json || true
+          uvx checkov -f docker-compose.yml --framework docker_compose --output json --output-file checkov-docker-compose.json || true
+          uvx checkov -d . --framework dockerfile --output json --output-file checkov-dockerfile.json || true
+          uvx checkov -d .github/workflows --framework github_actions --output json --output-file checkov-github-actions.json || true
 
           echo "✅ Infrastructure security scan completed"
 
