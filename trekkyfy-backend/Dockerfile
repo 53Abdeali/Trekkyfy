@@ -19,4 +19,4 @@ COPY . .
 
 EXPOSE 10000
 
-CMD ["uv", "run", "python", "app.py"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
