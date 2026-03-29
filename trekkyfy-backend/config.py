@@ -1,14 +1,17 @@
 import os
+
 from itsdangerous import URLSafeTimedSerializer
 
 
-def _as_bool(value: str, default: bool) -> bool:
+def _as_bool(value: str | None, default: bool) -> bool:
     if value is None:
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def _as_int(value: str, default: int) -> int:
+def _as_int(value: str | None, default: int) -> int:
+    if value is None:
+        return default
     try:
         return int(value)
     except (TypeError, ValueError):
@@ -23,9 +26,7 @@ def _as_list(value: str) -> list[str]:
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-me")
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-jwt-secret-key-change-me")
-JWT_ACCESS_TOKEN_EXPIRES_HOURS = _as_int(
-    os.getenv("JWT_ACCESS_TOKEN_EXPIRES_HOURS"), 10
-)
+JWT_ACCESS_TOKEN_EXPIRES_HOURS = _as_int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES_HOURS"), 10)
 
 SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///trekkyfy.db")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -41,9 +42,7 @@ CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "")
 CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "")
 
 FRONTEND_ORIGINS = _as_list(
-    os.getenv(
-        "FRONTEND_ORIGINS", "https://trekkyfy.vercel.app,http://localhost:3000"
-    )
+    os.getenv("FRONTEND_ORIGINS", "https://trekkyfy.vercel.app,http://localhost:3000")
 )
 SOCKET_CORS_ALLOWED_ORIGINS = _as_list(
     os.getenv(

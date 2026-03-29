@@ -1,0 +1,12 @@
+name: AI Review (Optional)
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Wire your AI review workflow here (optional)."

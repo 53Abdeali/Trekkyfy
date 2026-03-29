@@ -1,0 +1,280 @@
+name: continuous-integration
+
+# Main CI/CD pipeline for Trekkyfy platform
+# Comprehensive validation for AI-powered sales and customer support system
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+# Cancel in-progress runs when a new commit is pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  checks: write
+  statuses: write
+  security-events: write
+  id-token: write
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+  UV_VERSION: "0.7.6"
+
+jobs:
+  # Quick validation - fail fast on basic issues (2 min)
+  quick-checks:
+    name: Quick Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      should_run_full_pipeline: ${{ steps.changes.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for significant changes
+        id: changes
+        run: |
+          # Check if we should run full pipeline
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before || 'HEAD~1' }} HEAD || echo "")
+
+          # Skip pipeline for documentation-only changes
+          if echo "$CHANGED_FILES" | grep -qvE '\.(md|txt|rst)$'; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "Significant code changes detected"
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "Only documentation changes detected"
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install UV
+        run: |
+          if [ ! -f "$HOME/.local/bin/uv" ]; then
+            curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh
+          fi
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/bin/uv
+            ~/.local/bin/uvx
+          key: quick-validation-${{ runner.os }}-py${{ env.PYTHON_VERSION }}-${{ env.UV_VERSION }}
+
+      - name: Install validation dependencies
+        run: |
+          uv pip install --system pyyaml yamllint
+
+      - name: Validate Python Syntax
+        run: |
+          find . -name "*.py" -type f -not -path "./.venv/*" -not -path "./.*" \
+            -exec python -m py_compile {} + || exit 1
+
+      - name: Validate YAML/JSON
+        run: |
+          # Validate YAML with yamllint
+          uv run yamllint -d '{extends: relaxed, rules: {line-length: disable, trailing-spaces: disable}}' .
+
+          # Validate JSON
+          find . -name "*.json" -not -path "./node_modules/*" -not -path "./.venv/*" | while read -r file; do
+            if [ -s "$file" ]; then
+              python -c "import json; json.load(open('$file'))" || exit 1
+            fi
+          done
+
+      - name: Check File Size Limits
+        run: |
+          # Fail if any tracked/source file is larger than 50MB.
+          # Ignore VCS, dependency/vendor, and generated cache/build directories.
+          LARGE_FILES="$(find . \
+            \( -path './.git' -o -path './.git/*' \
+               -o -path './.venv' -o -path './.venv/*' \
+               -o -path './node_modules' -o -path './node_modules/*' \
+               -o -path './trekkyfy-frontend/node_modules' -o -path './trekkyfy-frontend/node_modules/*' \
+               -o -path './dist' -o -path './dist/*' \
+               -o -path './build' -o -path './build/*' \
+               -o -path './.next' -o -path './.next/*' \
+               -o -path './.cache' -o -path './.cache/*' \) -prune \
+            -o -type f -size +50M -print)"
+
+          if [ -n "$LARGE_FILES" ]; then
+            echo "Files larger than 50MB found:"
+            echo "$LARGE_FILES"
+            exit 1
+          fi
+
+  # Quality Gate - Code quality, formatting, linting
+  quality-gate:
+    name: Quality Gate
+    needs: quick-checks
+    if: needs.quick-checks.outputs.should_run_full_pipeline == 'true'
+    uses: ./.github/workflows/quality-gate.yml
+    secrets: inherit
+
+  # Security & Compliance - Security scanning, compliance validation
+  security-compliance:
+    name: Security & Compliance
+    needs: quick-checks
+    if: needs.quick-checks.outputs.should_run_full_pipeline == 'true'
+    uses: ./.github/workflows/security-compliance.yml
+    secrets: inherit
+
+  # Comprehensive Testing - Unit, integration, E2E, performance
+  comprehensive-testing:
+    name: Comprehensive Testing
+    needs: [quick-checks, quality-gate]
+    if: needs.quick-checks.outputs.should_run_full_pipeline == 'true'
+    uses: ./.github/workflows/testing.yml
+    secrets: inherit
+
+  # AI Review (Optional) - Placeholder
+  ai-review:
+    name: AI Review (Optional)
+    needs: quick-checks
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+    uses: ./.github/workflows/ai-review.yml
+    secrets: inherit
+
+
+  # Final pipeline status aggregation
+  pipeline-complete:
+    name: Pipeline Status Check
+    needs:
+      - quick-checks
+      - quality-gate
+      - security-compliance
+      - comprehensive-testing
+    if: always() && needs.quick-checks.outputs.should_run_full_pipeline == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check All Jobs Status
+        run: |
+          echo "## Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check required jobs
+          if [ "${{ needs.quick-checks.result }}" != "success" ] || \
+             [ "${{ needs.quality-gate.result }}" != "success" ] || \
+             [ "${{ needs.security-compliance.result }}" != "success" ] || \
+             [ "${{ needs.comprehensive-testing.result }}" != "success" ]; then
+            echo "❌ **Pipeline Failed** - One or more required checks failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Check Results:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Quick Checks: ${{ needs.quick-checks.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Quality Gate: ${{ needs.quality-gate.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Security & Compliance: ${{ needs.security-compliance.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Comprehensive Testing: ${{ needs.comprehensive-testing.result }}" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "✅ **All Required Checks Passed Successfully**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Consolidated Pipeline Summary**" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Code quality standards met" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Security scans passed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Compliance validation completed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Comprehensive tests passed" >> $GITHUB_STEP_SUMMARY
+
+  # Documentation-only changes path
+  docs-only-complete:
+    name: Documentation Update Complete
+    needs: quick-checks
+    if: needs.quick-checks.outputs.should_run_full_pipeline == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Documentation Status
+        run: |
+          echo "## 📚 Documentation-Only Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Only documentation files were changed." >> $GITHUB_STEP_SUMMARY
+          echo "Skipping full pipeline for faster feedback." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Documentation update completed successfully**" >> $GITHUB_STEP_SUMMARY
+
+  # Required status check for branch protection
+  build:
+    name: build
+    needs: [pipeline-complete, docs-only-complete]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine build status
+        id: build-status
+        run: |
+          if [ "${{ needs.pipeline-complete.result }}" = "success" ] || [ "${{ needs.docs-only-complete.result }}" = "success" ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "description=Build status satisfied" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "description=Build status failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Report legacy status context
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ steps.build-status.outputs.status }}';
+            const description = '${{ steps.build-status.outputs.description }}';
+            const targetUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const pr = context.payload && context.payload.pull_request;
+            const headSha = pr && pr.head && pr.head.sha ? pr.head.sha : context.sha;
+            const mergeSha = pr && pr.merge_commit_sha ? pr.merge_commit_sha : null;
+            const targetShas = mergeSha ? [headSha, mergeSha] : [headSha];
+            const checks = [
+              "continuous-integration/build",
+              "continuous-integration / build",
+              "continuous-integration / build (pull_request)",
+            ];
+            const conclusion = state === "success" ? "success" : "failure";
+            for (const targetSha of targetShas) {
+              for (const checkContext of checks) {
+                await github.rest.repos.createCommitStatus({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  sha: targetSha,
+                  state,
+                  context: checkContext,
+                  description,
+                  target_url: targetUrl,
+                });
+
+                await github.rest.checks.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: checkContext,
+                  head_sha: targetSha,
+                  status: "completed",
+                  conclusion,
+                  output: {
+                    title: "Build",
+                    summary: description,
+                  },
+                });
+              }
+            }
+
+      - name: Final build status
+        run: |
+          if [ "${{ steps.build-status.outputs.status }}" = "success" ]; then
+            echo "✅ Build status satisfied"
+            exit 0
+          fi
+          echo "❌ Build status failed"
+          exit 1
