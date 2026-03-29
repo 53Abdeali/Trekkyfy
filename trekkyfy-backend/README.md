@@ -4,7 +4,8 @@ Backend service for Trekkyfy.
 
 ## Current State
 
-- Framework: Flask + Flask-SocketIO
+- Primary app runtime: FastAPI (`main.py`)
+- Legacy API compatibility: existing Flask app mounted through WSGI during migration
 - ORM: SQLAlchemy
 - Database: configured through `DATABASE_URL`
 - Package manager baseline: `uv` + `pyproject.toml`
@@ -14,10 +15,18 @@ Backend service for Trekkyfy.
 ```bash
 cd trekkyfy-backend
 uv sync --all-groups
-uv run python app.py
+uv run uvicorn main:app --host 0.0.0.0 --port 10000
 ```
 
-Default port is `10000` unless overridden by `PORT`.
+## Run with Docker
+
+From repo root:
+
+```bash
+docker compose up --build backend postgres
+```
+
+Backend will be available at `http://localhost:10000`.
 
 ## Quality Commands
 
@@ -39,16 +48,6 @@ Backend reads configuration from environment variables (see root `.env.example`)
 - Cloudinary: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
 - CORS: `FRONTEND_ORIGINS`, `SOCKET_CORS_ALLOWED_ORIGINS`
 
-## Tests
+## Migration Note
 
-Initial backend test scaffolding is in `trekkyfy-backend/tests/`.
-
-- `test_config.py` validates environment parsing helpers
-
-## Upcoming Changes
-
-This service will be migrated to:
-
-- FastAPI
-- PostgreSQL + Alembic
-- Docker-first development and testing workflow
+`main.py` exposes `/healthz` as FastAPI native health check and mounts legacy Flask routes while we port endpoints incrementally to native FastAPI routers.
