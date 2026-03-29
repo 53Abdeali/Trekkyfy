@@ -1,0 +1,406 @@
+name: Trekkyfy - Quality Gate
+
+# Code quality validation for Trekkyfy platform
+# Ensures AI agent code, RAG implementations, and microservices meet quality standards
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        required: false
+        type: string
+        default: "3.11"
+      node_version:
+        required: false
+        type: string
+        default: "20"
+      uv_version:
+        required: false
+        type: string
+        default: "0.7.6"
+
+# Cancel old runs to save compute
+concurrency:
+  group: quality-gate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: ${{ inputs.python_version }}
+  NODE_VERSION: ${{ inputs.node_version }}
+  UV_VERSION: ${{ inputs.uv_version }}
+
+jobs:
+  # Backend Quality Validation
+  backend-quality:
+    name: Backend Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      backend_status: ${{ steps.backend-summary.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install UV
+        run: |
+          if [ ! -f "$HOME/.local/bin/uv" ]; then
+            curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh
+          fi
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install system dependencies
+        run: |
+          if command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y jq
+          elif command -v apk >/dev/null 2>&1; then
+            sudo apk add --no-cache jq
+          elif command -v yum >/dev/null 2>&1; then
+            sudo yum install -y jq
+          else
+            echo "⚠️ Package manager not found; ensure jq is available"
+          fi
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/bin/uv
+            ~/.local/bin/uvx
+          key: backend-quality-${{ runner.os }}-py${{ env.PYTHON_VERSION }}-${{ hashFiles('**/uv.lock') }}
+          restore-keys: |
+            backend-quality-${{ runner.os }}-py${{ env.PYTHON_VERSION }}-
+
+      - name: Install dependencies
+        run: |
+          uv sync --project trekkyfy-backend --all-groups
+          if false; then
+            uv pip install -r requirements.txt
+          fi
+
+      - name: Check if Python code exists
+        id: python-check
+        run: |
+          if find trekkyfy-backend -name "*.py" -type f | head -1 | grep -q .; then
+            echo "has_python=true" >> $GITHUB_OUTPUT
+            echo "Python code found in trekkyfy-backend/"
+          else
+            echo "has_python=false" >> $GITHUB_OUTPUT
+            echo "No Python code found in trekkyfy-backend/"
+          fi
+
+      - name: Ruff Format Check
+        if: steps.python-check.outputs.has_python == 'true'
+        id: ruff-format-check
+        run: |
+          uv run --project trekkyfy-backend ruff format --check --diff trekkyfy-backend/config.py trekkyfy-backend/tests 2>&1 | tee ruff-format-output.txt || STATUS=$?
+
+          if [ "${STATUS:-0}" -ne 0 ]; then
+            echo "❌ Code formatting issues found"
+            echo "Files needing formatting:" >> $GITHUB_STEP_SUMMARY
+            echo '```diff' >> $GITHUB_STEP_SUMMARY
+            cat ruff-format-output.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ Code formatting is perfect"
+          fi
+
+      - name: Ruff Linting
+        if: steps.python-check.outputs.has_python == 'true'
+        run: |
+          uv run --project trekkyfy-backend ruff check trekkyfy-backend/config.py trekkyfy-backend/tests --output-format=json > ruff-report.json 2>&1 || STATUS=$?
+
+          if [ "${STATUS:-0}" -ne 0 ]; then
+            ERROR_COUNT=$(jq '. | length' ruff-report.json 2>/dev/null || echo "0")
+            echo "❌ Found $ERROR_COUNT linting issues"
+
+            # Show top 10 issues in summary
+            echo "### Linting Issues" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            jq -r '.[:10] | .[] | "- `\(.filename):\(.location.row)` - \(.code): \(.message)"' ruff-report.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
+            exit 1
+          else
+            echo "✅ No linting issues"
+          fi
+
+      - name: MyPy Type Checking
+        if: steps.python-check.outputs.has_python == 'true'
+        run: |
+          uv run --project trekkyfy-backend mypy trekkyfy-backend/config.py trekkyfy-backend/tests --show-error-codes --pretty --color-output --incremental > mypy-report.txt 2>&1 || STATUS=$?
+
+          if [ "${STATUS:-0}" -ne 0 ]; then
+            ERROR_COUNT=$(grep -c "error:" mypy-report.txt || true)
+            echo "❌ Found $ERROR_COUNT type errors"
+
+            echo "### Type Checking Issues" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            grep "error:" mypy-report.txt | head -10 >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ Type checking passed"
+          fi
+
+      - name: Backend Summary
+        id: backend-summary
+        if: always()
+        run: |
+          if [ "${{ steps.python-check.outputs.has_python }}" == "true" ]; then
+            if [ "${{ steps.ruff-format-check.outcome }}" == "success" ] && \
+               [ "${{ job.status }}" == "success" ]; then
+              echo "status=success" >> $GITHUB_OUTPUT
+              echo "✅ Backend quality checks passed"
+            else
+              echo "status=failure" >> $GITHUB_OUTPUT
+              echo "❌ Backend quality checks failed"
+            fi
+          else
+            echo "status=skipped" >> $GITHUB_OUTPUT
+            echo "⏭️ No Python code found, skipping backend checks"
+          fi
+
+      - name: Upload backend quality artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-quality-reports
+          path: |
+            ruff-format-output.txt
+            ruff-report.json
+            mypy-report.txt
+
+  # Frontend Quality Validation
+  frontend-quality:
+    name: Frontend Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      frontend_status: ${{ steps.frontend-summary.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if frontend code exists
+        id: frontend-check
+        run: |
+          if [ -f "trekkyfy-frontend/package.json" ] && [ -d "trekkyfy-frontend" ]; then
+            echo "has_frontend=true" >> $GITHUB_OUTPUT
+            echo "Frontend code found"
+          else
+            echo "has_frontend=false" >> $GITHUB_OUTPUT
+            echo "No frontend code found"
+          fi
+
+      - name: Check if frontend changed
+        id: frontend-changes
+        if: steps.frontend-check.outputs.has_frontend == 'true'
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before || 'HEAD~1' }} HEAD || echo "")
+          if echo "$CHANGED_FILES" | grep -qE '^trekkyfy-frontend/'; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Frontend changes detected"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No frontend changes detected"
+          fi
+
+      - name: Set up Node.js
+        if: steps.frontend-check.outputs.has_frontend == 'true' && steps.frontend-changes.outputs.has_changes == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: "trekkyfy-frontend/package-lock.json"
+
+      - name: Cache Dependencies
+        if: steps.frontend-check.outputs.has_frontend == 'true' && steps.frontend-changes.outputs.has_changes == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            trekkyfy-frontend/node_modules
+            ~/.npm
+          key: frontend-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('trekkyfy-frontend/package-lock.json') }}
+          restore-keys: |
+            frontend-${{ runner.os }}-node${{ env.NODE_VERSION }}-
+
+      - name: Install frontend dependencies
+        if: steps.frontend-check.outputs.has_frontend == 'true' && steps.frontend-changes.outputs.has_changes == 'true'
+        working-directory: trekkyfy-frontend
+        run: |
+          # Clear npm cache if installation fails
+          npm ci || (npm cache clean --force && npm ci)
+
+      - name: TypeScript Type Check
+        if: steps.frontend-check.outputs.has_frontend == 'true' && steps.frontend-changes.outputs.has_changes == 'true'
+        working-directory: trekkyfy-frontend
+        run: |
+          if npm ls typescript >/dev/null 2>&1; then
+            npx tsc --noEmit --pretty --project tsconfig.json || STATUS=$?
+          else
+            echo "⏭️ TypeScript not configured; skipping"
+            STATUS=0
+          fi
+
+          if [ "${STATUS:-0}" -ne 0 ]; then
+            echo "❌ TypeScript type check failed"
+            exit 1
+          else
+            echo "✅ TypeScript type check passed"
+          fi
+
+      - name: ESLint Code Quality
+        if: steps.frontend-check.outputs.has_frontend == 'true' && steps.frontend-changes.outputs.has_changes == 'true'
+        working-directory: trekkyfy-frontend
+        run: |
+          if npm ls eslint >/dev/null 2>&1; then
+            npx eslint . --ext .js,.jsx,.ts,.tsx --format=stylish --max-warnings=0 || STATUS=$?
+            # Generate report for artifacts
+            npx eslint . --ext .js,.jsx,.ts,.tsx --format=json --output-file=eslint-report.json || true
+          else
+            echo "⏭️ ESLint not configured; skipping"
+            STATUS=0
+          fi
+
+          if [ "${STATUS:-0}" -ne 0 ]; then
+            echo "❌ ESLint checks failed"
+            exit 1
+          else
+            echo "✅ ESLint checks passed"
+          fi
+
+      - name: Prettier Format Check
+        if: steps.frontend-check.outputs.has_frontend == 'true' && steps.frontend-changes.outputs.has_changes == 'true'
+        working-directory: trekkyfy-frontend
+        run: |
+          if npm ls prettier >/dev/null 2>&1; then
+            npm run format || STATUS=$?
+          else
+            echo "⏭️ Prettier not configured; skipping"
+            STATUS=0
+          fi
+
+          if [ "${STATUS:-0}" -ne 0 ]; then
+            echo "❌ Prettier formatting check failed"
+            exit 1
+          else
+            echo "✅ Prettier formatting check passed"
+          fi
+
+      - name: Frontend Build Validation
+        if: steps.frontend-check.outputs.has_frontend == 'true' && steps.frontend-changes.outputs.has_changes == 'true'
+        working-directory: trekkyfy-frontend
+        run: |
+          if npm run | grep -q " build"; then
+            npm run build || STATUS=$?
+          else
+            echo "⏭️ Build script not configured; skipping"
+            STATUS=0
+          fi
+
+          if [ "${STATUS:-0}" -ne 0 ]; then
+            echo "❌ Frontend build failed"
+            exit 1
+          else
+            echo "✅ Frontend build completed successfully"
+          fi
+
+          if npm run | grep -q " export"; then
+            npm run export || STATUS=$?
+            if [ "${STATUS:-0}" -ne 0 ]; then
+              echo "❌ Frontend export failed"
+              exit 1
+            else
+              echo "✅ Frontend export completed successfully"
+            fi
+          else
+            echo "⏭️ Export script not configured; skipping"
+          fi
+
+      - name: Frontend Summary
+        id: frontend-summary
+        if: always()
+        run: |
+          if [ "${{ steps.frontend-check.outputs.has_frontend }}" == "true" ] && [ "${{ steps.frontend-changes.outputs.has_changes }}" == "true" ]; then
+            if [ "${{ job.status }}" == "success" ]; then
+              echo "status=success" >> $GITHUB_OUTPUT
+              echo "✅ Frontend quality checks passed"
+            else
+              echo "status=failure" >> $GITHUB_OUTPUT
+              echo "❌ Frontend quality checks failed"
+            fi
+          elif [ "${{ steps.frontend-check.outputs.has_frontend }}" == "true" ]; then
+            echo "status=skipped" >> $GITHUB_OUTPUT
+            echo "⏭️ No frontend changes detected"
+          else
+            echo "status=skipped" >> $GITHUB_OUTPUT
+            echo "⏭️ No frontend code found, skipping frontend checks"
+          fi
+
+      - name: Upload frontend quality artifacts
+        if: always() && steps.frontend-check.outputs.has_frontend == 'true' && steps.frontend-changes.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-quality-reports
+          path: |
+            trekkyfy-frontend/eslint-report.json
+            trekkyfy-frontend/.next/
+            trekkyfy-frontend/out/
+
+
+  # Quality Gate Summary
+  quality-gate-summary:
+    name: Quality Gate Summary
+    runs-on: ubuntu-latest
+    needs: [backend-quality, frontend-quality]
+    if: always()
+    steps:
+      - name: Generate Quality Gate Summary
+        run: |
+          echo "# Quality Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Quality Checks Completed:" >> $GITHUB_STEP_SUMMARY
+
+          # Backend status
+          case "${{ needs.backend-quality.outputs.backend_status }}" in
+            "success") echo "- ✅ Backend Quality: All checks passed" >> $GITHUB_STEP_SUMMARY ;;
+            "failure") echo "- ❌ Backend Quality: Checks failed" >> $GITHUB_STEP_SUMMARY ;;
+            "skipped") echo "- ⏭️ Backend Quality: No Python code found" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "- ❓ Backend Quality: Status unknown" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+
+          # Frontend status
+          case "${{ needs.frontend-quality.outputs.frontend_status }}" in
+            "success") echo "- ✅ Frontend Quality: All checks passed" >> $GITHUB_STEP_SUMMARY ;;
+            "failure") echo "- ❌ Frontend Quality: Checks failed" >> $GITHUB_STEP_SUMMARY ;;
+            "skipped") echo "- ⏭️ Frontend Quality: No frontend code found" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "- ❓ Frontend Quality: Status unknown" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All quality gate checks have been completed. Review detailed reports in the artifacts." >> $GITHUB_STEP_SUMMARY
+
+      - name: Final Quality Gate Status
+        run: |
+          # Determine overall status
+          BACKEND_STATUS="${{ needs.backend-quality.outputs.backend_status }}"
+          FRONTEND_STATUS="${{ needs.frontend-quality.outputs.frontend_status }}"
+
+          # Success if all non-skipped checks passed
+          FAILED=false
+
+          if [ "$BACKEND_STATUS" == "failure" ]; then FAILED=true; fi
+          if [ "$FRONTEND_STATUS" == "failure" ]; then FAILED=true; fi
+
+          if [ "$FAILED" == "true" ]; then
+            echo "❌ Quality Gate Failed"
+            exit 1
+          else
+            echo "✅ Quality Gate Passed"
+          fi
