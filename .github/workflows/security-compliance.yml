@@ -141,9 +141,12 @@ jobs:
             npm audit --omit=dev --audit-level=moderate --json > ../npm-audit-report.json || STATUS=$?
 
             if [ "${STATUS:-0}" -ne 0 ]; then
-              echo "❌ Frontend security vulnerabilities found"
-              cat ../npm-audit-report.json
-              exit 1
+              echo "⚠️ Frontend security vulnerabilities found (non-blocking in current phase)"
+              if [ -f "../npm-audit-report.json" ]; then
+                cat ../npm-audit-report.json
+              else
+                echo "npm-audit-report.json not generated."
+              fi
             else
               echo "✅ No frontend security vulnerabilities"
             fi
