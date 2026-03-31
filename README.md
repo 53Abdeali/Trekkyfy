@@ -30,6 +30,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
+
 3. Access services:
 
 - Frontend: `http://localhost:3000`

@@ -84,7 +84,7 @@ class Feedback(db.Model):
     email = db.Column(db.String(50), nullable=False)
     visited = db.Column(db.String(225), nullable=False)
     number = db.Column(db.String(15), nullable=False)
-    message = db.Column(db.Text(225), nullable=False)
+    message = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
         return f"<Feedback {self.name}>"
@@ -177,7 +177,7 @@ class Hiker(db.Model):
     __tablename__ = "hikers"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    hiker_id = db.Column(db.String(15), nullable=False, index=True)
+    hiker_id = db.Column(db.String(15), nullable=False, index=True, unique=True)
     hiker_username = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(15), nullable=False)
     whatsapp = db.Column(db.String(15), nullable=False)

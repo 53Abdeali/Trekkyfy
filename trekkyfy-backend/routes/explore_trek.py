@@ -1,19 +1,8 @@
 from flask import Blueprint, request, jsonify  # type: ignore
-import pymysql.cursors  # type: ignore
-import pymysql #type: ignore
+from sqlalchemy import text
+from extensions import db
 
 explore_trek_bp = Blueprint("explore", __name__)
-
-def get_db_connection():
-    connection = pymysql.connect(
-        host= "mysql-21f3bc70-aliabdealifakhri53-78d7.i.aivencloud.com",
-        user= "avnadmin",
-        password= "AVNS_P-7RDq_tkUVMeTbEKnV",
-        database= "trekkyfy",
-        port= 14791,
-        cursorclass=pymysql.cursors.DictCursor
-    )
-    return connection
 
 
 @explore_trek_bp.route('/explore', methods=['GET'])
@@ -26,27 +15,25 @@ def explore():
     offset = (page - 1) * limit
 
     query = "SELECT * FROM trails_and_treks WHERE 1=1"
-    params = []
+    params = {}
 
     if state:
-        query += " AND state LIKE %s"
-        params.append(f"%{state}%")
+        query += " AND state LIKE :state"
+        params["state"] = f"%{state}%"
     if difficulty:
-        query += " AND difficulty_level = %s"
-        params.append(difficulty)
+        query += " AND difficulty_level = :difficulty"
+        params["difficulty"] = difficulty
     if max_duration:
-        query += " AND duration_days <= %s"
-        params.append(max_duration)
+        query += " AND duration_days <= :max_duration"
+        params["max_duration"] = max_duration
 
-    query += " LIMIT %s OFFSET %s"
-    params.extend([limit, offset])
+    query += " LIMIT :limit OFFSET :offset"
+    params["limit"] = limit
+    params["offset"] = offset
 
     try:
-        conn = get_db_connection()
-        with conn.cursor() as cursor:
-            cursor.execute(query, params)
-            trails = cursor.fetchall()
-        conn.close()
+        result = db.session.execute(text(query), params)
+        trails = [dict(row) for row in result.mappings().all()]
         return jsonify(trails)
     except Exception as e:
         print("Error:", e)

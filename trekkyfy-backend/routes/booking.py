@@ -2,7 +2,6 @@ from flask import Blueprint, request, jsonify
 from models import db, Booking
 from flask_mail import Message  # type: ignore
 from extensions import mail
-import pymysql  # type: ignore
 
 booking_bp = Blueprint("booking_bp", __name__)
 

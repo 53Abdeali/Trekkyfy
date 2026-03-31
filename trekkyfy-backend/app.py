@@ -1,7 +1,3 @@
-import eventlet
-
-eventlet.monkey_patch()
-
 from flask import Flask, jsonify, request  # type: ignore
 from flask_cors import CORS
 from extensions import db, jwt, bcrypt, mail  # type: ignore
@@ -40,7 +36,7 @@ if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
         api_secret=CLOUDINARY_API_SECRET,
     )
 else:
-    print("Cloudinary credentials are not fully configured. Upload features may fail.")
+    print("Cloudinary not configured; media upload features are disabled.")
 
 # App configuration
 app = Flask(__name__)
@@ -55,6 +51,9 @@ app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=JWT_ACCESS_TOKEN_EXPIRES_HOURS)
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
+print(
+    f"Database backend configured: {SQLALCHEMY_DATABASE_URI.split(':', 1)[0]}"
+)
 
 # for forgot password
 app.config["MAIL_SERVER"] = MAIL_SERVER
@@ -66,7 +65,7 @@ app.config["MAIL_PASSWORD"] = MAIL_PASSWORD
 # Enabling web socket using SocketIO
 socketio = SocketIO(
     app,
-    async_mode="eventlet",
+    async_mode="threading",
     cors_allowed_origins=SOCKET_CORS_ALLOWED_ORIGINS,
 )
 
@@ -92,7 +91,7 @@ def handle_connect(sid):
 
     if user_id and user_type:
         online_users[user_id] = "online"
-        eventlet.spawn_n(update_last_seen, user_id, "online")
+        socketio.start_background_task(update_last_seen, user_id, "online")
         if user_type == "guide":
             join_room(user_id)
             print(f"Guide {user_id} joined room {user_id}")
@@ -111,7 +110,7 @@ def handle_disconnect():
     if user_id:
         online_users.pop(user_id, None)
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        eventlet.spawn_n(update_last_seen, user_id, current_time)
+        socketio.start_background_task(update_last_seen, user_id, current_time)
         print(f"User {user_id} disconnected; last_seen updated.")
     else:
         print("No user_id provided on disconnect.")
@@ -138,7 +137,9 @@ def handle_chat_request(data):
         return
 
     try:
-        eventlet.spawn_n(process_chat_request, hiker_id, guide_id, hiker_username)
+        socketio.start_background_task(
+            process_chat_request, hiker_id, guide_id, hiker_username
+        )
         return {"status": "success"}
     except Exception as e:
         print(f"Error handling chat_request: {e}")
@@ -201,7 +202,7 @@ def handle_chat_response(data):
     accepted = True if str(accepted).strip().lower() in ["true", "1", "yes"] else False
     print(f"🔍 DEBUG: accepted={accepted}, type={type(accepted)}")
 
-    eventlet.spawn_n(
+    socketio.start_background_task(
         process_chat_response, guide_id, hiker_id, accepted, guide_whatsapp
     )
 
@@ -297,7 +298,7 @@ def handle_price_availability(data):
         return
 
     try:
-        eventlet.spawn_n(process_price_availability, hiker_id, guide_id)
+        socketio.start_background_task(process_price_availability, hiker_id, guide_id)
         return {"status": "success"}
     except Exception as e:
         print(f"Error handling chat_request: {e}")
@@ -360,7 +361,7 @@ def handle_price_availability_response(data):
     accepted = True if str(accepted).strip().lower() in ["true", "1", "yes"] else False
     print(f"🔍 DEBUG: accepted={accepted}, type={type(accepted)}")
 
-    eventlet.spawn_n(
+    socketio.start_background_task(
         process_price_availability_response,
         guide_id,
         hiker_id,
@@ -423,7 +424,7 @@ def process_price_availability_response(guide_id, hiker_id, accepted):
 
 
 def update_last_seen(user_id, status):
-    eventlet.spawn_n(process_update_last_seen, user_id, status)
+    socketio.start_background_task(process_update_last_seen, user_id, status)
 
 
 def process_update_last_seen(user_id, status):
@@ -459,4 +460,4 @@ def home():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    socketio.run(app, host="0.0.0.0", port=port)
+    socketio.run(app, host="0.0.0.0", port=port, allow_unsafe_werkzeug=True)
