@@ -76,9 +76,14 @@ jobs:
       - name: Install UV
         run: |
           if [ ! -f "$HOME/.local/bin/uv" ]; then
-            curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh
+            for attempt in 1 2 3; do
+              curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh && break
+              echo "UV install attempt $attempt failed; retrying..."
+              sleep 2
+            done
           fi
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          command -v uv >/dev/null 2>&1 || { echo "uv installation failed"; exit 1; }
 
       - name: Cache UV Dependencies
         uses: actions/cache@v4
@@ -470,9 +475,14 @@ jobs:
       - name: Install UV
         run: |
           if [ ! -f "$HOME/.local/bin/uv" ]; then
-            curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh
+            for attempt in 1 2 3; do
+              curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh && break
+              echo "UV install attempt $attempt failed; retrying..."
+              sleep 2
+            done
           fi
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          command -v uv >/dev/null 2>&1 || { echo "uv installation failed"; exit 1; }
 
       - name: Cache Dependencies
         uses: actions/cache@v4
@@ -632,9 +642,14 @@ jobs:
       - name: Install UV
         run: |
           if [ ! -f "$HOME/.local/bin/uv" ]; then
-            curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh
+            for attempt in 1 2 3; do
+              curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh && break
+              echo "UV install attempt $attempt failed; retrying..."
+              sleep 2
+            done
           fi
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          command -v uv >/dev/null 2>&1 || { echo "uv installation failed"; exit 1; }
 
       - name: Cache Dependencies
         uses: actions/cache@v4

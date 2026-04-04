@@ -10,6 +10,16 @@ npm install
 npm run dev
 ```
 
+## Run with Docker
+
+From repo root:
+
+```bash
+docker compose up --build frontend
+```
+
+Frontend will be available at `http://localhost:3000`.
+
 ## Environment
 
 Frontend API base URL should come from:

@@ -28,7 +28,9 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-me")
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-jwt-secret-key-change-me")
 JWT_ACCESS_TOKEN_EXPIRES_HOURS = _as_int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES_HOURS"), 10)
 
-SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///trekkyfy.db")
+SQLALCHEMY_DATABASE_URI = os.getenv(
+    "DATABASE_URL", "postgresql+psycopg://trekkyfy:trekkyfy@localhost:5432/trekkyfy"
+)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")

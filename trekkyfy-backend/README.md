@@ -19,6 +19,16 @@ uv run python app.py
 
 Default port is `10000` unless overridden by `PORT`.
 
+## Run with Docker
+
+From repo root:
+
+```bash
+docker compose up --build backend postgres
+```
+
+Backend will be available at `http://localhost:10000`.
+
 ## Quality Commands
 
 ```bash
@@ -51,4 +61,3 @@ This service will be migrated to:
 
 - FastAPI
 - PostgreSQL + Alembic
-- Docker-first development and testing workflow

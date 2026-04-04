@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: trekkyfy-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-trekkyfy}
+      POSTGRES_USER: ${POSTGRES_USER:-trekkyfy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trekkyfy}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trekkyfy} -d ${POSTGRES_DB:-trekkyfy}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./trekkyfy-backend
+      dockerfile: Dockerfile
+    container_name: trekkyfy-backend
+    restart: unless-stopped
+    environment:
+      PORT: ${BACKEND_PORT:-10000}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-trekkyfy}:${POSTGRES_PASSWORD:-trekkyfy}@postgres:5432/${POSTGRES_DB:-trekkyfy}
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ACCESS_TOKEN_EXPIRES_HOURS: ${JWT_ACCESS_TOKEN_EXPIRES_HOURS:-10}
+      TOKEN_SALT: ${TOKEN_SALT:-trekkyfy-reset-password}
+      MAIL_SERVER: ${MAIL_SERVER:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USE_TLS: ${MAIL_USE_TLS:-true}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      FRONTEND_ORIGINS: http://localhost:3000
+      SOCKET_CORS_ALLOWED_ORIGINS: http://localhost:3000,*
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-10000}:10000"
+    volumes:
+      - ./trekkyfy-backend:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./trekkyfy-frontend
+      dockerfile: Dockerfile
+    container_name: trekkyfy-frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:10000/api}
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    command: npm run dev -- --hostname 0.0.0.0 --port 3000
+    volumes:
+      - ./trekkyfy-frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+volumes:
+  postgres_data:
+  frontend_node_modules:
